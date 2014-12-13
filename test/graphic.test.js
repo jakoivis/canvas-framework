@@ -54,7 +54,7 @@ describe("Graphic:", function() {
 
 
 
-    xdescribe("positions and rendering:", function() {
+    describe("positions and rendering:", function() {
 
         it("is (0,0)", function() {
             var graphic = new Graphic({imageData:imageData});
@@ -88,7 +88,7 @@ describe("Graphic:", function() {
 
 
 
-    xdescribe("Remove graphic:", function() {
+    describe("Remove graphic:", function() {
 
         it("removed graphic should leave fully transparent pixels", function() {
             var graphic = new Graphic({imageData:imageData});
@@ -118,36 +118,32 @@ describe("Graphic:", function() {
 
 
 
-    xdescribe("local and global coordinates", function() {
+    describe("local and global coordinates", function() {
 
         it("globalToLocal", function() {
-            ImageLoadHelper.getImageData(function(imageData) {
-                var graphic = new Graphic({imageData:imageData, x: 100, y: 200});
-                var localCoordinates = graphic.globalToLocal(0, 0);
-                expect(localCoordinates.x).toEqual(-100);
-                expect(localCoordinates.y).toEqual(-200);
-                localCoordinates = graphic.globalToLocal(110, 210);
-                expect(localCoordinates.x).toEqual(10);
-                expect(localCoordinates.y).toEqual(10);
-            })
+            var graphic = new Graphic({imageData:imageData, x: 100, y: 200});
+            var localCoordinates = graphic.globalToLocal(0, 0);
+            expect(localCoordinates.x).toEqual(-100);
+            expect(localCoordinates.y).toEqual(-200);
+            localCoordinates = graphic.globalToLocal(110, 210);
+            expect(localCoordinates.x).toEqual(10);
+            expect(localCoordinates.y).toEqual(10);
         });
 
         it("localToGlobal", function() {
-            ImageLoadHelper.getImageData(function(imageData) {
-                var graphic = new Graphic({imageData:imageData, x: 100, y: 200});
-                var localCoordinates = graphic.localToGlobal(0, 0);
-                expect(localCoordinates.x).toEqual(100);
-                expect(localCoordinates.y).toEqual(200);
-                localCoordinates = graphic.localToGlobal(110, 210);
-                expect(localCoordinates.x).toEqual(210);
-                expect(localCoordinates.y).toEqual(410);
-            });
+            var graphic = new Graphic({imageData:imageData, x: 100, y: 200});
+            var globalCoordinates = graphic.localToGlobal(0, 0);
+            expect(globalCoordinates.x).toEqual(100);
+            expect(globalCoordinates.y).toEqual(200);
+            globalCoordinates = graphic.localToGlobal(110, 210);
+            expect(globalCoordinates.x).toEqual(210);
+            expect(globalCoordinates.y).toEqual(410);
         });
     });
 
 
 
-    xdescribe("hasGlobalPixelAt:", function() {
+    describe("hasGlobalPixelAt:", function() {
 
         describe("off bounding box. return false when", function() {
 

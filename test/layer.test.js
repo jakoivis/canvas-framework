@@ -13,7 +13,7 @@ describe("Layer:", function() {
     afterEach(function() {
     });
 
-    xdescribe("fullScreen", function() {
+    describe("fullScreen", function() {
 
         beforeEach(function() {
             window.innerWidth = 1000;
@@ -114,7 +114,7 @@ describe("Layer:", function() {
 
 
 
-    xdescribe("getGraphicAtPoint", function() {
+    describe("getGraphicAtPoint", function() {
 
         beforeEach(function() {
         });
@@ -127,9 +127,9 @@ describe("Layer:", function() {
             layer.addGraphic(graphic2);
             layer.addGraphic(graphic3);
             layer.getGraphicAtPoint(0,0);
-            expect(graphic1.hasGlobalPixelAt.callCount).toEqual(1);
-            expect(graphic2.hasGlobalPixelAt.callCount).toEqual(1);
-            expect(graphic3.hasGlobalPixelAt.callCount).toEqual(1);
+            expect(graphic1.hasGlobalPixelAt.calls.count()).toEqual(1);
+            expect(graphic2.hasGlobalPixelAt.calls.count()).toEqual(1);
+            expect(graphic3.hasGlobalPixelAt.calls.count()).toEqual(1);
         });
 
         it("Returns null if all hasGlobalPixelAt return null", function() {
@@ -140,7 +140,8 @@ describe("Layer:", function() {
             layer.addGraphic(graphic2);
             layer.addGraphic(graphic3);
             var actual = layer.getGraphicAtPoint(0,0);
-            expect(actual).toEqual(null);
+            var isNull = actual === null;
+            expect(isNull).toEqual(true);
         });
 
         it("Returns the graphic object which returns true", function() {
@@ -246,15 +247,15 @@ describe("Layer:", function() {
 
     function spyHasGlobalPixelAtAndReturnFalse()
     {
-        spyOn(graphic1, 'hasGlobalPixelAt').andReturn(false);
-        spyOn(graphic2, 'hasGlobalPixelAt').andReturn(false);
-        spyOn(graphic3, 'hasGlobalPixelAt').andReturn(false);
+        spyOn(graphic1, 'hasGlobalPixelAt').and.returnValue(false);
+        spyOn(graphic2, 'hasGlobalPixelAt').and.returnValue(false);
+        spyOn(graphic3, 'hasGlobalPixelAt').and.returnValue(false);
     }
 
     function spyHasGlobalPixelAtAndOneReturnsTrue()
     {
-        spyOn(graphic1, 'hasGlobalPixelAt').andReturn(false);
-        spyOn(graphic2, 'hasGlobalPixelAt').andReturn(true);
-        spyOn(graphic3, 'hasGlobalPixelAt').andReturn(false);
+        spyOn(graphic1, 'hasGlobalPixelAt').and.returnValue(false);
+        spyOn(graphic2, 'hasGlobalPixelAt').and.returnValue(true);
+        spyOn(graphic3, 'hasGlobalPixelAt').and.returnValue(false);
     }
 });
