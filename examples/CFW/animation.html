@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>canvas fw test: Animate with timer</title>
+
+    <script src="../../bower_components/ImageLoader/build/ImageLoader.min.js"></script>
+    <script src="../../build/canvasfw.js"></script>
+
+</head>
+
+<body style="background-color: #AAAAAA;">
+
+    <script>
+        (function(){
+
+            var layer = new Layer();
+            layer.enableFullScreen();
+            document.body.appendChild(layer.getCanvas());
+
+            var loader = new ImageLoader({
+                images:['../assets/sample1_tb.png'],
+                onComplete: onComplete,
+            });
+
+            layer.getCanvas().addEventListener('click', function(event)
+            {
+                var graphic = layer.getGraphicAtPoint(event.clientX, event.clientY);
+                var log = graphic ? "yes" : "no";
+                console.log("click graphic", log);
+            });
+
+            function onComplete()
+            {
+                var canvasutil = new CanvasUtil();
+                var imageData = canvasutil.getImageDataFromTag(loader.getItemAt(0).tag);
+                var graphic1 = new Graphic({imageData: imageData, x: 0, y: 200});
+
+                layer.addGraphic(graphic1);
+
+                var timer = new Timer({
+                    renderCallback: renderHandler,
+                    updateCallback: updateHandler,
+                    frameRate: 30
+                });
+
+                timer.start();
+
+                function renderHandler()
+                {
+                    layer.render();
+                }
+
+                function updateHandler()
+                {
+                    graphic1.x = graphic1.x + 1;
+                }
+            }
+        })();
+
+
+    </script>
+</body>
+</html>

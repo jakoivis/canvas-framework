@@ -38,6 +38,9 @@ gulp.task('build', function() {
 		.pipe(gulp.dest('./build/'));
 });
 
+gulp.task('server:start', function() {
+    connect.server({port: 8080});
+});
 
 gulp.task('test', function() {
 

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>canvas fw: Graphic click test</title>
+
+    <script src="../../bower_components/ImageLoader/build/ImageLoader.min.js"></script>
+    <script src="../../build/canvasfw.js"></script>
+
+
+</head>
+
+<body style="background-color: #AAAAAA;">
+
+    <script>
+        (function(){
+
+            var layer = new Layer();
+            layer.enableFullScreen();
+            layer.enableOnClickEvents();
+            document.body.appendChild(layer.getCanvas());
+
+            var loader = new ImageLoader({
+                images:[
+                    '../assets/sample1_tb.png',
+                    '../assets/sample2_tb.png',
+                    '../assets/sample3_tb.png'],
+                onComplete: onComplete,
+            });
+
+            function onComplete()
+            {
+                var canvasUtil = new CanvasUtil();
+                var graphic1 = new Graphic({imageData: canvasUtil.getImageDataFromTag(loader.getItemAt(0).tag), x: 100, y: 10});
+                var graphic2 = new Graphic({imageData: canvasUtil.getImageDataFromTag(loader.getItemAt(1).tag), x: 500, y: 10});
+                var graphic3 = new Graphic({imageData: canvasUtil.getImageDataFromTag(loader.getItemAt(2).tag), x: 520, y: 10});
+
+                layer.addGraphic(graphic1);
+                layer.addGraphic(graphic2);
+                layer.addGraphic(graphic3);
+
+                graphic2.onClick = clickHandler;
+                graphic3.onClick = clickHandler;
+
+                graphic1.render();
+                graphic2.render();
+                graphic3.render();
+            }
+
+            function clickHandler()
+            {
+                console.log(this.x, this.y);
+            }
+
+        })();
+
+
+    </script>
+</body>
+</html>
