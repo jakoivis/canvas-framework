@@ -17,7 +17,7 @@ describe("Mouse interactions", function() {
     afterEach(function() {
     });
 
-    xdescribe("Graphic click", function() {
+    describe("Graphic click", function() {
 
         it("click handler is not triggered if click events are not enabled on layer", function() {
             var layer = new Layer();
@@ -73,15 +73,15 @@ describe("Mouse interactions", function() {
             layer.addGraphic(graphic1);
             layer.addGraphic(graphic2);
             simulateClick(layer.getCanvas(), 10, 0);
-            expect(graphic1.onClick.callCount).toEqual(0);
-            expect(graphic2.onClick.callCount).toEqual(1);
+            expect(graphic1.onClick.calls.count()).toEqual(0);
+            expect(graphic2.onClick.calls.count()).toEqual(1);
             simulateClick(layer.getCanvas(), 9, 0);
-            expect(graphic1.onClick.callCount).toEqual(1);
-            expect(graphic2.onClick.callCount).toEqual(1);
+            expect(graphic1.onClick.calls.count()).toEqual(1);
+            expect(graphic2.onClick.calls.count()).toEqual(1);
         });
     });
 
-    xdescribe("Graphic mouse move", function() {
+    describe("Graphic mouse move", function() {
 
         it("roll handlers handlers are not triggered if roll events are not enabled on layer", function() {
             var layer = new Layer();
@@ -95,11 +95,11 @@ describe("Mouse interactions", function() {
             var layer = new Layer({enableOnRollEvents:true});
             layer.addGraphic(graphic1);
             simulateMouseMove(layer.getCanvas(), 0, 0);
-            expect(graphic1.onRollOver.callCount).toEqual(1);
-            expect(graphic1.onRollOut.callCount).toEqual(0);
+            expect(graphic1.onRollOver.calls.count()).toEqual(1);
+            expect(graphic1.onRollOut.calls.count()).toEqual(0);
             simulateMouseMove(layer.getCanvas(), 30, 0);
-            expect(graphic1.onRollOver.callCount).toEqual(1);
-            expect(graphic1.onRollOut.callCount).toEqual(1);
+            expect(graphic1.onRollOver.calls.count()).toEqual(1);
+            expect(graphic1.onRollOut.calls.count()).toEqual(1);
         });
 
         it("roll handlers are triggered when enabled by enableOnRollEvents function call", function() {
@@ -107,11 +107,11 @@ describe("Mouse interactions", function() {
             layer.enableOnRollEvents();
             layer.addGraphic(graphic1);
             simulateMouseMove(layer.getCanvas(), 0, 0);
-            expect(graphic1.onRollOver.callCount).toEqual(1);
-            expect(graphic1.onRollOut.callCount).toEqual(0);
+            expect(graphic1.onRollOver.calls.count()).toEqual(1);
+            expect(graphic1.onRollOut.calls.count()).toEqual(0);
             simulateMouseMove(layer.getCanvas(), 30, 0);
-            expect(graphic1.onRollOver.callCount).toEqual(1);
-            expect(graphic1.onRollOut.callCount).toEqual(1);
+            expect(graphic1.onRollOver.calls.count()).toEqual(1);
+            expect(graphic1.onRollOut.calls.count()).toEqual(1);
         });
 
         it("roll handler are not triggered when disabled by disableOnRollEvents function call", function() {
@@ -120,11 +120,11 @@ describe("Mouse interactions", function() {
             layer.disableOnRollEvents();
             layer.addGraphic(graphic1);
             simulateMouseMove(layer.getCanvas(), 0, 0);
-            expect(graphic1.onRollOver.callCount).toEqual(0);
-            expect(graphic1.onRollOut.callCount).toEqual(0);
+            expect(graphic1.onRollOver.calls.count()).toEqual(0);
+            expect(graphic1.onRollOut.calls.count()).toEqual(0);
             simulateMouseMove(layer.getCanvas(), 30, 0);
-            expect(graphic1.onRollOver.callCount).toEqual(0);
-            expect(graphic1.onRollOut.callCount).toEqual(0);
+            expect(graphic1.onRollOver.calls.count()).toEqual(0);
+            expect(graphic1.onRollOut.calls.count()).toEqual(0);
         });
 
         it("roll handlers are not triggered if mouse position doesn't hit the graphic", function() {
@@ -143,25 +143,25 @@ describe("Mouse interactions", function() {
             layer.addGraphic(graphic1);
             layer.addGraphic(graphic2);
             simulateMouseMove(layer.getCanvas(), 40, 0);
-            expect(graphic1.onRollOver.callCount).toEqual(0);
-            expect(graphic1.onRollOut.callCount).toEqual(0);
-            expect(graphic2.onRollOver.callCount).toEqual(1);
-            expect(graphic2.onRollOut.callCount).toEqual(0);
+            expect(graphic1.onRollOver.calls.count()).toEqual(0);
+            expect(graphic1.onRollOut.calls.count()).toEqual(0);
+            expect(graphic2.onRollOver.calls.count()).toEqual(1);
+            expect(graphic2.onRollOut.calls.count()).toEqual(0);
             simulateMouseMove(layer.getCanvas(), 25, 0);
-            expect(graphic1.onRollOver.callCount).toEqual(0);
-            expect(graphic1.onRollOut.callCount).toEqual(0);
-            expect(graphic2.onRollOver.callCount).toEqual(1);
-            expect(graphic2.onRollOut.callCount).toEqual(1);
+            expect(graphic1.onRollOver.calls.count()).toEqual(0);
+            expect(graphic1.onRollOut.calls.count()).toEqual(0);
+            expect(graphic2.onRollOver.calls.count()).toEqual(1);
+            expect(graphic2.onRollOut.calls.count()).toEqual(1);
             simulateMouseMove(layer.getCanvas(), 10, 0);
-            expect(graphic1.onRollOver.callCount).toEqual(1);
-            expect(graphic1.onRollOut.callCount).toEqual(0);
-            expect(graphic2.onRollOver.callCount).toEqual(1);
-            expect(graphic2.onRollOut.callCount).toEqual(1);
+            expect(graphic1.onRollOver.calls.count()).toEqual(1);
+            expect(graphic1.onRollOut.calls.count()).toEqual(0);
+            expect(graphic2.onRollOver.calls.count()).toEqual(1);
+            expect(graphic2.onRollOut.calls.count()).toEqual(1);
             simulateMouseMove(layer.getCanvas(), 25, 0);
-            expect(graphic1.onRollOver.callCount).toEqual(1);
-            expect(graphic1.onRollOut.callCount).toEqual(1);
-            expect(graphic2.onRollOver.callCount).toEqual(1);
-            expect(graphic2.onRollOut.callCount).toEqual(1);
+            expect(graphic1.onRollOver.calls.count()).toEqual(1);
+            expect(graphic1.onRollOut.calls.count()).toEqual(1);
+            expect(graphic2.onRollOver.calls.count()).toEqual(1);
+            expect(graphic2.onRollOut.calls.count()).toEqual(1);
         });
 
         it("graphics are identified when overlapping", function() {
@@ -170,15 +170,15 @@ describe("Mouse interactions", function() {
             layer.addGraphic(graphic1);
             layer.addGraphic(graphic2);
             simulateMouseMove(layer.getCanvas(), 10, 0);
-            expect(graphic1.onRollOver.callCount).toEqual(0);
-            expect(graphic1.onRollOut.callCount).toEqual(0);
-            expect(graphic2.onRollOver.callCount).toEqual(1);
-            expect(graphic2.onRollOut.callCount).toEqual(0);
+            expect(graphic1.onRollOver.calls.count()).toEqual(0);
+            expect(graphic1.onRollOut.calls.count()).toEqual(0);
+            expect(graphic2.onRollOver.calls.count()).toEqual(1);
+            expect(graphic2.onRollOut.calls.count()).toEqual(0);
             simulateMouseMove(layer.getCanvas(), 9, 0);
-            expect(graphic1.onRollOver.callCount).toEqual(1);
-            expect(graphic1.onRollOut.callCount).toEqual(0);
-            expect(graphic2.onRollOver.callCount).toEqual(1);
-            expect(graphic2.onRollOut.callCount).toEqual(1);
+            expect(graphic1.onRollOver.calls.count()).toEqual(1);
+            expect(graphic1.onRollOut.calls.count()).toEqual(0);
+            expect(graphic2.onRollOver.calls.count()).toEqual(1);
+            expect(graphic2.onRollOut.calls.count()).toEqual(1);
         });
     });
 
