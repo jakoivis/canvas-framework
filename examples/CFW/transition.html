@@ -19,17 +19,20 @@
             document.body.appendChild(layer.getCanvas());
 
             var loader = new ImageLoader({
-                images:['../assets/sample1_tb.png'],
+                images:['../assets/sample1_tb.png', '../assets/sample2_tb.png'],
                 onComplete: onComplete,
             });
 
             function onComplete()
             {
                 var canvasutil = new CanvasUtil();
-                var imageData = canvasutil.getImageDataFromTag(loader.getItemAt(0).tag);
-                var graphic1 = new Graphic({imageData: imageData, x: 10, y: 10});
+                var imageData1 = canvasutil.getImageDataFromTag(loader.getItemAt(0).tag);
+                var imageData2 = canvasutil.getImageDataFromTag(loader.getItemAt(1).tag);
+                var graphic1 = new Graphic({imageData: imageData1, x: 10, y: 10});
+                var graphic2 = new Graphic({imageData: imageData2, x: 10, y: 100});
 
                 layer.addGraphic(graphic1);
+                layer.addGraphic(graphic2);
 
                 var timer = new Timer({
                     renderCallback: renderHandler,
@@ -39,19 +42,29 @@
 
                 timer.start();
 
-                graphic1.addTransition("fadeIn", {
+                var fadeInOptions = {
+                    property: "x",
                     duration: 500,
                     from: 10,
                     to: 30
-                });
-                graphic1.addTransition("fadeOut", {
+                };
+
+                var fadeOutOptions = {
+                    property: "x",
                     duration: 500,
                     from: 30,
                     to: 10
-                });
+                }
+
+                graphic1.addTransition("fadeIn", fadeInOptions);
+                graphic1.addTransition("fadeOut", fadeOutOptions);
+                graphic2.addTransition("fadeIn", fadeInOptions);
+                graphic2.addTransition("fadeOut", fadeOutOptions);
 
                 graphic1.onRollOver = rollOverHandler;
                 graphic1.onRollOut = rollOutHandler;
+                graphic2.onRollOver = rollOverHandler;
+                graphic2.onRollOut = rollOutHandler;
 
                 function renderHandler()
                 {
