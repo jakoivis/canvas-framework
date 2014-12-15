@@ -56,11 +56,6 @@
                     to: 10
                 }
 
-                graphic1.addTransition("fadeIn", fadeInOptions);
-                graphic1.addTransition("fadeOut", fadeOutOptions);
-                graphic2.addTransition("fadeIn", fadeInOptions);
-                graphic2.addTransition("fadeOut", fadeOutOptions);
-
                 graphic1.onRollOver = rollOverHandler;
                 graphic1.onRollOut = rollOutHandler;
                 graphic2.onRollOver = rollOverHandler;
@@ -74,16 +69,17 @@
                 function updateHandler()
                 {
                     layer.update();
+                    Animator.update();
                 }
 
                 function rollOverHandler()
                 {
-                    this.playTransition("fadeIn");
+                    Animator.play(this, fadeInOptions);
                 }
 
                 function rollOutHandler()
                 {
-                    this.playTransition("fadeOut");
+                    Animator.play(this, fadeOutOptions);
                 }
             }
         })();
