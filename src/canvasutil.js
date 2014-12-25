@@ -1,9 +1,9 @@
-;(function() {
+// ;(function() {
     'use strict';
 
-    window.CanvasUtil = CanvasUtil;
+    // window.CanvasUtil = CanvasUtil;
 
-    function CanvasUtil()
+    module.exports = function()
     {
         if(CanvasUtil.prototype.singletonInstance)
         {
@@ -70,4 +70,4 @@
 
         return this;
     }
-})();
+// })();

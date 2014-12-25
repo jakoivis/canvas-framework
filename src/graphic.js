@@ -1,7 +1,7 @@
-;(function() {
+// ;(function() {
     'use strict';
 
-    window.Graphic = Graphic;
+    // window.Graphic = Graphic;
 
     // TODO F MED: options events + other
     // TODO F: remove transition
@@ -10,7 +10,7 @@
     // TODO bug: renred width and height needs to be stored. when image data has changed clearing would not clear correct width and height
     // TODO: unit tests for transition... think about moving that away from graphic
 
-    function Graphic(options)
+    module.exports = function(options)
     {
         if (!(this instanceof Graphic))
         {
@@ -151,4 +151,4 @@
 
         return this;
     }
-})();
+// })();

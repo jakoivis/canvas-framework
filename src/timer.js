@@ -1,11 +1,11 @@
-;(function() {
+// ;(function() {
     'use strict';
     
-    window.Timer = Timer;
+    // window.Timer = Timer;
     
     //Timer class implements the main loop of the application and the callbacs that handle 
     //game processing in main loop.
-    function Timer(options)
+    module.exports = function(options)
     {
         if(Timer.prototype.singletonInstance)
         {
@@ -164,4 +164,4 @@
         
         return this;
     }
-})();
+// })();

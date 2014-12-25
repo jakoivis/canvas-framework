@@ -1,9 +1,9 @@
-;(function() {
+// ;(function() {
     'use strict';
 
-    window.Layer = Layer;
+//     window.Layer = Layer;
 
-    function Layer(options)
+    module.exports = function(options)
     {
         if (!(this instanceof Layer))
         {
@@ -240,4 +240,4 @@
 
         return this;
     }
-})();
+// })();

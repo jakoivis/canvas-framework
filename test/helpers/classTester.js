@@ -1,4 +1,4 @@
-var ClassTester = {
+window.ClassTester = {
     
     beforeEachSingleton: function(Class)
     {

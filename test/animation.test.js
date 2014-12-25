@@ -1,17 +1,17 @@
-describe("Transition:", function() {
+describe("Animation:", function() {
 
-    ClassTester.classTest(Transition);
+    ClassTester.classTest(Animation);
 
     var timer;
-    var transition;
+    var animation;
     var target;
     var collectedValues;
-    var transitionProperty;
+    var animationProperty;
 
     beforeEach(function() {
         target = {x:0, y:0};
         collectedValues = [];
-        transitionProperty = "x";
+        animationProperty = "x";
 
         timer = new Timer();
         timer.setFramerate(50);
@@ -26,56 +26,56 @@ describe("Transition:", function() {
     describe("", function() {
 
         it("defaults", function() {
-            transition = new Transition({target: target});
-            expect(transition.fromValue).toEqual(0);
-            expect(transition.toValue).toEqual(1);
-            expect(transition.property).toEqual("x");
+            animation = new Animation({target: target});
+            expect(animation.fromValue).toEqual(0);
+            expect(animation.toValue).toEqual(1);
+            expect(animation.property).toEqual("x");
         });
     });
 
     xdescribe("update call count", function() {
 
         it("50 fps = 50 updates with default 1000ms duration", function(done) {
-            transition = new Transition({target: target});
-            spyOn(transition, "update").and.callThrough();
+            animation = new Animation({target: target});
+            spyOn(animation, "update").and.callThrough();
 
-            playAndWaitForTransition(transition, function() {
+            playAndWaitForAnimation(animation, function() {
                 // Error somethimes: Expected 51 to equal 50.
-                expect(transition.update.calls.count()).toEqual(50);
+                expect(animation.update.calls.count()).toEqual(50);
                 done();
             });
         });
 
         it("50 fps = 5 updates with 100ms duration", function(done) {
-            transition = new Transition({target: target, duration:100});
-            spyOn(transition, "update").and.callThrough();
+            animation = new Animation({target: target, duration:100});
+            spyOn(animation, "update").and.callThrough();
 
-            playAndWaitForTransition(transition, function() {
+            playAndWaitForAnimation(animation, function() {
                 // Error sometimes: Expected 6 to equal 5.
-                expect(transition.update.calls.count()).toEqual(5);
+                expect(animation.update.calls.count()).toEqual(5);
                 done();
             });
         });
 
         it("100 fps = 10 updates with 100ms duration", function(done) {
             timer.setFramerate(100);
-            transition = new Transition({target: target, duration:100});
-            spyOn(transition, "update").and.callThrough();
+            animation = new Animation({target: target, duration:100});
+            spyOn(animation, "update").and.callThrough();
 
-            playAndWaitForTransition(transition, function() {
+            playAndWaitForAnimation(animation, function() {
                 // Error sometimes: Expected 11 to equal 10.
-                expect(transition.update.calls.count()).toEqual(10);
+                expect(animation.update.calls.count()).toEqual(10);
                 done();
             });
         });
     });
 
-    xdescribe("transition values with", function() {
+    xdescribe("animation values with", function() {
 
         it("50fps 100ms", function(done) {
-            transition = new Transition({target: target, duration:100});
+            animation = new Animation({target: target, duration:100});
 
-            playAndWaitForTransition(transition, function() {
+            playAndWaitForAnimation(animation, function() {
 
                 expect(collectedValues.length).toEqual(5);
                 expect(collectedValues[0].toFixed(3)).toEqual("0.000");
@@ -89,9 +89,9 @@ describe("Transition:", function() {
         });
 
         it("50fps 200ms", function(done) {
-            transition = new Transition({target: target, duration:200});
+            animation = new Animation({target: target, duration:200});
 
-            playAndWaitForTransition(transition, function() {
+            playAndWaitForAnimation(animation, function() {
                 expect(collectedValues.length).toEqual(10);
                 expect(collectedValues[0].toFixed(3)).toEqual("0.000");
                 expect(collectedValues[1].toFixed(3)).toEqual("0.111");
@@ -110,9 +110,9 @@ describe("Transition:", function() {
         });
 
         it("50fps 100ms from 2 to 4", function(done) {
-            transition = new Transition({target: target, duration:100, from:2, to:4});
+            animation = new Animation({target: target, duration:100, from:2, to:4});
 
-            playAndWaitForTransition(transition, function() {
+            playAndWaitForAnimation(animation, function() {
                 expect(collectedValues.length).toEqual(5);
                 expect(collectedValues[0].toFixed(3)).toEqual("2.000");
                 expect(collectedValues[1].toFixed(3)).toEqual("2.500");
@@ -125,9 +125,9 @@ describe("Transition:", function() {
         });
 
         it("50fps 100ms from 4 to 2", function(done) {
-            transition = new Transition({target: target, duration:100, from:4, to:2});
+            animation = new Animation({target: target, duration:100, from:4, to:2});
 
-            playAndWaitForTransition(transition, function() {
+            playAndWaitForAnimation(animation, function() {
                 expect(collectedValues.length).toEqual(5);
                 expect(collectedValues[0].toFixed(3)).toEqual("4.000");
                 expect(collectedValues[1].toFixed(3)).toEqual("3.500");
@@ -140,9 +140,9 @@ describe("Transition:", function() {
         });
 
         it("50fps 100ms from 2 to -2", function(done) {
-            transition = new Transition({target: target, duration:100, from:2, to:-2});
+            animation = new Animation({target: target, duration:100, from:2, to:-2});
 
-            playAndWaitForTransition(transition, function() {
+            playAndWaitForAnimation(animation, function() {
                 expect(collectedValues.length).toEqual(5);
                 expect(collectedValues[0].toFixed(3)).toEqual("2.000");
                 expect(collectedValues[1].toFixed(3)).toEqual("1.000");
@@ -157,17 +157,17 @@ describe("Transition:", function() {
 
     function timerUpdateHandler()
     {
-        if (transition)
+        if (animation)
         {
-            transition.update();
-            collectedValues.push(target[transitionProperty]);
+            animation.update();
+            collectedValues.push(target[animationProperty]);
         }
     }
 
-    function playAndWaitForTransition(transition, callback)
+    function playAndWaitForAnimation(animation, callback)
     {
-        transition.play();
-        waitForFalseyValue(transition, 'isPlaying', callback);
+        animation.play();
+        waitForFalseyValue(animation, 'isPlaying', callback);
     }
 
     function waitForFalseyValue(obj, method, callback, timeout)

@@ -1,12 +1,12 @@
-;(function() {
+// ;(function() {
     'use strict';
 
-    window.Animator = new Animator();
+    // window.Animator = new Animator();
 
-    function Animator()
+    module.exports = function()
     {
         var me = this;
-        var timer = new Timer();
+        // var timer = new Timer();
         var animations = [];
 
         me.play = function(target, options)
@@ -33,6 +33,4 @@
 
         return this;
     }
-
-    Animator.
-})();
+// })();

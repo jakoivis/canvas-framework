@@ -1,12 +1,14 @@
-;(function() {
+// ;(function() {
     'use strict';
 
-    window.Animation = Animation;
+    // window.Animation = Animation;
 
     // TODO: test interrupting a transition
     // TODO: easing
 
-    function Animation(options)
+    var timer = require('./timer.js');
+
+    module.exports = function(options)
     {
         if (!(this instanceof Animation))
         {
@@ -154,4 +156,4 @@
 
         return this;
     }
-})();
+// })();
