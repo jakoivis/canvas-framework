@@ -15,11 +15,8 @@ var imageLoader = './bower_components/ImageLoader/build/imageloader.min.js';
 
 var gulp = require('gulp');
 var glob = require('glob');
-// var changed = require('gulp-changed');
-// var concat = require('gulp-concat');
 var stripDebug = require('gulp-strip-debug');
 var uglify = require('gulp-uglify');
-// var connect = require('gulp-connect');
 var karma = require('gulp-karma');
 var connect = require('gulp-connect');
 var browserify = require('browserify');
@@ -60,41 +57,6 @@ gulp.task('server:start', function() {
 
 gulp.task('test', function() {
 
-    // connect.server({port: 8080});
-
-    // var browserifyOptions = {
-    //     entries: [
-    //         mainSourceFile,
-    //         glob.sync(testHelperFiles),
-    //         glob.sync(testFiles),
-    //         imageLoader
-    //     ]
-    // };
-
-
-    // browserify(browserifyOptions)
-    //     .bundle()
-    //     .pipe(source(unminifiedFileName))
-    //     .pipe(buffer())
-    //     .pipe(stripDebug())
-    //     .pipe(gulp.dest(buildFolder))
-    //     .pipe(karma(karmaSingleRunOptions))
-    //     .on('end', function () {
-    //         connect.serverClose();
-    //     })
-    //     .on('error', function (err) {
-    //         throw err;
-    //     });
-
-    // return gulp.src([sourceFiles, testHelperFiles, testFiles, imageLoader])
-    //     .pipe(karma(karmaSingleRunOptions))
-    //     .on('end', function () {
-    //         connect.serverClose();
-    //     })
-    //     .on('error', function (err) {
-    //         throw err;
-    //     });
-
     var browserifyOptions = {
         entries: [
             './src/canvasfw.js',
@@ -121,34 +83,18 @@ gulp.task('test', function() {
         action: "run"
     };
 
-connect.server({port: 8080});
+    connect.server({port: 8080});
 
- return browserify(browserifyOptions)
-        // .on("error", handleError)
+    return browserify(browserifyOptions)
         .transform(istanbul(istanbulOptions))
-        // .on("error", handleError)
         .bundle()
-
-        // .on("error", handleError)
         .pipe(source('testbundle.js'))
-        // .on("error", handleError)
         .pipe(buffer())
-        // .pipe(uglify())
-        // .on("error", handleError)
         .pipe(gulp.dest('./coverage'))
         .pipe(karma(karmaOptions))
         .on('end', function () {
             connect.serverClose();
-        })
-        // .on("error", handleError);
-});
-
-gulp.task('test-unminified', function() {
-
-});
-
-gulp.task('test-minified', function() {
-
+        });
 });
 
 gulp.task('default', ['scripts'], function() {

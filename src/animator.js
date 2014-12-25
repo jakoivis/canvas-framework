@@ -1,36 +1,33 @@
-// ;(function() {
-    'use strict';
 
-    // window.Animator = new Animator();
+'use strict';
 
-    module.exports = function()
+module.exports = function()
+{
+    var me = this;
+
+    var animations = [];
+
+    me.play = function(target, options)
     {
-        var me = this;
-        // var timer = new Timer();
-        var animations = [];
+        var animation = new Animation(options);
 
-        me.play = function(target, options)
-        {
-            var animation = new Animation(options);
+        storeAnimation(animation);
 
-            storeAnimation(animation);
-
-            animation.play();
-        }
-
-        me.update = function()
-        {
-            for(var i = 0; i < animations.length; i++)
-            {
-                animations[i].update();
-            }
-        }
-
-        function storeAnimation(animation)
-        {
-            animations.push(animation);
-        }
-
-        return this;
+        animation.play();
     }
-// })();
+
+    me.update = function()
+    {
+        for(var i = 0; i < animations.length; i++)
+        {
+            animations[i].update();
+        }
+    }
+
+    function storeAnimation(animation)
+    {
+        animations.push(animation);
+    }
+
+    return this;
+}
