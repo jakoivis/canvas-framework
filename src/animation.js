@@ -21,6 +21,7 @@ module.exports = function(options)
     me.toValue;
     me.steps;
     me.target;
+    me.onComplete;
 
     var position;
     var isPlaying;
@@ -34,6 +35,7 @@ module.exports = function(options)
             me.fromValue = options.from || 0;
             me.toValue = options.to || 1;
             me.target = options.target;
+            me.onComplete = options.onComplete;
         }
 
         me.steps = getPrecalculateSteps();
@@ -42,12 +44,12 @@ module.exports = function(options)
 
     me.play = function()
     {
-        var wasInterrupted = interruptOverlappingTransitions();
+        // var wasInterrupted = interruptOverlappingAnimations();
 
-        if (wasInterrupted)
-        {
-            position = findNearestStartingPosition();
-        }
+        // if (wasInterrupted)
+        // {
+            // position = findNearestStartingPosition();
+        // }
 
         isPlaying = true;
     }
@@ -104,50 +106,25 @@ module.exports = function(options)
         return result;
     }
 
-    function interruptOverlappingTransitions()
-    {
-        var transitions = Transition.prototype.transitions;
-        var wasInterrupting = false;
+    // function findNearestStartingPosition()
+    // {
+    //     var currentValue = me.target[me.property];
+    //     var nearestValue = me.steps[0];
+    //     var nearestValuePosition = 0;
+    //     var nearestDistance = Math.abs(nearestValue - currentValue);
 
-        for(var i = 0; i < transitions.length; i++)
-        {
-            if (isOverlappingTransition(transitions[i]))
-            {
-                wasInterrupting = true;
-                transitions[i].reset();
-            }
-        }
+    //     for(var i = 0; i < me.steps.length; i++)
+    //     {
+    //         if (Math.abs(me.steps[i] - currentValue) < nearestDistance)
+    //         {
+    //             nearestDistance = Math.abs(nearestValue - currentValue);
+    //             nearestValue = me.steps[i];
+    //             nearestValuePosition = i;
+    //         }
+    //     }
 
-        return wasInterrupting;
-    }
-
-    function isOverlappingTransition(transition)
-    {
-        return transition.property === me.property
-                && transition.target === me.target
-                && transition.isPlaying()
-                && transition !== me;
-    }
-
-    function findNearestStartingPosition()
-    {
-        var currentValue = me.target[me.property];
-        var nearestValue = me.steps[0];
-        var nearestValuePosition = 0;
-        var nearestDistance = Math.abs(nearestValue - currentValue);
-
-        for(var i = 0; i < me.steps.length; i++)
-        {
-            if (Math.abs(me.steps[i] - currentValue) < nearestDistance)
-            {
-                nearestDistance = Math.abs(nearestValue - currentValue);
-                nearestValue = me.steps[i];
-                nearestValuePosition = i;
-            }
-        }
-
-        return nearestValuePosition;
-    }
+    //     return nearestValuePosition;
+    // }
 
     init();
 

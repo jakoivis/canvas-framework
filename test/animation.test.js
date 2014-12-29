@@ -23,6 +23,24 @@ describe("Animation:", function() {
         timer.stop();
     });
 
+    // preconditions:
+    //  - graphic always has position
+    // when 'to' value is defined but 'from' value is not
+    //  - starts at current positin
+    //  - ends at the 'to' position
+    // when 'from' value is defined but 'to' value is not
+    //  - starts at 'from' value
+    //  - ends at the current position
+    // when both are defined
+    //  - starts from 'from' value and ends to the 'to' value
+    // when neither of the values are defined
+    //  - doesn't do anything
+    // Animation updates the properties of animated object
+    // It's up the objet it self to decide how to react to those changes
+    //  - how to detect the change?
+    //      - js watch
+    //      - setter & getter HTML5
+
     describe("", function() {
 
         it("defaults", function() {
@@ -30,6 +48,13 @@ describe("Animation:", function() {
             expect(animation.fromValue).toEqual(0);
             expect(animation.toValue).toEqual(1);
             expect(animation.property).toEqual("x");
+        });
+    });
+
+    describe("options", function() {
+
+        it("onComplete should be called when animation finishes", function() {
+            // animation = new Animation();
         });
     });
 
