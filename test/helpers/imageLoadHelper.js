@@ -7,7 +7,7 @@ it("...", function(done) {
 });
 */
 
-var ImageLoadHelper = {
+window.ImageLoadHelper = {
 
     loader: null,
 
