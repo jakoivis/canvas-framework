@@ -25,12 +25,16 @@ module.exports = function(options)
     var renderedX;
     var renderedY;
 
+    var dummyFunction = function() {}
+
     me.x = 0;
     me.y = 0;
 
     me.onRollOver;
     me.onRollOut;
     me.onClick;
+
+    var update = dummyFunction;
 
     function init()
     {
@@ -47,6 +51,8 @@ module.exports = function(options)
             me.onRollOver = options.onRollOver;
             me.onRollOut = options.onRollOut;
             me.onClick = options.onClick;
+
+            update = options.update || dummyFunction;
         }
     }
 
@@ -80,7 +86,7 @@ module.exports = function(options)
 
     me.update = function()
     {
-
+        update.call(this);
     }
 
     me.globalToLocal = function(x, y)
