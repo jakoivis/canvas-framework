@@ -172,7 +172,6 @@ module.exports = function(options)
 
     me.update = function()
     {
-        // update();
         update.call(this);
     }
 

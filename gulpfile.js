@@ -23,8 +23,7 @@ var browserify = require('browserify');
 var istanbul = require('browserify-istanbul');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
-
-
+var livereload = require('gulp-livereload');
 
 var karmaSingleRunOptions = { configFile: 'karma.conf.js', action: 'run' };
 
@@ -55,7 +54,7 @@ gulp.task('server:start', function() {
     connect.server({port: 8080});
 });
 
-gulp.task('test', function() {
+gulp.task('test', ['server:start'], function() {
 
     var browserifyOptions = {
         entries: [
@@ -83,8 +82,6 @@ gulp.task('test', function() {
         action: "run"
     };
 
-    connect.server({port: 8080});
-
     return browserify(browserifyOptions)
         .transform(istanbul(istanbulOptions))
         .bundle()
@@ -92,11 +89,19 @@ gulp.task('test', function() {
         .pipe(buffer())
         .pipe(gulp.dest('./coverage'))
         .pipe(karma(karmaOptions))
-        .on('end', function () {
+        .on('end', function() {
             connect.serverClose();
-        });
+        })
+        .on('error', function() {
+            connect.serverClose();
+        })
 });
 
-gulp.task('default', ['scripts'], function() {
+gulp.task('watch', function() {
+    livereload.listen();
+    gulp.watch(['src/**/*.js', 'test/**/*.js', 'examples/**/*.html'], ['test', 'build']);
+});
+
+gulp.task('default', ['watch'], function() {
 
 });
