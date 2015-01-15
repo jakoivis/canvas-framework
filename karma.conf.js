@@ -32,7 +32,7 @@ module.exports = function(config) {
         captureTimeout: 30000,
         colors: true,
         autoWatch: false,
-        singleRun: false,
+        singleRun: true,
         logLevel: config.LOG_INFO
     });
 };

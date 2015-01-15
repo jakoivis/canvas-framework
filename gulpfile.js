@@ -1,18 +1,4 @@
 
-var releaseName = 'canvasfw';
-
-var unminifiedFileName = releaseName + '.js';
-var minifiedFileName = releaseName + '.min.js';
-
-var mainSourceFile = './src/canvasfw.js';
-var sourceFiles = './src/*.js';
-var testFiles = './test/*.test.js';
-var testHelperFiles = './test/helpers/*.js';
-var imageFiles = './test/assets/*.png';
-var buildFolder = './build/';
-
-var imageLoader = './bower_components/ImageLoader/build/imageloader.min.js';
-
 var gulp = require('gulp');
 var glob = require('glob');
 var stripDebug = require('gulp-strip-debug');
@@ -23,9 +9,64 @@ var browserify = require('browserify');
 var istanbul = require('browserify-istanbul');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
-var livereload = require('gulp-livereload');
+var util = require('gulp-util');
 
-var karmaSingleRunOptions = { configFile: 'karma.conf.js', action: 'run' };
+var releaseName = 'canvasfw';
+
+var unminifiedFileName = releaseName + '.js';
+var minifiedFileName = releaseName + '.min.js';
+
+var mainSourceFile = './src/canvasfw.js';
+var sourceFiles = './src/*.js';
+var testFiles = './test/*.test.js';
+var testHelperFiles = './test/helpers/*.js';
+var exampleFiles = './examples/**/*.html';
+var imageFiles = './test/assets/*.png';
+
+var buildFolder = './build/';
+var coverageFolder = './coverage/';
+
+var imageLoader = './bower_components/ImageLoader/build/imageloader.min.js';
+
+var karmaOptions = { configFile: './karma.conf.js', action: 'run' };
+var istanbulOptions = {
+    ignore: [
+        "**/bower_components/**",
+        "**/node_modules/**",
+        "**/test/**",
+        "**/tests/**"
+    ],
+    defaultIgnore: false
+};
+var browserifyTestOptions = {
+    entries: [
+        mainSourceFile,
+        imageLoader,
+        glob.sync(testHelperFiles),
+        glob.sync(testFiles)
+    ],
+    debug: true,
+    insertGlobals: true
+};
+
+var isLiveReloading = false;
+
+gulp.task('startLiveServer', function() {
+    isLiveReloading = true;
+    connect.server({port: 8080, livereload: true});
+});
+
+gulp.task('startSingleRunServer', function() {
+    if(!isLiveReloading) {
+        connect.server({port: 8080, livereload: false});
+    }
+});
+
+function serverStop() {
+    if(!isLiveReloading) {
+        connect.serverClose();
+    }
+}
 
 gulp.task('build', function() {
 
@@ -47,61 +88,35 @@ gulp.task('build', function() {
         .pipe(source(unminifiedFileName))
         .pipe(buffer())
         .pipe(stripDebug())
-        .pipe(gulp.dest(buildFolder));
+        .pipe(gulp.dest(buildFolder))
+        .pipe(connect.reload());
 });
 
-gulp.task('server:start', function() {
-    connect.server({port: 8080});
-});
+gulp.task('test', ['startSingleRunServer'], function() {
 
-gulp.task('test', ['server:start'], function() {
-
-    var browserifyOptions = {
-        entries: [
-            './src/canvasfw.js',
-            imageLoader,
-            glob.sync('./test/helpers/*.js'),
-            glob.sync('./test/*.js')
-        ],
-        debug: true,
-        insertGlobals: true
-    };
-
-    var istanbulOptions = {
-        ignore: [
-            "**/bower_components/**",
-            "**/node_modules/**",
-            "**/test/**",
-            "**/tests/**"
-        ],
-        defaultIgnore: false
-    };
-
-    var karmaOptions = {
-        configFile: './karma.conf.js',
-        action: "run"
-    };
-
-    return browserify(browserifyOptions)
+    return browserify(browserifyTestOptions)
         .transform(istanbul(istanbulOptions))
         .bundle()
         .pipe(source('testbundle.js'))
         .pipe(buffer())
-        .pipe(gulp.dest('./coverage'))
+        .pipe(gulp.dest(coverageFolder))
         .pipe(karma(karmaOptions))
         .on('end', function() {
-            connect.serverClose();
+            serverStop();
         })
         .on('error', function() {
-            connect.serverClose();
+            serverStop();
         })
 });
 
-gulp.task('watch', function() {
-    livereload.listen();
-    gulp.watch(['src/**/*.js', 'test/**/*.js', 'examples/**/*.html'], ['test', 'build']);
-});
+gulp.task('watch', ['startLiveServer'], function() {
 
-gulp.task('default', ['watch'], function() {
+    gulp.watch(sourceFiles, ['test', 'build']);
 
+    gulp.watch([testFiles, testHelperFiles], ['test']);
+
+    gulp.watch(exampleFiles, function(event) {
+        return gulp.src(event.path)
+            .pipe(connect.reload());
+    });
 });
