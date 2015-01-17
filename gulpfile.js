@@ -11,11 +11,6 @@ var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var util = require('gulp-util');
 
-var releaseName = 'canvasfw';
-
-var unminifiedFileName = releaseName + '.js';
-var minifiedFileName = releaseName + '.min.js';
-
 var mainSourceFile = './src/canvasfw.js';
 var sourceFiles = './src/*.js';
 var testFiles = './test/*.test.js';
@@ -29,15 +24,8 @@ var coverageFolder = './coverage/';
 var imageLoader = './bower_components/ImageLoader/build/imageloader.min.js';
 
 var karmaOptions = { configFile: './karma.conf.js', action: 'run' };
-var istanbulOptions = {
-    ignore: [
-        "**/bower_components/**",
-        "**/node_modules/**",
-        "**/test/**",
-        "**/tests/**"
-    ],
-    defaultIgnore: false
-};
+var istanbulOptions = { ignore: ["**/bower_components/**"] };
+
 var browserifyTestOptions = {
     entries: [
         mainSourceFile,
@@ -50,6 +38,22 @@ var browserifyTestOptions = {
 };
 
 var isLiveReloading = false;
+
+function getBundleFileName() {
+    return getPackageName() + '-' + getPackageVersion + '.js';
+}
+
+function getBundleMinFileName() {
+    return getPackageName() + '-' + getPackageVersion + '.min.js';
+}
+
+function getPackageVersion() {
+    return require('./package.json').name;
+}
+
+function getPackageName() {
+    return require('./package.json').version;
+}
 
 gulp.task('startLiveServer', function() {
     isLiveReloading = true;
@@ -74,7 +78,7 @@ gulp.task('build', function() {
     browserify(mainSourceFile)
         .bundle()
         // Pass desired output filename to vinyl-source-stream
-        .pipe(source(minifiedFileName))
+        .pipe(source(getBundleMinFileName()))
         // Convert streaming vinyl files to use buffers
         .pipe(buffer())
         .pipe(stripDebug())
@@ -85,7 +89,7 @@ gulp.task('build', function() {
     // build unminified file
     browserify(mainSourceFile)
         .bundle()
-        .pipe(source(unminifiedFileName))
+        .pipe(source(getBundleFileName()))
         .pipe(buffer())
         .pipe(stripDebug())
         .pipe(gulp.dest(buildFolder))
