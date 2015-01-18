@@ -14,6 +14,7 @@
     "tests"
   ],
   "devDependencies": {
-    "ImageLoader": "jakoivis/ImageLoader#~1.0.0"
+    "ImageLoader": "jakoivis/ImageLoader#~1.0.0",
+    "tweenjs": "*"
   }
 }
