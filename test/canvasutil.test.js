@@ -1,9 +1,5 @@
 describe("CanvasUtil:", function() {
 
-    ClassTester.singletonClassTest(CanvasUtil);
-
-    var canvasUtil = new CanvasUtil();
-
     beforeEach(function() {
     });
 
@@ -16,7 +12,7 @@ describe("CanvasUtil:", function() {
 
             ImageLoadHelper.getImageTag(function(imageTag) {
 
-                var imageData = canvasUtil.getImageDataFromTag(imageTag);
+                var imageData = CanvasUtil.getImageDataFromTag(imageTag);
 
                 ImageTester.expectToHaveImageDataProperties(imageData);
                 ImageTester.expectImageDataSizeToBe(imageData, 20, 20);

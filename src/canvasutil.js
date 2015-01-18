@@ -1,7 +1,9 @@
 
 'use strict';
 
-module.exports = function()
+module.exports = new CanvasUtil();
+
+function CanvasUtil()
 {
     if(CanvasUtil.prototype.singletonInstance)
     {
