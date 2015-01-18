@@ -202,6 +202,11 @@ module.exports = function(options)
         }
     }
 
+    me.getGraphicAt = function(index)
+    {
+        return graphics[index];
+    }
+
     me.getGraphicAtPoint = function(x, y)
     {
         var result = null;

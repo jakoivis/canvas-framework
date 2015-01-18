@@ -189,9 +189,9 @@ describe("Layer:", function() {
 
 
 
-    describe("adding and removing graphics", function() {
+    describe("adding and removing and getting graphics", function() {
 
-        it("adding", function(){
+        it("addGraphic", function(){
             var layer = new Layer();
             layer.addGraphic(graphic1);
             layer.update();
@@ -200,7 +200,7 @@ describe("Layer:", function() {
             expect(graphic3.update.calls.count()).toEqual(0);
         });
 
-        it("removing", function(){
+        it("removeGraphic", function(){
             var layer = new Layer();
             layer.addGraphic(graphic1);
             layer.addGraphic(graphic2);
@@ -221,6 +221,25 @@ describe("Layer:", function() {
             expect(graphic1.update.calls.count()).toEqual(2);
             expect(graphic2.update.calls.count()).toEqual(1);
             expect(graphic3.update.calls.count()).toEqual(3);
+        });
+
+        it("getGraphicAt returns correct graphic", function() {
+            var layer = new Layer();
+            layer.addGraphic(graphic1);
+            layer.addGraphic(graphic2);
+            layer.addGraphic(graphic3);
+
+            var isSame = layer.getGraphicAt(1) === graphic2;
+            expect(isSame).toEqual(true);
+        });
+
+        it("getGraphicAt returns undefined if out of bounds", function() {
+            var layer = new Layer();
+            layer.addGraphic(graphic1);
+            layer.addGraphic(graphic2);
+            layer.addGraphic(graphic3);
+
+            expect(layer.getGraphicAt(-1)).toEqual(undefined);
         });
     });
 
