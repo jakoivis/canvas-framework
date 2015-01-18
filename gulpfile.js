@@ -40,18 +40,18 @@ var browserifyTestOptions = {
 var isLiveReloading = false;
 
 function getBundleFileName() {
-    return getPackageName() + '-' + getPackageVersion + '.js';
+    return getPackageName() + '-' + getPackageVersion() + '.js';
 }
 
 function getBundleMinFileName() {
-    return getPackageName() + '-' + getPackageVersion + '.min.js';
-}
-
-function getPackageVersion() {
-    return require('./package.json').name;
+    return getPackageName() + '-' + getPackageVersion() + '.min.js';
 }
 
 function getPackageName() {
+    return require('./package.json').name;
+}
+
+function getPackageVersion() {
     return require('./package.json').version;
 }
 

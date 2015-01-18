@@ -3,6 +3,7 @@ node_modules
 npm-debug.log
 coverage
 bower_components
+build/*
 
 # Windows image file caches
 Thumbs.db

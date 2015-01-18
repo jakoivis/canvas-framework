@@ -22,7 +22,13 @@ module.exports = function(config) {
             type : "html",
             dir: 'coverage/'
         },
-        browsers: ["Chrome"],
+        browsers: ["ChromeHidden"],
+        customLaunchers: {
+            ChromeHidden: {
+                base: 'Chrome',
+                flags: ['--window-size=300,300', '--window-position=-9999,0']
+            }
+        },
         proxies: {
             '/assets/': 'http://localhost:8080/test/assets/'
         },
