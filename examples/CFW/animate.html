@@ -4,7 +4,7 @@
     <title>canvas fw: Graphic click test</title>
 
     <script src="../../bower_components/ImageLoader/build/ImageLoader.js"></script>
-    <script src="../../build/canvasfw.js"></script>
+    <script src="../../build/canvasFW-1.0.0.js"></script>
 </head>
 
 <body style="background-color: #AAAAAA;">
@@ -39,10 +39,8 @@
 
             function addGraphic(loaderItem)
             {
-                var canvasUtil = new CanvasUtil();
-
                 var graphic = new Graphic({
-                    imageData: canvasUtil.getImageDataFromTag(loaderItem.tag),
+                    imageData: CanvasUtil.getImageDataFromTag(loaderItem.tag),
                     update: updateGraphic,
                     x: loaderItem.x,
                     y: loaderItem.y,

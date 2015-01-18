@@ -4,7 +4,7 @@
     <title>canvas fw test: Animate with timer</title>
 
     <script src="../../bower_components/ImageLoader/build/ImageLoader.min.js"></script>
-    <script src="../../build/canvasfw.js"></script>
+    <script src="../../build/canvasFW-1.0.0.js"></script>
 
 </head>
 
@@ -31,8 +31,7 @@
 
             function onComplete()
             {
-                var canvasutil = new CanvasUtil();
-                var imageData = canvasutil.getImageDataFromTag(loader.getItemAt(0).tag);
+                var imageData = CanvasUtil.getImageDataFromTag(loader.getItemAt(0).tag);
                 var graphic1 = new Graphic({imageData: imageData, x: 0, y: 200});
 
                 layer.addGraphic(graphic1);
