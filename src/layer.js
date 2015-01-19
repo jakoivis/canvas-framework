@@ -211,11 +211,15 @@ module.exports = function(options)
     {
         var result = null;
 
-        for(var i = 0; i < graphics.length; i++)
+        // take the topmost item on the screen.
+        // i.e the first graphic from bottom of the
+        // array that has pixel at the coordinates
+        for(var i = graphics.length-1; i >= 0; i--)
         {
             if(graphics[i].hasGlobalPixelAt(x, y))
             {
                 result = graphics[i];
+                break;
             }
         }
 
