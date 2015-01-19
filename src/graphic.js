@@ -81,7 +81,7 @@ module.exports = function(options)
 
     me.clear = function()
     {
-        renderContext.clearRect(renderedX-1, renderedY-1, _imageData.width+1, _imageData.height+1);
+        renderContext.clearRect(renderedX-1, renderedY-1, _imageData.width+2, _imageData.height+2);
     }
 
     me.update = function()
