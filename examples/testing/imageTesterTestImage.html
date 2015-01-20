@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="../../build/canvasFW-1.0.0.js"></script>
+  <script src="../../test/helpers/imageTester.js"></script>
+</head>
+
+<body>
+<script>
+
+var layer = new Layer({
+  appendToBody: true,
+  fullScreen: true
+});
+
+var graphic = new Graphic({
+    imageData: ImageTester.createTestImage()
+});
+
+layer.addGraphic(graphic);
+
+layer.render();
+
+</script>
+</body>
+</html>
