@@ -43,4 +43,22 @@ describe("Transform:", function() {
         });
     });
 
+    describe("", function() {
+
+        it("sampleLinear", function() {
+            var pixel = Transform.sampleLinear(testImage, 0, 0);
+            expect(pixel[0]).toEqual(0);    // R
+            expect(pixel[1]).toEqual(255);  // G
+            expect(pixel[2]).toEqual(255);  // B
+            expect(pixel[3]).toEqual(255);  // A
+
+            // console.log(testImage.data);
+            pixel = Transform.sampleLinear(testImage, 19, 19);
+            expect(pixel[0]).toEqual(0);    // R
+            expect(pixel[1]).toEqual(255);  // G
+            expect(pixel[2]).toEqual(255);  // B
+            expect(pixel[3]).toEqual(255);  // A
+        });
+    })
+
 });
