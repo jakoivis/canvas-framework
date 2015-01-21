@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>canvas fw: Graphic click test</title>
+
+    <script src="../../bower_components/ImageLoader/build/ImageLoader.js"></script>
+    <script src="../../bower_components/tweenjs/build/tween.min.js"></script>
+    <script src="../../build/canvasFW-1.0.0.js"></script>
+</head>
+
+<body>
+
+    <script>
+        (function(){
+
+            var layer = new Layer({
+                appendToBody: true,
+                fullScreen: true
+            });
+
+            var loader = new ImageLoader({
+                images:[{src: '../assets/HTML5_logo_and_wordmark.svg.png', y:10, x:10}],
+                onComplete: onComplete,
+            });
+
+            function onComplete()
+            {
+                var loaderItem = loader.getItemAt(0);
+                var imageData = CanvasUtil.getImageDataFromTag(loaderItem.tag);
+
+                var transform = new Transform(imageData, layer.getCanvas().getContext("2d"));
+                transform.do(Transform.Swirl, {originX:500, originY:250, degree: 2, radius: 20});
+
+                var graphic = new Graphic({
+                    imageData: transform.getImageData(),
+                    x: 10,
+                    y: 10
+                });
+
+                var graphic2 = new Graphic({
+                    imageData: imageData,
+                    x: 270,
+                    y: 10
+                })
+
+                layer.addGraphic(graphic);
+                layer.addGraphic(graphic2);
+                layer.render();
+
+                new TWEEN.Tween({x: 500})
+                    .to({x: -500}, 10000)
+                    .repeat(Infinity)
+                    .yoyo(true)
+                    .easing(TWEEN.Easing.Cubic.InOut)
+                    .onUpdate(function () {
+                        transform.do(Transform.Swirl, {originX:this.x, originY:250, degree: 2, radius: 20});
+                        graphic.setImageData(transform.getImageData());
+                    })
+                    .start();
+            }
+
+            function animationLoop(time)
+            {
+                TWEEN.update(time);
+                layer.render();
+                window.requestAnimationFrame(animationLoop);
+            }
+
+            window.requestAnimationFrame(animationLoop);
+
+        })();
+
+
+    </script>
+</body>
+</html>
