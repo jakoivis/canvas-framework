@@ -43,10 +43,13 @@ function CanvasUtil()
 
     function updateCanvasSize(imageTag)
     {
-        if (canvas.width < imageTag.width
-            || canvas.height < imageTag.height)
+        if (canvas.width < imageTag.width)
         {
             canvas.width = imageTag.width;
+        }
+
+        if(canvas.height < imageTag.height)
+        {
             canvas.height = imageTag.height;
         }
     }
