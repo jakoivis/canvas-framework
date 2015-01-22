@@ -12,6 +12,7 @@ function Transform(imageData, context)
 
     var me = this;
     var modifiedImageData;
+    var originalImageData = imageData;
 
     me.getImageData = function()
     {
@@ -25,8 +26,16 @@ function Transform(imageData, context)
         return me;
     }
 
+    me.reset = function()
+    {
+        modifiedImageData = null;
+
+        return me;
+    }
+
     function transform(evaluatePixel, userParameters)
     {
+        var imageData = modifiedImageData || originalImageData;
         var imageDataPixels = imageData.data;
         var newImageData = context.createImageData(imageData);
         var newImageDataPixels = newImageData.data;
