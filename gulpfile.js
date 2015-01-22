@@ -40,11 +40,11 @@ var browserifyTestOptions = {
 var isLiveReloading = false;
 
 function getBundleFileName() {
-    return getPackageName() + '-' + getPackageVersion() + '.js';
+    return getPackageName() + '.js';
 }
 
 function getBundleMinFileName() {
-    return getPackageName() + '-' + getPackageVersion() + '.min.js';
+    return getPackageName() + '.min.js';
 }
 
 function getPackageName() {
@@ -91,7 +91,7 @@ gulp.task('build', function() {
         .bundle()
         .pipe(source(getBundleFileName()))
         .pipe(buffer())
-        .pipe(stripDebug())
+        // .pipe(stripDebug())
         .pipe(gulp.dest(buildFolder))
         .pipe(connect.reload());
 });

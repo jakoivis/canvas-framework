@@ -5,7 +5,7 @@
 
     <script src="../../bower_components/ImageLoader/build/ImageLoader.js"></script>
     <script src="../../bower_components/tweenjs/build/tween.min.js"></script>
-    <script src="../../build/canvasFW-1.0.0.js"></script>
+    <script src="../../build/canvas-framework.js"></script>
 </head>
 
 <body>
@@ -53,7 +53,11 @@
                     .yoyo(true)
                     .easing(TWEEN.Easing.Cubic.InOut)
                     .onUpdate(function () {
+                        transform.reset();
+                        transform.do(Transform.Alpha, {value:Math.abs(this.x/2)})
                         transform.do(Transform.Swirl, {originX:this.x, originY:250, degree: 2, radius: 20});
+                        transform.do(Transform.Invert);
+
                         graphic.setImageData(transform.getImageData());
                     })
                     .start();
