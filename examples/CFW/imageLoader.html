@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ImageLoader examples</title>
+
+<script src="build/imageloader.min.js"></script>
+
+</head>
+<body>
+
+
+<script>
+    function getStrings() {
+        return ["test/assets/sample1_tb.png", "test/assets/sample2_tb.png"];
+    }
+
+    function example1_basicUsage() {
+        var images = getStrings();
+        var loader = new ImageLoader({images: images});
+    }
+    //example1_basicUsage();
+
+    function example_triggerLoadManually() {
+        var images = getStrings();
+        var loader = new ImageLoader({images: images, autoload: false});
+        // do something...
+        loader.load();
+    }
+    //example_triggerLoadManually();
+
+    function example_callbacks()
+    {
+        var loader = new ImageLoader({
+                            images:getStrings(),
+                            onComplete:onComplete,
+                            onFileComplete:onFileComplete,
+                            onFileStart:onFileStart});
+
+        function onComplete() {
+            console.log("onComplete");
+        }
+        function onFileStart(item) {
+            console.log("onFileStart: " + item.src);
+        }
+        function onFileComplete(item) {
+            console.log("onFileComplete: " + item.src);
+            document.body.appendChild(item.tag);
+        }
+    }
+    //example_callbacks();
+
+    function example_simulationDelay()
+    {
+        var loader = new ImageLoader({
+                            images:getStrings(),
+                            onFileComplete:onFileComplete,
+                            simulationDelayMin:500,
+                            simulationDelayMax:1000});
+
+        function onFileComplete(item) {
+            console.log("onFileComplete: " + item.src);
+            document.body.appendChild(item.tag);
+        }
+    }
+    //example_simulationDelay();
+
+    function example_userProperties()
+    {
+        var images = [{src:"test/assets/sample1_tb.png", someProperty:"someValue1"},{src:"test/assets/sample2_tb.png", someProperty:"someValue2"}]
+        var loader = new ImageLoader({
+                            images:images,
+                            onFileComplete:onFileComplete});
+
+        function onFileComplete(item) {
+            console.log("onFileComplete: " + item.src);
+            console.log("someProperty: " + item.someProperty);
+        }
+    }
+    example_userProperties();
+
+</script>
+</body>
+</html>
