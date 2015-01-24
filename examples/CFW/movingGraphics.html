@@ -2,10 +2,7 @@
 <html>
 <head>
     <title>canvas fw test: Animate with timer</title>
-
-    <script src="../../bower_components/ImageLoader/build/ImageLoader.min.js"></script>
     <script src="../../build/canvas-framework.js"></script>
-
 </head>
 
 <body style="background-color: #AAAAAA;">
@@ -18,7 +15,7 @@
             document.body.appendChild(layer.getCanvas());
 
             var loader = new ImageLoader({
-                images:['../assets/sample1_tb.png'],
+                images:['../../sampleImages/sample1_tb.png'],
                 onComplete: onComplete,
             });
 

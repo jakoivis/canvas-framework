@@ -2,8 +2,6 @@
 <html>
 <head>
     <title>canvas fw: Graphic click test</title>
-
-    <script src="../../bower_components/ImageLoader/build/ImageLoader.js"></script>
     <script src="../../build/canvas-framework.js"></script>
 </head>
 
@@ -23,9 +21,9 @@
 
             var loader = new ImageLoader({
                 images:[
-                    {src: '../assets/sample1_tb.png', name: 'purple', y:10, x:10, rotationRadius: 30},
-                    {src: '../assets/sample2_tb.png', name: 'blue', y:10, x:30, rotationRadius: 60},
-                    {src: '../assets/sample3_tb.png', name: 'orange', y:10, x:110, rotationRadius: 90}
+                    {src: '../../sampleImages/sample1_tb.png', name: 'purple', y:10, x:10, rotationRadius: 30},
+                    {src: '../../sampleImages/sample2_tb.png', name: 'blue', y:10, x:30, rotationRadius: 60},
+                    {src: '../../sampleImages/sample3_tb.png', name: 'orange', y:10, x:110, rotationRadius: 90}
                 ],
                 onComplete: onComplete,
             });

@@ -5,6 +5,7 @@
 // 	CanvasUtil: require('./canvasutil.js'),
 // };
 
+window.ImageLoader = require('./imageLoader/imageLoader.js');
 window.Layer = require('./layer.js');
 window.Transform = require('./transform.js');
 window.Graphic = require('./graphic.js');
