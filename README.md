@@ -16,8 +16,6 @@ I cannot think of any reason for you to use this library. This is library doesn'
 
 ## Graphic
 
-###Examples
-
 Mouse event example
 ```js
 
@@ -54,7 +52,8 @@ function rollOutHandler(){console.log("onRollOut");}
 
 Simple JavaScript image loader. Provides complete callbacks for the whole load and for individual files. Loading can be done in parallel or in sequence.
 
-###Options
+**ImageLoader options**
+
 Property name       | Default           | Description
 -------------       | -------           | -----------
 **images**          |                   | Array of strings or array of objects. When specifying array of strings, each string in the array is a path to the image file. e.g. `["/path/to/image", ...]` When specifying array of objects, each object must have src property which is a path to the image file. e.g. `[{src:"/path/to/image", someProperty:"user's data"}, ...]`
@@ -65,6 +64,8 @@ Property name       | Default           | Description
 **numberOfThreads** | 1                 | Number of threads used for preloading. Keeping the default value will load all the images in sequence. Changing this to 3 for example, will load 3 images parallel.
 **simulationDelayMin**|                 | When spacified, a random time delay is added for each image download to simulate the connection speed. The random value is calculated between `simulationDelayMin` and `simulationDelayMax` values. This is used for testing purposes only. Specified in milliseconds.
 **simulationDelayMax**|                 |
+
+**ImageLoader functions**
 
 Function | Description
 -------- | -----------
@@ -78,11 +79,15 @@ Function | Description
 
 ImageLoaderItem is the object that you receve when an image has loaded.
 
+**ImageLoaderItem properties**
+
 Property | Description
 -------- | -----------
 **status** | Status of the image load. Use `isPending`, `isComplete`, `isLoading` and `isFailed` functions to test the status.
 **tag** | IMG tag.
 **src** | Source of the image.
+
+**ImageLoaderItem functions**
 
 Function | Description
 -------- | -----------
@@ -91,24 +96,8 @@ Function | Description
 **isLoading()** | Returns `true` if status is `"loading"`
 **isFailed()** | Returns `true` if status is `"failed"`
 
-###ImageLoader Examples
-####Basic usage
+**Basic usage**
 When creating new instance of `ImageLoader`, all the listed images start to load immediately.
-```js
-var images = ["/assets/sample1_tb.png", "/assets/sample2_tb.png"]
-var loader = new ImageLoader({images: images});
-```
-
-####Trigger load manually
-When setting the `autoload` option to `false`, `load` function can be called to start the loading.
-```js
-var images = ["/assets/sample1_tb.png", "/assets/sample2_tb.png"]
-var loader = new ImageLoader({images: images, autoload: false});
-// do something...
-loader.load();
-```
-
-####Callbacks
 ```js
 var images = ["/assets/sample1_tb.png", "/assets/sample2_tb.png"]
 var loader = new ImageLoader({
@@ -129,7 +118,16 @@ function onFileComplete(item) {
 }
 ```
 
-####Using custom properties in images object
+**Trigger load manually**
+When setting the `autoload` option to `false`, `load` function can be called to start the loading.
+```js
+var images = ["/assets/sample1_tb.png", "/assets/sample2_tb.png"]
+var loader = new ImageLoader({images: images, autoload: false});
+// do something...
+loader.load();
+```
+
+**Using custom properties in images object**
 All the properties of image objects will be be accessible in the onFileComplete callback. Those properties are copied to the `ImageLoaderItem` objects.
 ```js
 var images = [
@@ -144,7 +142,8 @@ function onFileComplete(item) {
 }
 ```
 
-####SimulationDelayMin & SimulationDelayMax
+**SimulationDelayMin & SimulationDelayMax**
+Add delay for loading to simulate download. Delay is a random value between `simulationDelayMin` and `simulationDelayMax`.
 ```js
 var images = ["/assets/sample1_tb.png", "/assets/sample2_tb.png"]
 var loader = new ImageLoader({
