@@ -1,6 +1,11 @@
+var ImageLoaderItem = require('./imageLoaderItem');
+
+module.exports = Queue;
 
 function Queue(images)
 {
+    'use strict';
+
     var items;
     var me = this;
 

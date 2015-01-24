@@ -1,6 +1,10 @@
 
+module.exports = ImageLoaderItem;
+
 function ImageLoaderItem(options)
 {
+    'use strict';
+
     var STATUS = {
         PENDING: "pending",
         LOADING: "loading",

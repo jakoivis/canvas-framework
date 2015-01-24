@@ -1,6 +1,10 @@
 
+module.exports = Thread;
+
 function Thread(options)
 {
+    'use strict';
+
     var me = this;
     var onThreadCompleteCallback;
     var onFileCompleteCallback;

@@ -1,8 +1,14 @@
 
-window.ImageLoader = ImageLoader;
+var Queue = require('./queue');
+var Thread = require('./thread');
+var ImageLoaderItem = require('./imageLoaderItem');
+
+module.exports = ImageLoader;
 
 function ImageLoader(options)
 {
+    'use strict';
+
     if (!(this instanceof ImageLoader))
     {
         return new ImageLoader(options);
