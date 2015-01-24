@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>canvas-framework: Transform tester</title>
+    <script src="../../build/canvas-framework.js"></script>
+</head>
+
+<body>
+
+    <div style="float:right;">
+        <form>
+            <fieldset>
+                <legend>Transforms</legend>
+                <label>label</label><input type="checkbox" />
+            </fieldset>
+            <fieldset>
+                <legend>Arguments</legend>
+                <p><label>label</label><input type="text" /></p>
+            </fieldset>
+        </form>
+    </div>
+
+    <script>
+        (function(){
+
+            var transforms = {
+                Invert: {
+                    arguments: []
+                },
+                GrayScale: {
+                    arguments: []
+                },
+                Alpha: {
+                    arguments: []
+                },
+                Rotate: {
+                    arguments: []
+                },
+                Swirl: {
+                    arguments: []
+                },
+            };
+
+            var layer = new Layer({
+                appendToBody: true
+            });
+
+            layer.getCanvas().width = 550;
+            layer.getCanvas().height = 280;
+
+            drawBackground();
+
+            var loader = new ImageLoader({
+                images:['../../sampleImages/HTML5_logo_and_wordmark.svg.png'],
+                onComplete: onComplete,
+            });
+
+            function onComplete()
+            {
+                var loaderItem = loader.getItemAt(0);
+                var imageData = CanvasUtil.getImageDataFromTag(loaderItem.tag);
+
+                var transform = new Transform(imageData, layer.getCanvas().getContext("2d"));
+                transform.do(Transform.Swirl, {originX:500, originY:250, degree: 2, radius: 20});
+
+                var graphic = new Graphic({
+                    imageData: transform.getImageData(),
+                    x: 12,
+                    y: 12
+                });
+
+                var graphic2 = new Graphic({
+                    imageData: imageData,
+                    x: 280,
+                    y: 12
+                })
+
+                layer.addGraphic(graphic);
+                layer.addGraphic(graphic2);
+                layer.render();
+            }
+
+            function drawBackground()
+            {
+                var canvas = layer.getCanvas();
+                var context = canvas.getContext("2d");
+                context.fillStyle = "#EEEEEE";
+                context.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+        })();
+
+
+    </script>
+</body>
+</html>
