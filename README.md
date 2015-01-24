@@ -6,6 +6,7 @@ Library that brings some features for handling graphics on canvas.
 * Easy way for adding, removing, moving graphical elements on canvas
 * Mouse events for graphical elements (onRollOver, onRollOut, onClick)
 * Customizable pixel transformations
+* Image preloading
 
 #Why to use this library instead of some other
 I cannot think of any reason for you to use this library. This is library doesn't have that many features. It is not performing well on animations. There is at least one bug. This first release will be just a basic implementation which suits my needs. Lets see what there will be on future releases.
@@ -45,6 +46,23 @@ function rollOutHandler(){console.log("onRollOut");}
 ```
 
 ##CanvasUtil
+
+Function | Description
+-------- | -----------
+**getImageDataFromTag(imageTag)** | Returns the image data object
+**resetTempCanvas()** | Reset temporal canvas. CanvasUtil uses internally a canvas to get the image data from image tag. It is not required to reset the temporal canvas. When getting image data from big images the canvas size is automatically increased to match the image size. This function can be used to reset the canvas to default size.
+
+**Example**
+```js
+var loader = new ImageLoader({
+    images:['../../sampleImages/sample1_tb.png'],
+    onComplete: function() {
+        var imageTag = loader.getItemAt(0).tag;
+        var imageData = CanvasUtil.getImageDataFromTag(imageTag);
+        console.log(imageData);
+    }
+});
+```
 
 ##Transform
 
