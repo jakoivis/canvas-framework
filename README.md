@@ -48,6 +48,9 @@ function rollOutHandler(){console.log("onRollOut");}
 
 ##Transform
 
+##Timer
+This is still experimantal. Purpose of this is to provide alternative for requestAnimatioFrame function. Can run animations with lower frame rate. Can skip render phase to keep up with frame rate.
+
 ##ImageLoader
 
 Simple JavaScript image loader. Provides complete callbacks for the whole load and for individual files. Loading can be done in parallel or in sequence.
