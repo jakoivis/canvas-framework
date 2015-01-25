@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>canvas-framework: Transform tester</title>
+
+    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../../build/canvas-framework.js"></script>
+
+    <style>
+    fieldset p {
+        margin:0;
+    }
+
+    input[type='text'] {
+        width:50px;
+    }
+
+    fieldset.arguments {
+        display: none;
+    }
+
+    </style>
+</head>
+
+<body>
+
+    <div id="formContainer" style="float:right; width:200px">
+    </div>
+
+    <script>
+        /*
+        Yes I know this is ugly code.
+        */
+        (function(){
+
+            var layer = new Layer({
+                appendToBody: true
+            });
+
+            layer.getCanvas().width = 550;
+            layer.getCanvas().height = 280;
+
+            drawBackground();
+            generateForm();
+
+            var loader = new ImageLoader({
+                images:['../../sampleImages/HTML5_logo_and_wordmark.svg.png'],
+                onComplete: onComplete,
+            });
+
+            var transform;
+
+            function onComplete()
+            {
+                var loaderItem = loader.getItemAt(0);
+                var imageData = CanvasUtil.getImageDataFromTag(loaderItem.tag);
+
+                var graphic = new Graphic({
+                    imageData: imageData,
+                    x: 12,
+                    y: 12
+                });
+
+                var graphic2 = new Graphic({
+                    imageData: imageData,
+                    x: 280,
+                    y: 12
+                })
+
+                layer.addGraphic(graphic);
+                layer.addGraphic(graphic2);
+                layer.render();
+
+                transform = new Transform(imageData, layer.getCanvas().getContext("2d"));
+            }
+
+            function drawBackground()
+            {
+                var canvas = layer.getCanvas();
+                var context = canvas.getContext("2d");
+                context.fillStyle = "#EEEEEE";
+                context.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            function generateForm()
+            {
+                var $form = $("<form>");
+                $form.append(generateTransformCheckboxes());
+                $form.append(generateTransformAttributes())
+                $("#formContainer").append($form);
+            }
+
+            function generateTransformCheckboxes()
+            {
+                var fieldsetStr = "<fieldset><legend>Transforms</legend>";
+
+                for(var transformName in Transform.descriptions)
+                {
+                    fieldsetStr += "<p><input type='checkbox' value='"+transformName+"'/><label>"+transformName+"</label><p>"
+                }
+
+                fieldsetStr += "</fieldset>";
+
+                $fieldset = $(fieldsetStr);
+
+                $fieldset.find('input').change(transformCheckboxChange);
+
+                return $fieldset;
+            }
+
+            function generateTransformAttributes()
+            {
+                var fieldsetStr = "";
+                var args;
+
+                for(var transformName in Transform.descriptions)
+                {
+                    fieldsetStr += "<fieldset class='"+transformName+" arguments'><legend>"+transformName+" arguments</legend>";
+
+                    args = Transform.descriptions[transformName].arguments;
+
+                    for(var i = 0; i < args.length; i++)
+                    {
+                        fieldsetStr += "<p><input type='text' value="+args[i].default+" class='"+args[i].name+"' /><label>"+args[i].name+"</label></p>";
+                    }
+
+                    fieldsetStr += "</fieldset>";
+                }
+
+                $fieldset = $(fieldsetStr);
+
+                $fieldset.find('input').change(updateTransforms);
+
+                return $fieldset;
+            }
+
+            function transformCheckboxChange(event)
+            {
+                updateAttributeVisibility(event.target.value, event.target.checked);
+                updateTransforms();
+            }
+
+            function updateAttributeVisibility(transformName, visible)
+            {
+                $("fieldset."+transformName).css('display', visible ? 'block' : 'none');
+            }
+
+            function updateTransforms()
+            {
+                var transformName,
+                    options,
+                    args;
+
+                transform.reset();
+
+                $checkbox = $("input[type='checkbox']");
+
+                for(var i = 0; i < $checkbox.length; i++)
+                {
+                    if($checkbox.eq(i).is(':checked'))
+                    {
+                        transformName = $checkbox.eq(i).val();
+                        args = Transform.descriptions[transformName].arguments;
+                        options = {};
+
+                        for(var j = 0; j < args.length; j++)
+                        {
+                            options[args[j].name] = parseInt($('fieldset.'+transformName+' input.'+args[j].name).val());
+                        }
+
+                        transform.do(Transform[transformName], options);
+                    }
+                }
+
+                var graphic = layer.getGraphicAt(0);
+                graphic.setImageData(transform.getImageData());
+                graphic.clear();
+                graphic.render();
+            }
+
+        })();
+
+
+    </script>
+</body>
+</html>
