@@ -189,6 +189,8 @@
 
                 $fieldset = $(fieldsetStr);
 
+                $fieldset.find('input').change(updateTransforms);
+
                 return $fieldset;
             }
 
