@@ -2,25 +2,35 @@
 <html>
 <head>
     <title>canvas-framework: Transform tester</title>
+
+    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../../build/canvas-framework.js"></script>
+
+    <style>
+    fieldset p {
+        margin:0;
+    }
+
+    input[type='text'] {
+        width:50px;
+    }
+
+    fieldset.arguments {
+        display: none;
+    }
+
+    </style>
 </head>
 
 <body>
 
-    <div style="float:right;">
-        <form>
-            <fieldset>
-                <legend>Transforms</legend>
-                <label>label</label><input type="checkbox" />
-            </fieldset>
-            <fieldset>
-                <legend>Arguments</legend>
-                <p><label>label</label><input type="text" /></p>
-            </fieldset>
-        </form>
+    <div id="formContainer" style="float:right; width:200px">
     </div>
 
     <script>
+        /*
+        Yes I know this is ugly code.
+        */
         (function(){
 
             var transforms = {
@@ -31,13 +41,55 @@
                     arguments: []
                 },
                 Alpha: {
-                    arguments: []
+                    arguments: [
+                        {
+                            name:"value",
+                            min: 0,
+                            max: 255,
+                            default: 255,
+                            type: "number",
+                            description: "Control the alpha channel of pixels."
+                        }
+                    ]
                 },
                 Rotate: {
                     arguments: []
                 },
                 Swirl: {
-                    arguments: []
+                    arguments: [
+                        {
+                            name: "originX",
+                            min: Number.MIN_VALUE,
+                            max: Number.MAX_VALUE,
+                            default: 0,
+                            type: "number",
+                            description: "Center position of the transform on X axis."
+                        },
+                        {
+                            name: "originY",
+                            min: Number.MIN_VALUE,
+                            max: Number.MAX_VALUE,
+                            default: 0,
+                            type: "number",
+                            description: "Center position of the transform on Y axis."
+                        },
+                        {
+                            name: "degree",
+                            min: Number.MIN_VALUE,
+                            max: Number.MAX_VALUE,
+                            default: 2,
+                            type: "number",
+                            description: "Degree of the twist."
+                        },
+                        {
+                            name: "radius",
+                            min: Number.MIN_VALUE,
+                            max: Number.MAX_VALUE,
+                            default: 20,
+                            type: "number",
+                            description: ""
+                        },
+                    ]
                 },
             };
 
@@ -49,22 +101,22 @@
             layer.getCanvas().height = 280;
 
             drawBackground();
+            generateForm();
 
             var loader = new ImageLoader({
                 images:['../../sampleImages/HTML5_logo_and_wordmark.svg.png'],
                 onComplete: onComplete,
             });
 
+            var transform;
+
             function onComplete()
             {
                 var loaderItem = loader.getItemAt(0);
                 var imageData = CanvasUtil.getImageDataFromTag(loaderItem.tag);
 
-                var transform = new Transform(imageData, layer.getCanvas().getContext("2d"));
-                transform.do(Transform.Swirl, {originX:500, originY:250, degree: 2, radius: 20});
-
                 var graphic = new Graphic({
-                    imageData: transform.getImageData(),
+                    imageData: imageData,
                     x: 12,
                     y: 12
                 });
@@ -78,6 +130,8 @@
                 layer.addGraphic(graphic);
                 layer.addGraphic(graphic2);
                 layer.render();
+
+                transform = new Transform(imageData, layer.getCanvas().getContext("2d"));
             }
 
             function drawBackground()
@@ -86,6 +140,100 @@
                 var context = canvas.getContext("2d");
                 context.fillStyle = "#EEEEEE";
                 context.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            function generateForm()
+            {
+                var $form = $("<form>");
+                $form.append(generateTransformCheckboxes());
+                $form.append(generateTransformAttributes())
+                $("#formContainer").append($form);
+            }
+
+            function generateTransformCheckboxes()
+            {
+                var fieldsetStr = "<fieldset><legend>Transforms</legend>";
+
+                for(var transformName in transforms)
+                {
+                    fieldsetStr += "<p><input type='checkbox' value='"+transformName+"'/><label>"+transformName+"</label><p>"
+                }
+
+                fieldsetStr += "</fieldset>";
+
+                $fieldset = $(fieldsetStr);
+
+                $fieldset.find('input').change(transformCheckboxChange);
+
+                return $fieldset;
+            }
+
+            function generateTransformAttributes()
+            {
+                var fieldsetStr = "";
+                var args;
+
+                for(var transformName in transforms)
+                {
+                    fieldsetStr += "<fieldset class='"+transformName+" arguments'><legend>"+transformName+" arguments</legend>";
+
+                    args = transforms[transformName].arguments;
+
+                    for(var i = 0; i < args.length; i++)
+                    {
+                        fieldsetStr += "<p><input type='text' value="+args[i].default+" class='"+args[i].name+"' /><label>"+args[i].name+"</label></p>";
+                    }
+
+                    fieldsetStr += "</fieldset>";
+                }
+
+                $fieldset = $(fieldsetStr);
+
+                return $fieldset;
+            }
+
+            function transformCheckboxChange(event)
+            {
+                updateAttributeVisibility(event.target.value, event.target.checked);
+                updateTransforms();
+            }
+
+            function updateAttributeVisibility(transformName, visible)
+            {
+                $("fieldset."+transformName).css('display', visible ? 'block' : 'none');
+            }
+
+            function updateTransforms()
+            {
+                var transformName,
+                    options,
+                    args;
+
+                transform.reset();
+
+                $checkbox = $("input[type='checkbox']");
+
+                for(var i = 0; i < $checkbox.length; i++)
+                {
+                    if($checkbox.eq(i).is(':checked'))
+                    {
+                        transformName = $checkbox.eq(i).val();
+                        args = transforms[transformName].arguments;
+                        options = {};
+
+                        for(var j = 0; j < args.length; j++)
+                        {
+                            options[args[j].name] = parseInt($('fieldset.'+transformName+' input.'+args[j].name).val());
+                        }
+
+                        transform.do(Transform[transformName], options);
+                    }
+                }
+
+                var graphic = layer.getGraphicAt(0);
+                graphic.setImageData(transform.getImageData());
+                graphic.clear();
+                graphic.render();
             }
 
         })();
