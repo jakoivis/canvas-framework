@@ -86,6 +86,13 @@ Transform.sampleLinear = function(imageData, x, y)
     ];
 };
 
+Transform.distance = function(x1, y1, x2, y2)
+{
+    var distanceX = x1-x2;
+    var distanceY = y1-y2;
+    return Math.sqrt(distanceX*distanceX + distanceY*distanceY);
+}
+
 Transform.Invert = function(p)
 {
     return [255-p.r, 255-p.g, 255-p.b, p.a];
@@ -120,10 +127,7 @@ Transform.Swirl = function(p)
     var degree = p.degree;
     var radius = p.radius;
 
-    // calculate distance of pixel from origin
-    var distanceX = p.x-originX;
-    var distanceY = p.y-originY;
-    var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
+    var distance = Transform.distance(p.x, p.y, originX, originY);
 
     // radian is the greater the farther the pixel is from origin
     var radian = ((degree * distance)/180.0)*3.14159265;
