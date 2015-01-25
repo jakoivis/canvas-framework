@@ -165,7 +165,7 @@
 
                         for(var j = 0; j < args.length; j++)
                         {
-                            options[args[j].name] = parseInt($('fieldset.'+transformName+' input.'+args[j].name).val());
+                            options[args[j].name] = parseFloat($('fieldset.'+transformName+' input.'+args[j].name).val());
                         }
 
                         transform.do(Transform[transformName], options);
