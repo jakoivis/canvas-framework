@@ -1,10 +1,10 @@
 
-'use strict';
-
 module.exports = Transform;
 
 function Transform(imageData, context)
 {
+    'use strict';
+
     if (!(this instanceof Transform))
     {
         return new Transform(imageData);

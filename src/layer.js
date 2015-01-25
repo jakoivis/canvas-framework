@@ -1,8 +1,8 @@
 
-'use strict';
-
 module.exports = function(options)
 {
+    'use strict';
+
     if (!(this instanceof Layer))
     {
         return new Layer(options);

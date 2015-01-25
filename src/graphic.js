@@ -1,15 +1,8 @@
 
-'use strict';
-
-// TODO F MED: options events + other
-// TODO F: remove transition
-// TODO F: make transition switchable feature
-// TODO F HI: invalidation
-// TODO bug: renred width and height needs to be stored. when image data has changed clearing would not clear correct width and height
-// TODO: unit tests for transition... think about moving that away from graphic
-
 module.exports = function(options)
 {
+    'use strict';
+
     if (!(this instanceof Graphic))
     {
         return new Graphic(options);

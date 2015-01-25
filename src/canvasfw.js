@@ -1,10 +1,3 @@
-// window.CFW = {
-// 	Layer: require('./layer.js'),
-// 	Graphic: require('./graphic.js'),
-// 	Timer: require('./timer.js'),
-// 	CanvasUtil: require('./canvasutil.js'),
-// };
-
 window.ImageLoader = require('./imageLoader/imageLoader.js');
 window.Layer = require('./layer.js');
 window.Transform = require('./transform.js');
