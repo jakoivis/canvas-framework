@@ -230,8 +230,9 @@ module.exports = function(options)
     {
         for(var i = 0; i < graphics.length; i++)
         {
-            graphics[i].clear();
-            graphics[i].render();
+            graphics[i].validate();
+            // graphics[i].clear();
+            // graphics[i].render();
         }
     }
 

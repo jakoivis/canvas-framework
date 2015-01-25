@@ -175,7 +175,7 @@ describe("Layer:", function() {
             expect(graphic3.clear.calls.count()).toEqual(1);
         });
 
-        it("graphics update is called", function(){
+        it("graphics update is called", function() {
             var layer = new Layer();
             layer.addGraphic(graphic1);
             layer.addGraphic(graphic2);
@@ -191,7 +191,7 @@ describe("Layer:", function() {
 
     describe("adding and removing and getting graphics", function() {
 
-        it("addGraphic", function(){
+        it("addGraphic", function() {
             var layer = new Layer();
             layer.addGraphic(graphic1);
             layer.update();

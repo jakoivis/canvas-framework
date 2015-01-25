@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>canvas fw: Graphic click test</title>
+    <script src="../../bower_components/tweenjs/build/tween.min.js"></script>
+    <script src="../../build/canvas-framework.js"></script>
+</head>
+
+<body style="background-color: #AAAAAA;">
+
+    <div class="output"></div>
+
+    <script>
+        (function(){
+
+            var layer = new Layer({
+                appendToBody: true,
+                fullScreen: true,
+                enableOnClickEvents: true,
+                enableOnRollEvents: true
+            });
+
+            var images = [{src: '../../sampleImages/sample1_tb.png', name: 'purple', y:10, x:10}];
+
+            for(var i = 0; i < 5000; i++)
+            {
+                var x = Math.floor((Math.random() * 500) + 200);
+                var y = Math.floor((Math.random() * 500) + 200);
+                images.push({src: '../../sampleImages/sample3_tb.png', name: 'orange', y:x, x:y})
+            }
+
+            var loader = new ImageLoader({
+                images:images,
+                onComplete: onComplete,
+            });
+
+            function onComplete()
+            {
+                for(var i = 0; i < loader.length(); i++)
+                {
+                    addGraphic(loader.getItemAt(i));
+                }
+
+                createTween(layer.getGraphicAt(0), 200);
+            }
+
+            function addGraphic(loaderItem)
+            {
+                var graphic = new Graphic({
+                    imageData: CanvasUtil.getImageDataFromTag(loaderItem.tag),
+                    x: loaderItem.x,
+                    y: loaderItem.y,
+                });
+
+                graphic.name = loaderItem.name;
+
+                layer.addGraphic(graphic);
+            }
+
+            function createTween(target, delay)
+            {
+                return new TWEEN.Tween({y: 10})
+                    .to({y: 200}, 2000)
+                    .delay(delay)
+                    .repeat(Infinity)
+                    .yoyo(true)
+                    .easing(TWEEN.Easing.Elastic.Out)
+                    .onUpdate(function () {
+                        target.y = this.y;
+                    })
+                    .start();
+            }
+
+            function animationLoop(time)
+            {
+                TWEEN.update(time);
+                layer.render();
+                window.requestAnimationFrame(animationLoop);
+            }
+
+            window.requestAnimationFrame(animationLoop);
+
+        })();
+
+
+    </script>
+</body>
+</html>

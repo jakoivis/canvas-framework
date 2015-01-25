@@ -27,14 +27,26 @@ module.exports = function(options)
 
     var dummyFunction = function() {}
 
-    me.x = 0;
-    me.y = 0;
-
     me.onRollOver;
     me.onRollOut;
     me.onClick;
 
     var update = dummyFunction;
+
+    var isInvalid = true;
+
+    var x = 0;
+    var y = 0;
+
+    Object.defineProperty(this, "x", {
+        get: function() { return x; },
+        set: function(value) { if(value !== x) { x = value; invalidate() } }
+    });
+
+    Object.defineProperty(this, "y", {
+        get: function() { return y; },
+        set: function(value) { if(value !== y) { y = value; invalidate() } }
+    });
 
     function init()
     {
@@ -45,8 +57,8 @@ module.exports = function(options)
                 me.setImageData(options.imageData);
             }
 
-            me.x = options.x || 0;
-            me.y = options.y || 0;
+            x = options.x || 0;
+            y = options.y || 0;
 
             me.onRollOver = options.onRollOver;
             me.onRollOut = options.onRollOut;
@@ -73,10 +85,26 @@ module.exports = function(options)
         renderContext = context;
     };
 
+    me.validate = function()
+    {
+        if(isInvalid)
+        {
+            me.clear();
+            me.render();
+            isInvalid = false;
+        }
+    }
+
+    function invalidate()
+    {
+        isInvalid = true;
+    }
+
     me.render = function()
     {
+        console.log(this.name);
         saveRenderedPosition();
-        renderContext.putImageData(_imageData, me.x, me.y);
+        renderContext.putImageData(_imageData, x, y);
     }
 
     me.clear = function()
@@ -89,30 +117,30 @@ module.exports = function(options)
         update.call(this);
     }
 
-    me.globalToLocal = function(x, y)
+    me.globalToLocal = function(_x, _y)
     {
         return {
-            x: x - me.x,
-            y: y - me.y
+            x: _x - x,
+            y: _y - y
         }
     }
 
-    me.localToGlobal = function(x, y)
+    me.localToGlobal = function(_x, _y)
     {
         return {
-            x: me.x + x,
-            y: me.y + y
+            x: x + _x,
+            y: y + _y
         }
     }
 
-    me.hasGlobalPixelAt = function(x, y)
+    me.hasGlobalPixelAt = function(_x, _y)
     {
         var result = false;
 
-        if (isGlobalPositionWithinBoundaries(x, y))
+        if (isGlobalPositionWithinBoundaries(_x, _y))
         {
-            var distanceFromLeft = x - me.x;
-            var distanceFromTop = y - me.y;
+            var distanceFromLeft = _x - x;
+            var distanceFromTop = _y - y;
             var pixel32 = getPixel32At(distanceFromLeft, distanceFromTop);
 
             if (pixel32 !== 0)
@@ -124,31 +152,23 @@ module.exports = function(options)
         return result;
     }
 
-    function isGlobalPositionWithinBoundaries(x, y)
+    function isGlobalPositionWithinBoundaries(_x, _y)
     {
-        //var distanceFromLeft = x - me.x;
-        //var distanceFromTop = y - me.y;
-        //var distanceFromRight = x - (me.x + _imageData.width);
-        //var distanceFromBottom = y - (me.y + _imageData.height);
-        //return (distanceFromLeft >= 0 && distanceFromRight <= 0
-        //    && distanceFromTop >= 0 && distanceFromBottom <= 0);
-
-        // the below statement implements the same functionality as above
-        return ((x - me.x) >= 0
-                && (y - me.y) >= 0
-                && (x - (me.x + _imageData.width)) <= 0
-                && (y - (me.y + _imageData.height)) <= 0);
+        return ((_x - x) >= 0
+                && (_y - y) >= 0
+                && (_x - (x + _imageData.width)) <= 0
+                && (_y - (y + _imageData.height)) <= 0);
     }
 
     function saveRenderedPosition()
     {
-        renderedX = me.x;
-        renderedY = me.y;
+        renderedX = x;
+        renderedY = y;
     }
 
-    function getPixel32At(x, y)
+    function getPixel32At(_x, _y)
     {
-        return imageData32View[y * _imageData.width + x];
+        return imageData32View[_y * _imageData.width + _x];
     }
 
     init();
