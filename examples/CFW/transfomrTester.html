@@ -33,66 +33,6 @@
         */
         (function(){
 
-            var transforms = {
-                Invert: {
-                    arguments: []
-                },
-                GrayScale: {
-                    arguments: []
-                },
-                Alpha: {
-                    arguments: [
-                        {
-                            name:"value",
-                            min: 0,
-                            max: 255,
-                            default: 255,
-                            type: "number",
-                            description: "Control the alpha channel of pixels."
-                        }
-                    ]
-                },
-                Rotate: {
-                    arguments: []
-                },
-                Swirl: {
-                    arguments: [
-                        {
-                            name: "originX",
-                            min: Number.MIN_VALUE,
-                            max: Number.MAX_VALUE,
-                            default: 0,
-                            type: "number",
-                            description: "Center position of the transform on X axis."
-                        },
-                        {
-                            name: "originY",
-                            min: Number.MIN_VALUE,
-                            max: Number.MAX_VALUE,
-                            default: 0,
-                            type: "number",
-                            description: "Center position of the transform on Y axis."
-                        },
-                        {
-                            name: "degree",
-                            min: Number.MIN_VALUE,
-                            max: Number.MAX_VALUE,
-                            default: 2,
-                            type: "number",
-                            description: "Degree of the twist."
-                        },
-                        {
-                            name: "radius",
-                            min: Number.MIN_VALUE,
-                            max: Number.MAX_VALUE,
-                            default: 20,
-                            type: "number",
-                            description: ""
-                        },
-                    ]
-                },
-            };
-
             var layer = new Layer({
                 appendToBody: true
             });
@@ -154,7 +94,7 @@
             {
                 var fieldsetStr = "<fieldset><legend>Transforms</legend>";
 
-                for(var transformName in transforms)
+                for(var transformName in Transform.descriptions)
                 {
                     fieldsetStr += "<p><input type='checkbox' value='"+transformName+"'/><label>"+transformName+"</label><p>"
                 }
@@ -173,11 +113,11 @@
                 var fieldsetStr = "";
                 var args;
 
-                for(var transformName in transforms)
+                for(var transformName in Transform.descriptions)
                 {
                     fieldsetStr += "<fieldset class='"+transformName+" arguments'><legend>"+transformName+" arguments</legend>";
 
-                    args = transforms[transformName].arguments;
+                    args = Transform.descriptions[transformName].arguments;
 
                     for(var i = 0; i < args.length; i++)
                     {
@@ -220,7 +160,7 @@
                     if($checkbox.eq(i).is(':checked'))
                     {
                         transformName = $checkbox.eq(i).val();
-                        args = transforms[transformName].arguments;
+                        args = Transform.descriptions[transformName].arguments;
                         options = {};
 
                         for(var j = 0; j < args.length; j++)

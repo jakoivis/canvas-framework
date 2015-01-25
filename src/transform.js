@@ -71,70 +71,130 @@ function Transform(imageData, context)
 
         return newImageData;
     };
-
-    Transform.sampleLinear = function(imageData, x, y)
-    {
-        var data = imageData.data;
-        var index = y * (imageData.width << 2) + (x << 2);
-
-        return [
-            data[index],
-            data[index+1],
-            data[index+2],
-            data[index+3]
-        ];
-    };
-
-    Transform.Invert = function(p)
-    {
-        return [255-p.r, 255-p.g, 255-p.b, p.a];
-    };
-
-    Transform.GrayScale = function(p)
-    {
-        var average = (p.r + p.g + p.b) /3;
-        return [average, average, average, p.a];
-    };
-
-    Transform.Alpha = function(p)
-    {
-        return [p.r, p.g, p.b, p.value];
-    }
-
-    Transform.Rotate = function(p)
-    {
-        var degree = p.degree;
-
-        var radian = (degree/180.0)*3.14159265;
-        var tx = Math.round(p.x*Math.cos(radian) - p.y*Math.sin(radian));
-        var ty = Math.round(p.x*Math.sin(radian) + p.y*Math.cos(radian));
-
-        return Transform.sampleLinear(p.imageData, tx, ty);
-    }
-
-    Transform.Swirl = function(p)
-    {
-        var originX = p.originX;
-        var originY = p.originY;
-        var degree = p.degree;
-        var radius = p.radius;
-
-        // calculate distance of pixel from origin
-        var distanceX = p.x-originX;
-        var distanceY = p.y-originY;
-        var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
-
-        // radian is the greater the farther the pixel is from origin
-        var radian = ((degree * distance)/180.0)*3.14159265;
-        var tx = originX + Math.cos(radian)*radius;
-        var ty = originY - Math.sin(radian)*radius;
-
-        tx -= originX;
-        ty -= originY;
-
-        tx = Math.round(p.x - tx);
-        ty = Math.round(p.y - ty);
-
-        return Transform.sampleLinear(p.imageData, tx, ty);
-    }
 }
+
+Transform.sampleLinear = function(imageData, x, y)
+{
+    var data = imageData.data;
+    var index = y * (imageData.width << 2) + (x << 2);
+
+    return [
+        data[index],
+        data[index+1],
+        data[index+2],
+        data[index+3]
+    ];
+};
+
+Transform.Invert = function(p)
+{
+    return [255-p.r, 255-p.g, 255-p.b, p.a];
+};
+
+Transform.GrayScale = function(p)
+{
+    var average = (p.r + p.g + p.b) /3;
+    return [average, average, average, p.a];
+};
+
+Transform.Alpha = function(p)
+{
+    return [p.r, p.g, p.b, p.value];
+}
+
+Transform.Rotate = function(p)
+{
+    var degree = p.degree;
+
+    var radian = (degree/180.0)*3.14159265;
+    var tx = Math.round(p.x*Math.cos(radian) - p.y*Math.sin(radian));
+    var ty = Math.round(p.x*Math.sin(radian) + p.y*Math.cos(radian));
+
+    return Transform.sampleLinear(p.imageData, tx, ty);
+}
+
+Transform.Swirl = function(p)
+{
+    var originX = p.originX;
+    var originY = p.originY;
+    var degree = p.degree;
+    var radius = p.radius;
+
+    // calculate distance of pixel from origin
+    var distanceX = p.x-originX;
+    var distanceY = p.y-originY;
+    var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
+
+    // radian is the greater the farther the pixel is from origin
+    var radian = ((degree * distance)/180.0)*3.14159265;
+    var tx = originX + Math.cos(radian)*radius;
+    var ty = originY - Math.sin(radian)*radius;
+
+    tx -= originX;
+    ty -= originY;
+
+    tx = Math.round(p.x - tx);
+    ty = Math.round(p.y - ty);
+
+    return Transform.sampleLinear(p.imageData, tx, ty);
+}
+
+Transform.descriptions = {
+    Invert: {
+        arguments: []
+    },
+    GrayScale: {
+        arguments: []
+    },
+    Alpha: {
+        arguments: [
+            {
+                name:"value",
+                min: 0,
+                max: 255,
+                default: 255,
+                type: "number",
+                description: "Control the alpha channel of pixels."
+            }
+        ]
+    },
+    Rotate: {
+        arguments: []
+    },
+    Swirl: {
+        arguments: [
+            {
+                name: "originX",
+                min: Number.MIN_VALUE,
+                max: Number.MAX_VALUE,
+                default: 0,
+                type: "number",
+                description: "Center position of the transform on X axis."
+            },
+            {
+                name: "originY",
+                min: Number.MIN_VALUE,
+                max: Number.MAX_VALUE,
+                default: 0,
+                type: "number",
+                description: "Center position of the transform on Y axis."
+            },
+            {
+                name: "degree",
+                min: Number.MIN_VALUE,
+                max: Number.MAX_VALUE,
+                default: 2,
+                type: "number",
+                description: "Degree of the twist."
+            },
+            {
+                name: "radius",
+                min: Number.MIN_VALUE,
+                max: Number.MAX_VALUE,
+                default: 20,
+                type: "number",
+                description: ""
+            },
+        ]
+    }
+};
