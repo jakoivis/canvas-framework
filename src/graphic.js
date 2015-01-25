@@ -102,7 +102,6 @@ module.exports = function(options)
 
     me.render = function()
     {
-        console.log(this.name);
         saveRenderedPosition();
         renderContext.putImageData(_imageData, x, y);
     }
