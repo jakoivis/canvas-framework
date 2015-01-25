@@ -93,6 +93,11 @@ Transform.distance = function(x1, y1, x2, y2)
     return Math.sqrt(distanceX*distanceX + distanceY*distanceY);
 }
 
+Transform.degreesToRadians = function(degree)
+{
+    return (degree/180.0)*3.14159265;
+}
+
 Transform.Invert = function(p)
 {
     return [255-p.r, 255-p.g, 255-p.b, p.a];
@@ -113,7 +118,7 @@ Transform.Rotate = function(p)
 {
     var degree = p.degree;
 
-    var radian = (degree/180.0)*3.14159265;
+    var radian = Transform.degreesToRadians(degree);
     var tx = Math.round(p.x*Math.cos(radian) - p.y*Math.sin(radian));
     var ty = Math.round(p.x*Math.sin(radian) + p.y*Math.cos(radian));
 
@@ -130,7 +135,7 @@ Transform.Swirl = function(p)
     var distance = Transform.distance(p.x, p.y, originX, originY);
 
     // radian is the greater the farther the pixel is from origin
-    var radian = ((degree * distance)/180.0)*3.14159265;
+    var radian = Transform.degreesToRadians(degree * distance);
     var tx = originX + Math.cos(radian)*radius;
     var ty = originY - Math.sin(radian)*radius;
 
