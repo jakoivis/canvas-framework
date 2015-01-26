@@ -40,12 +40,16 @@ module.exports = function(options)
 
     Object.defineProperty(this, "x", {
         get: function() { return x; },
-        set: function(value) { if(value !== x) { x = value; invalidate() } }
+        set: function(value) { if(value !== x) { x = value; me.invalidate() } }
     });
 
     Object.defineProperty(this, "y", {
         get: function() { return y; },
-        set: function(value) { if(value !== y) { y = value; invalidate() } }
+        set: function(value) { if(value !== y) { y = value; me.invalidate() } }
+    });
+
+    Object.defineProperty(this, "isInvalid", {
+        get: function() { return isInvalid; }
     });
 
     function init()
@@ -78,6 +82,7 @@ module.exports = function(options)
         _imageData = imageData;
         imageData8ClampedView = _imageData.data;
         imageData32View = new Uint32Array(imageData8ClampedView.buffer);
+        me.invalidate();
     }
 
     me.setRenderContext = function(context)
@@ -85,7 +90,7 @@ module.exports = function(options)
         renderContext = context;
     };
 
-    me.validate = function()
+    me.validateNow = function()
     {
         if(isInvalid)
         {
@@ -95,7 +100,7 @@ module.exports = function(options)
         }
     }
 
-    function invalidate()
+    me.invalidate = function()
     {
         isInvalid = true;
     }
