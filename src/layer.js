@@ -230,9 +230,7 @@ module.exports = function(options)
     {
         for(var i = 0; i < graphics.length; i++)
         {
-            graphics[i].validate();
-            // graphics[i].clear();
-            // graphics[i].render();
+            graphics[i].validateNow();
         }
     }
 
@@ -241,6 +239,31 @@ module.exports = function(options)
         for(var i = 0; i < graphics.length; i++)
         {
             graphics[i].update();
+        }
+    }
+
+    function invalidateGraphics()
+    {
+        var invalidRects = [];
+
+        for(var i = 0; i < graphics.length; i++)
+        {
+            if(graphics[i].isInvalid)
+            {
+                // invalidateTouchingGraphics(graphics[i].rectBeforeMove)
+                // invalidateTouchingGraphics(graphics[i].rectCurrent)
+            }
+        }
+    }
+
+    function invalidateTouchingGraphics(rectangle)
+    {
+        for(var i = 0; i < graphics.length; i++)
+        {
+            // if graphics[i] hits rectangle
+                // graphics[i] push rectangle
+                // graphics store array of invalidation rects
+                // that are waiting to to be rerendered
         }
     }
 
