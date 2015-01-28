@@ -228,9 +228,11 @@ module.exports = function(options)
 
     me.render = function()
     {
+        invalidateGraphics();
+
         for(var i = 0; i < graphics.length; i++)
         {
-            graphics[i].validateNow();
+            graphics[i].render();//validateNow();
         }
     }
 
@@ -244,26 +246,28 @@ module.exports = function(options)
 
     function invalidateGraphics()
     {
-        var invalidRects = [];
-
         for(var i = 0; i < graphics.length; i++)
         {
             if(graphics[i].isInvalid)
             {
-                // invalidateTouchingGraphics(graphics[i].rectBeforeMove)
-                // invalidateTouchingGraphics(graphics[i].rectCurrent)
+                invalidateIntersectingGraphics(graphics[i].getRect());
             }
         }
     }
 
-    function invalidateTouchingGraphics(rectangle)
+    function invalidateIntersectingGraphics(rectangle)
     {
         for(var i = 0; i < graphics.length; i++)
         {
-            // if graphics[i] hits rectangle
-                // graphics[i] push rectangle
-                // graphics store array of invalidation rects
-                // that are waiting to to be rerendered
+            if(graphics[i].isIntersecting(rectangle))
+            {
+                graphics[i].invalidate(rectangle);
+            }
+
+            if(graphics[i].isIntersectingOldPosition(rectangle))
+            {
+                graphics[i].invalidate(rectangle);
+            }
         }
     }
 

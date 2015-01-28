@@ -88,6 +88,63 @@ describe("Graphic:", function() {
 
 
 
+    describe("rects:", function() {
+        it("getRect should get dimensions and position when initialized", function() {
+            var graphic = new Graphic({imageData:imageData, x: 2, y:3});
+            var rect = graphic.getRect();
+
+            expect(rect.left).toEqual(2);
+            expect(rect.top).toEqual(3);
+            expect(rect.width).toEqual(20);
+            expect(rect.height).toEqual(20);
+            expect(rect.right).toEqual(22);
+            expect(rect.bottom).toEqual(23);
+        });
+
+        it("getRect should have updated position when x or y changes", function() {
+            var graphic = new Graphic({imageData:imageData, x: 2, y:3});
+            var rect = graphic.getRect();
+
+            graphic.x = 5;
+            rect = graphic.getRect();
+
+            expect(rect.left).toEqual(5);
+            expect(rect.top).toEqual(3);
+            expect(rect.width).toEqual(20);
+            expect(rect.height).toEqual(20);
+            expect(rect.right).toEqual(25);
+            expect(rect.bottom).toEqual(23);
+
+            graphic.y = 8;
+            rect = graphic.getRect();
+
+            expect(rect.left).toEqual(5);
+            expect(rect.top).toEqual(8);
+            expect(rect.width).toEqual(20);
+            expect(rect.height).toEqual(20);
+            expect(rect.right).toEqual(25);
+            expect(rect.bottom).toEqual(28);
+        });
+    });
+
+
+
+    describe("intersepting:", function() {
+        it("isIntersecting should return false when rectangle is not intersepting", function() {
+            var graphic = new Graphic({imageData:imageData, x: 10, y:10});
+            var rect = {left: 0, top: 0, right: 9, bottom:9};
+            expect(graphic.isIntersecting(rect)).toEqual(false);
+        });
+
+        it("isIntersecting should return true when rectangle is intersepting", function() {
+            var graphic = new Graphic({imageData:imageData, x: 10, y:10});
+            var rect = {left: 0, top: 0, right: 10, bottom:10};
+            expect(graphic.isIntersecting(rect)).toEqual(true);
+        });
+    });
+
+
+
     describe("Remove graphic:", function() {
 
         it("removed graphic should leave fully transparent pixels", function() {
@@ -236,6 +293,105 @@ describe("Graphic:", function() {
                 graphic.setRenderContext(context);
                 var actual = graphic.hasGlobalPixelAt(0,4);
                 expect(actual).toEqual(true);
+            });
+        });
+
+        describe("TEMP", function() {
+
+            it("getDirtyRect intersepting rect on the right", function() {
+                var graphic1 = new Graphic({imageData:imageData, x:10, y:10});
+                var graphic2 = new Graphic({imageData:imageData, x:20, y:10});
+
+                var rect = graphic1.getDirtyRect(graphic2.getRect());
+
+                expect(rect.left).toEqual(10);
+                expect(rect.top).toEqual(0);
+                expect(rect.width).toEqual(10);
+                expect(rect.height).toEqual(20);
+            });
+
+            it("getDirtyRect intersepting rect on the bottom", function() {
+                var graphic1 = new Graphic({imageData:imageData, x:10, y:10});
+                var graphic2 = new Graphic({imageData:imageData, x:10, y:20});
+
+                var rect = graphic1.getDirtyRect(graphic2.getRect());
+
+                expect(rect.left).toEqual(0);
+                expect(rect.top).toEqual(10);
+                expect(rect.width).toEqual(20);
+                expect(rect.height).toEqual(10);
+            });
+
+            it("getDirtyRect intersepting rect on the left", function() {
+                var graphic1 = new Graphic({imageData:imageData, x:10, y:10});
+                var graphic2 = new Graphic({imageData:imageData, x:0, y:10});
+
+                var rect = graphic1.getDirtyRect(graphic2.getRect());
+
+                expect(rect.left).toEqual(0);
+                expect(rect.top).toEqual(0);
+                expect(rect.width).toEqual(10);
+                expect(rect.height).toEqual(20);
+            });
+
+            it("getDirtyRect intersepting rect on the top", function() {
+                var graphic1 = new Graphic({imageData:imageData, x:10, y:10});
+                var graphic2 = new Graphic({imageData:imageData, x:10, y:0});
+
+                var rect = graphic1.getDirtyRect(graphic2.getRect());
+
+                expect(rect.left).toEqual(0);
+                expect(rect.top).toEqual(0);
+                expect(rect.width).toEqual(20);
+                expect(rect.height).toEqual(10);
+            });
+
+            it("getDirtyRect intersepting rect on the right top", function() {
+                var graphic1 = new Graphic({imageData:imageData, x:10, y:10});
+                var graphic2 = new Graphic({imageData:imageData, x:20, y:0});
+
+                var rect = graphic1.getDirtyRect(graphic2.getRect());
+
+                expect(rect.left).toEqual(10);
+                expect(rect.top).toEqual(0);
+                expect(rect.width).toEqual(10);
+                expect(rect.height).toEqual(10);
+            });
+
+            it("getDirtyRect intersepting rect on the left bottom", function() {
+                var graphic1 = new Graphic({imageData:imageData, x:10, y:10});
+                var graphic2 = new Graphic({imageData:imageData, x:0, y:20});
+
+                var rect = graphic1.getDirtyRect(graphic2.getRect());
+
+                expect(rect.left).toEqual(0);
+                expect(rect.top).toEqual(10);
+                expect(rect.width).toEqual(10);
+                expect(rect.height).toEqual(10);
+            });
+
+            it("getDirtyRect intersepting rect on the left exceeding height", function() {
+                var imageData2 = ImageTester.createTestImage(20, 40);
+                var graphic1 = new Graphic({imageData:imageData, x:10, y:10});
+                var graphic2 = new Graphic({imageData:imageData2, x:0, y:0});
+                var rect = graphic1.getDirtyRect(graphic2.getRect());
+
+                expect(rect.left).toEqual(0);
+                expect(rect.top).toEqual(0);
+                expect(rect.width).toEqual(10);
+                expect(rect.height).toEqual(20);
+            });
+
+            it("getDirtyRect intersepting rect on the bottom exceeding width", function() {
+                var imageData2 = ImageTester.createTestImage(40, 20);
+                var graphic1 = new Graphic({imageData:imageData, x:10, y:10});
+                var graphic2 = new Graphic({imageData:imageData2, x:0, y:20});
+                var rect = graphic1.getDirtyRect(graphic2.getRect());
+
+                expect(rect.left).toEqual(0);
+                expect(rect.top).toEqual(10);
+                expect(rect.width).toEqual(20);
+                expect(rect.height).toEqual(10);
             });
         });
     });

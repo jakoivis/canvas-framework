@@ -15,9 +15,7 @@
 
             var layer = new Layer({
                 appendToBody: true,
-                fullScreen: true,
-                enableOnClickEvents: true,
-                enableOnRollEvents: true
+                fullScreen: true
             });
 
             var images = [{src: '../../sampleImages/sample1_tb.png', name: 'purple', y:100, x:300}];
@@ -31,8 +29,11 @@
 
             var loader = new ImageLoader({
                 images:images,
-                onComplete: onComplete,
+                onComplete: onComplete
             });
+
+            var mouseX;
+            var mouseY;
 
             function onComplete()
             {
@@ -41,7 +42,14 @@
                     addGraphic(loader.getItemAt(i));
                 }
 
-                createTween(layer.getGraphicAt(0), 200);
+
+
+                layer.getCanvas().addEventListener('mousemove', function(event) {
+                    mouseX = event.x;
+                    mouseY = event.y;
+                });
+
+                window.requestAnimationFrame(animationLoop);
             }
 
             function addGraphic(loaderItem)
@@ -52,33 +60,24 @@
                     y: loaderItem.y,
                 });
 
-                graphic.name = loaderItem.name;
-
                 layer.addGraphic(graphic);
-            }
-
-            function createTween(target, delay)
-            {
-                return new TWEEN.Tween({y: 100})
-                    .to({y: 400}, 2000)
-                    .delay(delay)
-                    .repeat(Infinity)
-                    .yoyo(true)
-                    .easing(TWEEN.Easing.Elastic.Out)
-                    .onUpdate(function () {
-                        target.y = this.y;
-                    })
-                    .start();
             }
 
             function animationLoop(time)
             {
-                TWEEN.update(time);
+                if(layer.length())
+                {
+                    var graphic = layer.getGraphicAt(0);
+                    graphic.x = mouseX;
+                    // graphic.y = mouseY;
+                }
+
+
                 layer.render();
                 window.requestAnimationFrame(animationLoop);
             }
 
-            window.requestAnimationFrame(animationLoop);
+
 
         })();
 

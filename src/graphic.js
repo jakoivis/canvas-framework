@@ -22,8 +22,8 @@ module.exports = function(options)
     var imageData8ClampedView;
     var imageData32View;
 
-    var renderedX;
-    var renderedY;
+    var renderedRectangle = {left:0, top:0, right:0, bottom:0, width:0, height:0};
+    var currentRectangle = {left:0, top:0, right:0, bottom:0, width:0, height:0};
 
     var dummyFunction = function() {}
 
@@ -34,18 +34,37 @@ module.exports = function(options)
     var update = dummyFunction;
 
     var isInvalid = true;
+    var invalidationRects = [];
 
     var x = 0;
     var y = 0;
 
     Object.defineProperty(this, "x", {
         get: function() { return x; },
-        set: function(value) { if(value !== x) { x = value; me.invalidate() } }
+        set: function(value)
+        {
+            if(value !== x)
+            {
+                x = value;
+                currentRectangle.left = x;
+                currentRectangle.right = currentRectangle.left + currentRectangle.width;
+                me.invalidate();
+            }
+        }
     });
 
     Object.defineProperty(this, "y", {
         get: function() { return y; },
-        set: function(value) { if(value !== y) { y = value; me.invalidate() } }
+        set: function(value)
+        {
+            if(value !== y)
+            {
+                y = value;
+                currentRectangle.top = y;
+                currentRectangle.bottom = currentRectangle.top + currentRectangle.height;
+                me.invalidate();
+            }
+        }
     });
 
     Object.defineProperty(this, "isInvalid", {
@@ -61,8 +80,8 @@ module.exports = function(options)
                 me.setImageData(options.imageData);
             }
 
-            x = options.x || 0;
-            y = options.y || 0;
+            me.x = options.x || 0;
+            me.y = options.y || 0;
 
             me.onRollOver = options.onRollOver;
             me.onRollOut = options.onRollOut;
@@ -80,6 +99,12 @@ module.exports = function(options)
     me.setImageData = function(imageData)
     {
         _imageData = imageData;
+
+        currentRectangle.width = _imageData.width;
+        currentRectangle.height = _imageData.height;
+        currentRectangle.right = currentRectangle.left + currentRectangle.width;
+        currentRectangle.bottom = currentRectangle.top + currentRectangle.height;
+
         imageData8ClampedView = _imageData.data;
         imageData32View = new Uint32Array(imageData8ClampedView.buffer);
         me.invalidate();
@@ -100,20 +125,47 @@ module.exports = function(options)
         }
     }
 
-    me.invalidate = function()
+    me.invalidate = function(rectangle)
     {
         isInvalid = true;
+
+        if(rectangle)
+        {
+            invalidationRects.push(rectangle);
+        }
+        else
+        {
+            invalidationRects.push(renderedRectangle);
+        }
     }
 
     me.render = function()
     {
-        saveRenderedPosition();
-        renderContext.putImageData(_imageData, x, y);
+        saveRenderedRectangle(x, y, _imageData.width, _imageData.height);
+        // renderContext.putImageData(_imageData, x, y);
+        while(invalidationRects.length)
+        {
+            var rect = me.getDirtyRect(invalidationRects.shift());
+            renderContext.putImageData(_imageData, x, y, rect.left, rect.top, rect.width, rect.height);
+        }
+    }
+
+    me.partialRender = function()
+    {
+        while(invalidationRects.length)
+        {
+            var rect = me.getDirtyRect(invalidationRects.shift());
+            renderContext.putImageData(_imageData, x, y, rect.left, rect.top, rect.width, rect.height);
+        }
     }
 
     me.clear = function()
     {
-        renderContext.clearRect(renderedX-1, renderedY-1, _imageData.width+2, _imageData.height+2);
+        renderContext.clearRect(
+            renderedRectangle.left-1,
+            renderedRectangle.top-1,
+            renderedRectangle.width+2,
+            renderedRectangle.height+2);
     }
 
     me.update = function()
@@ -156,6 +208,22 @@ module.exports = function(options)
         return result;
     }
 
+    me.isIntersecting = function(rectangle)
+    {
+        return (rectangle.left <= currentRectangle.right &&
+                  currentRectangle.left <= rectangle.right &&
+                  rectangle.top <= currentRectangle.bottom &&
+                  currentRectangle.top <= rectangle.bottom)
+    }
+
+    me.isIntersectingOldPosition = function(rectangle)
+    {
+        return (rectangle.left <= renderedRectangle.right &&
+                  renderedRectangle.left <= rectangle.right &&
+                  rectangle.top <= renderedRectangle.bottom &&
+                  renderedRectangle.top <= rectangle.bottom)
+    }
+
     function isGlobalPositionWithinBoundaries(_x, _y)
     {
         return ((_x - x) >= 0
@@ -164,15 +232,50 @@ module.exports = function(options)
                 && (_y - (y + _imageData.height)) <= 0);
     }
 
-    function saveRenderedPosition()
+    function saveRenderedRectangle(_x, _y, width, height)
     {
-        renderedX = x;
-        renderedY = y;
+        renderedRectangle.left = _x;
+        renderedRectangle.top = _y;
+        renderedRectangle.right = _x + width;
+        renderedRectangle.bottom = _y + height;
+        renderedRectangle.width = width;
+        renderedRectangle.height = height;
     }
 
     function getPixel32At(_x, _y)
     {
         return imageData32View[_y * _imageData.width + _x];
+    }
+
+    me.getRect = function()
+    {
+        return {
+            left: currentRectangle.left,
+            right: currentRectangle.right,
+            top: currentRectangle.top,
+            bottom: currentRectangle.bottom,
+            width: currentRectangle.width,
+            height: currentRectangle.height
+        };
+    }
+
+    // This is temporarily public just to make unit tests for it
+    me.getDirtyRect = function(interseptingRect)
+    {
+        var left = interseptingRect.left - x;
+        var top = interseptingRect.top - y;
+
+        var width = interseptingRect.width - Math.abs(left);
+        var height = interseptingRect.height - Math.abs(top);
+
+        var rect = {
+            left: left < 0 ? 0 : left,
+            top: top < 0 ? 0 : top,
+            width: width > currentRectangle.width ? currentRectangle.width : width,
+            height: height > currentRectangle.height ? currentRectangle.height : height
+        };
+
+        return rect;
     }
 
     init();
