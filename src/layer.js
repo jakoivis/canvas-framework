@@ -232,7 +232,7 @@ module.exports = function(options)
 
         for(var i = 0; i < graphics.length; i++)
         {
-            graphics[i].render();//validateNow();
+            graphics[i].validateNow();
         }
     }
 
