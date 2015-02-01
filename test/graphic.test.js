@@ -85,36 +85,37 @@ describe("Graphic:", function() {
 
 
 
-    describe("positions and rendering:", function() {
+    describe("x and y setter and getter:", function() {
 
-        it("is (0,0)", function() {
-            var graphic = new Graphic({imageData:imageData});
-            var canvas = document.createElement("canvas");
-            var context = canvas.getContext("2d");
-            graphic.setRenderContext(context);
-            graphic.render();
-            ImageTester.expectTestImagePositionToBeOnCanvas(canvas, 0, 0);
-        });
+        // move tests to own file, that draw something on canvas
+        // it("is (0,0)", function() {
+        //     var graphic = new Graphic({imageData:imageData});
+        //     var canvas = document.createElement("canvas");
+        //     var context = canvas.getContext("2d");
+        //     graphic.setRenderContext(context);
+        //     graphic.render();
+        //     ImageTester.expectTestImagePositionToBeOnCanvas(canvas, 0, 0);
+        // });
 
-        it("is (10,10)", function() {
-            var graphic = new Graphic({imageData:imageData, x: 10, y: 10});
-            var canvas = document.createElement("canvas");
-            var context = canvas.getContext("2d");
-            graphic.setRenderContext(context);
-            graphic.render();
-            ImageTester.expectTestImagePositionToBeOnCanvas(canvas, 10, 10);
-        });
+        // it("is (10,10)", function() {
+        //     var graphic = new Graphic({imageData:imageData, x: 10, y: 10});
+        //     var canvas = document.createElement("canvas");
+        //     var context = canvas.getContext("2d");
+        //     graphic.setRenderContext(context);
+        //     graphic.render();
+        //     ImageTester.expectTestImagePositionToBeOnCanvas(canvas, 10, 10);
+        // });
 
-        it("is (10,10) after changing position and rerendering", function() {
-            var graphic = new Graphic({imageData:imageData, x: 0, y: 0});
-            var canvas = document.createElement("canvas");
-            var context = canvas.getContext("2d");
-            graphic.setRenderContext(context);
-            graphic.x = 10;
-            graphic.y = 10;
-            graphic.render();
-            ImageTester.expectTestImagePositionToBeOnCanvas(canvas, 10, 10);
-        });
+        // it("is (10,10) after changing position and rerendering", function() {
+        //     var graphic = new Graphic({imageData:imageData, x: 0, y: 0});
+        //     var canvas = document.createElement("canvas");
+        //     var context = canvas.getContext("2d");
+        //     graphic.setRenderContext(context);
+        //     graphic.x = 10;
+        //     graphic.y = 10;
+        //     graphic.render();
+        //     ImageTester.expectTestImagePositionToBeOnCanvas(canvas, 10, 10);
+        // });
 
         it("position change invalidates graphic", function() {
             var graphic1 = new Graphic({imageData:imageData, x:10, y:10});

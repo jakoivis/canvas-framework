@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="../../build/canvasFW-1.0.0.js"></script>
+  <script src="../../build/canvas-framework.js"></script>
   <script src="../../test/helpers/imageTester.js"></script>
 </head>
 
@@ -13,11 +13,25 @@ var layer = new Layer({
   fullScreen: true
 });
 
-var graphic = new Graphic({
-    imageData: ImageTester.createTestImage()
-});
+layer.addGraphic(new Graphic({
+    imageData: ImageTester.createTestImage(),
+    x: 10, y: 10
+}));
 
-layer.addGraphic(graphic);
+layer.addGraphic(new Graphic({
+    imageData: ImageTester.createRedImage(),
+    x: 40, y: 10
+}));
+
+layer.addGraphic(new Graphic({
+    imageData: ImageTester.createGreenImage(),
+    x: 70, y: 10
+}));
+
+layer.addGraphic(new Graphic({
+    imageData: ImageTester.createBlueImage(),
+    x: 100, y: 10
+}));
 
 layer.render();
 

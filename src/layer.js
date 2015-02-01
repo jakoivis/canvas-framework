@@ -228,6 +228,8 @@ module.exports = function(options)
 
     me.render = function()
     {
+        // console.log("layer.render");
+
         invalidateGraphics();
 
         for(var i = 0; i < graphics.length; i++)
@@ -261,13 +263,14 @@ module.exports = function(options)
         {
             if(graphics[i].isIntersecting(rectangle))
             {
+                // console.log("isIntersecting:", graphics[i].name)
                 graphics[i].invalidate(rectangle);
             }
 
-            if(graphics[i].isIntersectingOldPosition(rectangle))
-            {
-                graphics[i].invalidate(rectangle);
-            }
+            // if(graphics[i].isIntersectingOldPosition(rectangle))
+            // {
+            //     graphics[i].invalidate(rectangle);
+            // }
         }
     }
 

@@ -243,21 +243,6 @@ describe("Layer:", function() {
         });
     });
 
-    describe("graphic invalidation", function() {
-
-        it("", function() {
-            var layer = new Layer();
-            layer.addGraphic(graphic1);
-            layer.addGraphic(graphic2);
-            layer.addGraphic(graphic3);
-            // layer.render();
-            expect(graphic1.invalidate.calls.count()).toEqual(0);
-            expect(graphic2.invalidate.calls.count()).toEqual(0);
-            expect(graphic3.invalidate.calls.count()).toEqual(0);
-        });
-
-    });
-
 
 
 

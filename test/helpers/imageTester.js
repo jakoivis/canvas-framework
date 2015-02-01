@@ -53,6 +53,15 @@ window.ImageTester = {
         expect(color).toEqual(value);
     },
 
+    getPixel32: function(canvas, x, y)
+    {
+        var context = canvas.getContext("2d");
+        var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        var uint32View = new Uint32Array(imageData.data.buffer);
+        return uint32View[y * canvas.width + x];
+    },
+
+
     createTestImage: function(width, height)
     {
         width = width || 20;
@@ -117,12 +126,104 @@ window.ImageTester = {
         return getImageDataFromCanvas(canvas);
     },
 
-    getPixel32: function(canvas, x, y)
+    createRedImage: function(width, height)
     {
+        width = width || 20;
+        height = height || 20;
+
+        var canvas = createCanvas(width, height);
         var context = canvas.getContext("2d");
-        var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        var uint32View = new Uint32Array(imageData.data.buffer);
-        return uint32View[y * canvas.width + x];
+
+        drawBackground();
+
+        function drawBackground()
+        {
+            context.fillStyle = "#FF0000";
+            context.fillRect(0,0,width,height);
+        }
+
+        function createCanvas(width, height)
+        {
+            var canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            return canvas;
+        }
+
+        function getImageDataFromCanvas(canvas)
+        {
+            var context = canvas.getContext("2d");
+            return context.getImageData(0, 0, canvas.width, canvas.height);
+        }
+
+        return getImageDataFromCanvas(canvas);
     },
+
+    createGreenImage: function(width, height)
+    {
+        width = width || 20;
+        height = height || 20;
+
+        var canvas = createCanvas(width, height);
+        var context = canvas.getContext("2d");
+
+        drawBackground();
+
+        function drawBackground()
+        {
+            context.fillStyle = "#00FF00";
+            context.fillRect(0,0,width,height);
+        }
+
+        function createCanvas(width, height)
+        {
+            var canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            return canvas;
+        }
+
+        function getImageDataFromCanvas(canvas)
+        {
+            var context = canvas.getContext("2d");
+            return context.getImageData(0, 0, canvas.width, canvas.height);
+        }
+
+        return getImageDataFromCanvas(canvas);
+    },
+
+    createBlueImage: function(width, height)
+    {
+        width = width || 20;
+        height = height || 20;
+
+        var canvas = createCanvas(width, height);
+        var context = canvas.getContext("2d");
+
+        drawBackground();
+
+        function drawBackground()
+        {
+            context.fillStyle = "#0000FF";
+            context.fillRect(0,0,width,height);
+        }
+
+        function createCanvas(width, height)
+        {
+            var canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            return canvas;
+        }
+
+        function getImageDataFromCanvas(canvas)
+        {
+            var context = canvas.getContext("2d");
+            return context.getImageData(0, 0, canvas.width, canvas.height);
+        }
+
+        return getImageDataFromCanvas(canvas);
+    },
+
 
 };

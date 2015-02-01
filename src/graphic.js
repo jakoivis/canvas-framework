@@ -1,13 +1,6 @@
 
 'use strict';
 
-// TODO F MED: options events + other
-// TODO F: remove transition
-// TODO F: make transition switchable feature
-// TODO F HI: invalidation
-// TODO bug: renred width and height needs to be stored. when image data has changed clearing would not clear correct width and height
-// TODO: unit tests for transition... think about moving that away from graphic
-
 module.exports = function(options)
 {
     if (!(this instanceof Graphic))
@@ -69,6 +62,10 @@ module.exports = function(options)
 
     Object.defineProperty(this, "isInvalid", {
         get: function() { return isInvalid; }
+    });
+
+    Object.defineProperty(this, "invalidationRects", {
+        get: function() { return invalidationRects; }
     });
 
     function init()
@@ -133,25 +130,17 @@ module.exports = function(options)
         {
             invalidationRects.push(rectangle);
         }
-        else
-        {
-            invalidationRects.push(renderedRectangle);
-        }
+        // else
+        // {
+        //     invalidationRects.push(renderedRectangle);
+        // }
     }
 
     me.render = function()
     {
         saveRenderedRectangle(x, y, _imageData.width, _imageData.height);
         // renderContext.putImageData(_imageData, x, y);
-        while(invalidationRects.length)
-        {
-            var rect = me.getDirtyRect(invalidationRects.shift());
-            renderContext.putImageData(_imageData, x, y, rect.left, rect.top, rect.width, rect.height);
-        }
-    }
-
-    me.partialRender = function()
-    {
+        console.log(invalidationRects.length);
         while(invalidationRects.length)
         {
             var rect = me.getDirtyRect(invalidationRects.shift());

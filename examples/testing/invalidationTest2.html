@@ -18,22 +18,26 @@
                 fullScreen: true
             });
 
-            var images = [{src: '../../sampleImages/sample1_tb.png', name: 'purple', y:100, x:300}];
+            var images = [
+                {src: '../../sampleImages/sample1_tb.png', name: 'purple', y:100, x:100},
+                {src: '../../sampleImages/sample2_tb.png', name: 'blue', y:100, x:300},
+                {src: '../../sampleImages/sample3_tb.png', name: 'orange', y:150, x:150}
+            ];
 
-            for(var i = 0; i < 50; i++)
-            {
-                var x = Math.floor((Math.random() * 500) + 200);
-                var y = Math.floor((Math.random() * 500) + 200);
-                images.push({src: '../../sampleImages/sample3_tb.png', name: 'orange', y:x, x:y})
-            }
+            // for(var i = 0; i < 1; i++)
+            // {
+            //     var x = Math.floor((Math.random() * 500) + 200);
+            //     var y = Math.floor((Math.random() * 500) + 200);
+            //     images.push({src: '../../sampleImages/sample3_tb.png', name: 'orange', y:x, x:y})
+            // }
 
             var loader = new ImageLoader({
                 images:images,
                 onComplete: onComplete
             });
 
-            var mouseX;
-            var mouseY;
+            var mouseX = 0;
+            var mouseY = 0;
 
             function onComplete()
             {
@@ -41,8 +45,6 @@
                 {
                     addGraphic(loader.getItemAt(i));
                 }
-
-
 
                 layer.getCanvas().addEventListener('mousemove', function(event) {
                     mouseX = event.x;
@@ -60,6 +62,8 @@
                     y: loaderItem.y,
                 });
 
+                graphic.name = loaderItem.name;
+
                 layer.addGraphic(graphic);
             }
 
@@ -67,9 +71,9 @@
             {
                 if(layer.length())
                 {
-                    var graphic = layer.getGraphicAt(0);
+                    var graphic = layer.getGraphicAt(1);
                     graphic.x = mouseX;
-                    // graphic.y = mouseY;
+                    graphic.y = mouseY;
                 }
 
 
