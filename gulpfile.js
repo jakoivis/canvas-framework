@@ -12,7 +12,7 @@ var buffer = require('vinyl-buffer');
 var util = require('gulp-util');
 
 var mainSourceFile = './src/canvasfw.js';
-var sourceFiles = './src/*.js';
+var sourceFiles = './src/**/*.js';
 var testFiles = './test/*.test.js';
 var testHelperFiles = './test/helpers/*.js';
 var exampleFiles = './examples/**/*.html';
@@ -21,15 +21,12 @@ var imageFiles = './test/assets/*.png';
 var buildFolder = './build/';
 var coverageFolder = './coverage/';
 
-var imageLoader = './bower_components/ImageLoader/build/imageloader.min.js';
-
 var karmaOptions = { configFile: './karma.conf.js', action: 'run' };
 var istanbulOptions = { ignore: ["**/bower_components/**"] };
 
 var browserifyTestOptions = {
     entries: [
         mainSourceFile,
-        imageLoader,
         glob.sync(testHelperFiles),
         glob.sync(testFiles)
     ],

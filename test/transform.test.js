@@ -174,6 +174,8 @@ describe("Transform:", function() {
 
         it("reset sets the next transform done against original image", function() {
 
+            var originalPixel1R = 0;
+            var originalPixel1G = 255;
             var invertedPixel1R = 255;
             var invertedPixel1G = 0;
 
@@ -183,12 +185,19 @@ describe("Transform:", function() {
 
             transform.reset();
 
+            // pixel values should match the original image
+            var pixel1R = transform.getImageData().data[0];
+            var pixel1G = transform.getImageData().data[1];
+
+            expect(pixel1R).toEqual(originalPixel1R);
+            expect(pixel1G).toEqual(originalPixel1G);
+
             // invert again
             transform.do(Transform.Invert);
 
             // pixel values should be inverted
-            var pixel1R = transform.getImageData().data[0];
-            var pixel1G = transform.getImageData().data[1];
+            pixel1R = transform.getImageData().data[0];
+            pixel1G = transform.getImageData().data[1];
 
             expect(pixel1R).toEqual(invertedPixel1R);
             expect(pixel1G).toEqual(invertedPixel1G);

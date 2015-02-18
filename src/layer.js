@@ -1,8 +1,8 @@
 
-'use strict';
-
 module.exports = function(options)
 {
+    'use strict';
+
     if (!(this instanceof Layer))
     {
         return new Layer(options);
@@ -196,7 +196,7 @@ module.exports = function(options)
         {
             if (graphic === graphics[i])
             {
-                graphics = graphics.slice(0,i).concat(graphics.slice(i+1));
+                graphics.splice(i,1);
                 return;
             }
         }

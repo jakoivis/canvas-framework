@@ -30,7 +30,7 @@ module.exports = function(config) {
             }
         },
         proxies: {
-            '/assets/': 'http://localhost:8080/test/assets/'
+            '/assets/': 'http://localhost:8080/sampleImages/'
         },
         port: 9876,
         runnerPort: 9100,

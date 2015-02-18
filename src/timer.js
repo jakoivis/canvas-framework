@@ -1,10 +1,10 @@
 
-'use strict';
-
-//Timer class implements the main loop of the application and the callbacs that handle
-//game processing in main loop.
+// Timer class implements the main loop of the application and the callbacs that handle
+// application processing in main loop.
 module.exports = function(options)
 {
+    'use strict';
+
     if(Timer.prototype.singletonInstance)
     {
         return Timer.prototype.singletonInstance;
