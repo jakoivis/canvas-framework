@@ -92,6 +92,19 @@ describe("Layer:", function() {
 
 
 
+    describe("options width and height", function() {
+
+        it("", function() {
+            var layer = new Layer({width: 500, height: 600});
+            var canvas = layer.getCanvas();
+
+            expect(canvas.width).toEqual(500);
+            expect(canvas.height).toEqual(600);
+        });
+    });
+
+
+
     describe("other:", function() {
 
         it("getCanvas returns object of correct type", function() {
@@ -240,6 +253,18 @@ describe("Layer:", function() {
             layer.addGraphic(graphic3);
 
             expect(layer.getGraphicAt(-1)).toEqual(undefined);
+        });
+
+        it("removeAllGraphics", function() {
+            var layer = new Layer();
+            layer.addGraphic(graphic1);
+            layer.addGraphic(graphic2);
+            layer.addGraphic(graphic3);
+            layer.removeAllGraphics();
+            layer.update();
+            expect(graphic1.update.calls.count()).toEqual(0);
+            expect(graphic2.update.calls.count()).toEqual(0);
+            expect(graphic3.update.calls.count()).toEqual(0);
         });
     });
 

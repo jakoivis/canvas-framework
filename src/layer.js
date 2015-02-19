@@ -40,6 +40,16 @@ module.exports = function Layer(options)
                 me.enableOnClickEvents();
             }
 
+            if (options.width)
+            {
+                canvas.width = options.width;
+            }
+
+            if (options.height)
+            {
+                canvas.height = options.height;
+            }
+
             if (options.fullScreen)
             {
                 me.enableFullScreen();
@@ -200,6 +210,16 @@ module.exports = function Layer(options)
                 return;
             }
         }
+    }
+
+    me.removeAllGraphics = function()
+    {
+        for(var i = 0; i < graphics.length; i++)
+        {
+            graphics[i].clear();
+        }
+
+        graphics = [];
     }
 
     me.getGraphicAt = function(index)
