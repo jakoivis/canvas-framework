@@ -1,5 +1,5 @@
 
-module.exports = function(options)
+module.exports = function Graphic(options)
 {
     'use strict';
 
