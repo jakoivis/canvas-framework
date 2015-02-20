@@ -114,6 +114,23 @@ Transform.Alpha = function(p)
     return [p.r, p.g, p.b, p.value];
 }
 
+// Weighted alpha blend between two images.
+// Used for drawing images with alpha colors
+// on top of other images
+Transform.WeightedAlphaBlend = function(p)
+{
+    var p2 = Transform.sampleLinear(p.imageData2, p.x, p.y);
+    var p2a = p2[3];
+    var p2aPct = p2a / 255;
+
+    return [
+        getGetColorFromGradient(p.r, p2[0], p2aPct),
+        getGetColorFromGradient(p.g, p2[1], p2aPct),
+        getGetColorFromGradient(p.b, p2[2], p2aPct),
+        p.a > p2a ? p.a : p2a
+    ];
+}
+
 Transform.Rotate = function(p)
 {
     var degree = p.degree;
@@ -146,6 +163,18 @@ Transform.Swirl = function(p)
     ty = Math.round(p.y - ty);
 
     return Transform.sampleLinear(p.imageData, tx, ty);
+}
+
+/**
+ * Get color value between two color component at the specified position
+ * @param colorComponent1 color component e.g. red value from 0 to 255
+ * @param colorComponent2 color component e.g. red value from 0 to 255
+ * @param position Position of the color in gradient. Number value from 0 to 1
+ * @return number between 0 to 255
+ */
+function getGetColorFromGradient(colorComponent1, colorComponent2, position)
+{
+    return colorComponent1 - position * (colorComponent1 - colorComponent2);
 }
 
 Transform.descriptions = {

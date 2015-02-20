@@ -1,4 +1,6 @@
 
+var Transform = require('./transform.js');
+
 module.exports = function Graphic(options)
 {
     'use strict';
@@ -69,7 +71,12 @@ module.exports = function Graphic(options)
     me.render = function()
     {
         saveRenderedPosition();
-        renderContext.putImageData(_imageData, me.x, me.y);
+
+        var existingImageData = renderContext.getImageData(me.x, me.y, _imageData.width, _imageData.height);
+        var transform = new Transform(existingImageData, renderContext);
+
+        transform.do(Transform.WeightedAlphaBlend, {imageData2:_imageData});
+        renderContext.putImageData(transform.getImageData(), me.x, me.y);
     }
 
     me.clear = function()
