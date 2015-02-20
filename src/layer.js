@@ -1,5 +1,5 @@
 
-module.exports = function(options)
+module.exports = function Layer(options)
 {
     'use strict';
 
@@ -38,6 +38,16 @@ module.exports = function(options)
             if (options.enableOnClickEvents)
             {
                 me.enableOnClickEvents();
+            }
+
+            if (options.width)
+            {
+                canvas.width = options.width;
+            }
+
+            if (options.height)
+            {
+                canvas.height = options.height;
             }
 
             if (options.fullScreen)
@@ -200,6 +210,16 @@ module.exports = function(options)
                 return;
             }
         }
+    }
+
+    me.removeAllGraphics = function()
+    {
+        for(var i = 0; i < graphics.length; i++)
+        {
+            graphics[i].clear();
+        }
+
+        graphics = [];
     }
 
     me.getGraphicAt = function(index)

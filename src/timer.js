@@ -1,7 +1,7 @@
 
 // Timer class implements the main loop of the application and the callbacs that handle
 // application processing in main loop.
-module.exports = function(options)
+module.exports = function Timer(options)
 {
     'use strict';
 
