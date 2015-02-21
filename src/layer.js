@@ -251,6 +251,10 @@ module.exports = function Layer(options)
         for(var i = 0; i < graphics.length; i++)
         {
             graphics[i].clear();
+        }
+
+        for(var i = 0; i < graphics.length; i++)
+        {
             graphics[i].render();
         }
     }
