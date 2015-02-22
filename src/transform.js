@@ -123,6 +123,15 @@ Transform.WeightedAlphaBlend = function(p)
     var p2a = p2[3];
     var p2aPct = p2a / 255;
 
+    if(p2a === 255)
+    {
+        return [p2[0], p2[1], p2[2], p2[3]];
+    }
+    else if(p2a === 0)
+    {
+        return [p.r, p.g, p.b, p.a];
+    }
+
     return [
         getGetColorFromGradient(p.r, p2[0], p2aPct),
         getGetColorFromGradient(p.g, p2[1], p2aPct),
