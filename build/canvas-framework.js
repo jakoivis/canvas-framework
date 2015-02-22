@@ -1,11 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-// window.CFW = {
-// 	Layer: require('./layer.js'),
-// 	Graphic: require('./graphic.js'),
-// 	Timer: require('./timer.js'),
-// 	CanvasUtil: require('./canvasutil.js'),
-// };
-
 window.ImageLoader = require('./imageLoader/imageLoader.js');
 window.Layer = require('./layer.js');
 window.Transform = require('./transform.js');
@@ -15,12 +8,12 @@ window.CanvasUtil = require('./canvasutil.js');
 
 },{"./canvasutil.js":2,"./graphic.js":3,"./imageLoader/imageLoader.js":4,"./layer.js":8,"./timer.js":9,"./transform.js":10}],2:[function(require,module,exports){
 
-'use strict';
-
 module.exports = new CanvasUtil();
 
 function CanvasUtil()
 {
+    'use strict';
+
     if(CanvasUtil.prototype.singletonInstance)
     {
         return CanvasUtil.prototype.singletonInstance;
@@ -92,10 +85,12 @@ function CanvasUtil()
 
 },{}],3:[function(require,module,exports){
 
-'use strict';
+var Transform = require('./transform.js');
 
-module.exports = function(options)
+module.exports = function Graphic(options)
 {
+    'use strict';
+
     if (!(this instanceof Graphic))
     {
         return new Graphic(options);
@@ -108,58 +103,19 @@ module.exports = function(options)
     var imageData8ClampedView;
     var imageData32View;
 
-    var renderedRectangle = {left:0, top:0, right:0, bottom:0, width:0, height:0};
-    var currentRectangle = {left:0, top:0, right:0, bottom:0, width:0, height:0};
+    var renderedX;
+    var renderedY;
 
     var dummyFunction = function() {}
+
+    me.x = 0;
+    me.y = 0;
 
     me.onRollOver;
     me.onRollOut;
     me.onClick;
 
     var update = dummyFunction;
-
-    var isInvalid = true;
-    var invalidationRects = [];
-
-    var x = 0;
-    var y = 0;
-
-    Object.defineProperty(this, "x", {
-        get: function() { return x; },
-        set: function(value)
-        {
-            if(value !== x)
-            {
-                x = value;
-                currentRectangle.left = x;
-                currentRectangle.right = currentRectangle.left + currentRectangle.width;
-                me.invalidate();
-            }
-        }
-    });
-
-    Object.defineProperty(this, "y", {
-        get: function() { return y; },
-        set: function(value)
-        {
-            if(value !== y)
-            {
-                y = value;
-                currentRectangle.top = y;
-                currentRectangle.bottom = currentRectangle.top + currentRectangle.height;
-                me.invalidate();
-            }
-        }
-    });
-
-    Object.defineProperty(this, "isInvalid", {
-        get: function() { return isInvalid; }
-    });
-
-    Object.defineProperty(this, "invalidationRects", {
-        get: function() { return invalidationRects; }
-    });
 
     function init()
     {
@@ -189,15 +145,8 @@ module.exports = function(options)
     me.setImageData = function(imageData)
     {
         _imageData = imageData;
-
-        currentRectangle.width = _imageData.width;
-        currentRectangle.height = _imageData.height;
-        currentRectangle.right = currentRectangle.left + currentRectangle.width;
-        currentRectangle.bottom = currentRectangle.top + currentRectangle.height;
-
         imageData8ClampedView = _imageData.data;
         imageData32View = new Uint32Array(imageData8ClampedView.buffer);
-        me.invalidate();
     }
 
     me.setRenderContext = function(context)
@@ -205,49 +154,20 @@ module.exports = function(options)
         renderContext = context;
     };
 
-    me.validateNow = function()
-    {
-        if(isInvalid)
-        {
-            me.clear();
-            me.render();
-            isInvalid = false;
-        }
-    }
-
-    me.invalidate = function(rectangle)
-    {
-        isInvalid = true;
-
-        if(rectangle)
-        {
-            invalidationRects.push(rectangle);
-        }
-        // else
-        // {
-        //     invalidationRects.push(renderedRectangle);
-        // }
-    }
-
     me.render = function()
     {
-        saveRenderedRectangle(x, y, _imageData.width, _imageData.height);
-        // renderContext.putImageData(_imageData, x, y);
-        console.log(invalidationRects.length);
-        while(invalidationRects.length)
-        {
-            var rect = me.getDirtyRect(invalidationRects.shift());
-            renderContext.putImageData(_imageData, x, y, rect.left, rect.top, rect.width, rect.height);
-        }
+        saveRenderedPosition();
+
+        var existingImageData = renderContext.getImageData(me.x, me.y, _imageData.width, _imageData.height);
+        var transform = new Transform(existingImageData, renderContext);
+
+        transform.do(Transform.WeightedAlphaBlend, {imageData2:_imageData});
+        renderContext.putImageData(transform.getImageData(), me.x, me.y);
     }
 
     me.clear = function()
     {
-        renderContext.clearRect(
-            renderedRectangle.left-1,
-            renderedRectangle.top-1,
-            renderedRectangle.width+2,
-            renderedRectangle.height+2);
+        renderContext.clearRect(renderedX-1, renderedY-1, _imageData.width+2, _imageData.height+2);
     }
 
     me.update = function()
@@ -255,30 +175,30 @@ module.exports = function(options)
         update.call(this);
     }
 
-    me.globalToLocal = function(_x, _y)
+    me.globalToLocal = function(x, y)
     {
         return {
-            x: _x - x,
-            y: _y - y
+            x: x - me.x,
+            y: y - me.y
         }
     }
 
-    me.localToGlobal = function(_x, _y)
+    me.localToGlobal = function(x, y)
     {
         return {
-            x: x + _x,
-            y: y + _y
+            x: me.x + x,
+            y: me.y + y
         }
     }
 
-    me.hasGlobalPixelAt = function(_x, _y)
+    me.hasGlobalPixelAt = function(x, y)
     {
         var result = false;
 
-        if (isGlobalPositionWithinBoundaries(_x, _y))
+        if (isGlobalPositionWithinBoundaries(x, y))
         {
-            var distanceFromLeft = _x - x;
-            var distanceFromTop = _y - y;
+            var distanceFromLeft = x - me.x;
+            var distanceFromTop = y - me.y;
             var pixel32 = getPixel32At(distanceFromLeft, distanceFromTop);
 
             if (pixel32 !== 0)
@@ -290,74 +210,31 @@ module.exports = function(options)
         return result;
     }
 
-    me.isIntersecting = function(rectangle)
+    function isGlobalPositionWithinBoundaries(x, y)
     {
-        return (rectangle.left <= currentRectangle.right &&
-                  currentRectangle.left <= rectangle.right &&
-                  rectangle.top <= currentRectangle.bottom &&
-                  currentRectangle.top <= rectangle.bottom)
+        //var distanceFromLeft = x - me.x;
+        //var distanceFromTop = y - me.y;
+        //var distanceFromRight = x - (me.x + _imageData.width);
+        //var distanceFromBottom = y - (me.y + _imageData.height);
+        //return (distanceFromLeft >= 0 && distanceFromRight <= 0
+        //    && distanceFromTop >= 0 && distanceFromBottom <= 0);
+
+        // the below statement implements the same functionality as above
+        return ((x - me.x) >= 0
+                && (y - me.y) >= 0
+                && (x - (me.x + _imageData.width)) <= 0
+                && (y - (me.y + _imageData.height)) <= 0);
     }
 
-    me.isIntersectingOldPosition = function(rectangle)
+    function saveRenderedPosition()
     {
-        return (rectangle.left <= renderedRectangle.right &&
-                  renderedRectangle.left <= rectangle.right &&
-                  rectangle.top <= renderedRectangle.bottom &&
-                  renderedRectangle.top <= rectangle.bottom)
+        renderedX = me.x;
+        renderedY = me.y;
     }
 
-    function isGlobalPositionWithinBoundaries(_x, _y)
+    function getPixel32At(x, y)
     {
-        return ((_x - x) >= 0
-                && (_y - y) >= 0
-                && (_x - (x + _imageData.width)) <= 0
-                && (_y - (y + _imageData.height)) <= 0);
-    }
-
-    function saveRenderedRectangle(_x, _y, width, height)
-    {
-        renderedRectangle.left = _x;
-        renderedRectangle.top = _y;
-        renderedRectangle.right = _x + width;
-        renderedRectangle.bottom = _y + height;
-        renderedRectangle.width = width;
-        renderedRectangle.height = height;
-    }
-
-    function getPixel32At(_x, _y)
-    {
-        return imageData32View[_y * _imageData.width + _x];
-    }
-
-    me.getRect = function()
-    {
-        return {
-            left: currentRectangle.left,
-            right: currentRectangle.right,
-            top: currentRectangle.top,
-            bottom: currentRectangle.bottom,
-            width: currentRectangle.width,
-            height: currentRectangle.height
-        };
-    }
-
-    // This is temporarily public just to make unit tests for it
-    me.getDirtyRect = function(interseptingRect)
-    {
-        var left = interseptingRect.left - x;
-        var top = interseptingRect.top - y;
-
-        var width = interseptingRect.width - Math.abs(left);
-        var height = interseptingRect.height - Math.abs(top);
-
-        var rect = {
-            left: left < 0 ? 0 : left,
-            top: top < 0 ? 0 : top,
-            width: width > currentRectangle.width ? currentRectangle.width : width,
-            height: height > currentRectangle.height ? currentRectangle.height : height
-        };
-
-        return rect;
+        return imageData32View[y * _imageData.width + x];
     }
 
     init();
@@ -365,7 +242,7 @@ module.exports = function(options)
     return this;
 }
 
-},{}],4:[function(require,module,exports){
+},{"./transform.js":10}],4:[function(require,module,exports){
 
 var Queue = require('./queue');
 var Thread = require('./thread');
@@ -915,10 +792,10 @@ function Thread(options)
 
 },{}],8:[function(require,module,exports){
 
-'use strict';
-
-module.exports = function(options)
+module.exports = function Layer(options)
 {
+    'use strict';
+
     if (!(this instanceof Layer))
     {
         return new Layer(options);
@@ -954,6 +831,16 @@ module.exports = function(options)
             if (options.enableOnClickEvents)
             {
                 me.enableOnClickEvents();
+            }
+
+            if (options.width)
+            {
+                canvas.width = options.width;
+            }
+
+            if (options.height)
+            {
+                canvas.height = options.height;
             }
 
             if (options.fullScreen)
@@ -1118,6 +1005,16 @@ module.exports = function(options)
         }
     }
 
+    me.removeAllGraphics = function()
+    {
+        for(var i = 0; i < graphics.length; i++)
+        {
+            graphics[i].clear();
+        }
+
+        graphics = [];
+    }
+
     me.getGraphicAt = function(index)
     {
         return graphics[index];
@@ -1144,13 +1041,10 @@ module.exports = function(options)
 
     me.render = function()
     {
-        // console.log("layer.render");
-
-        invalidateGraphics();
-
         for(var i = 0; i < graphics.length; i++)
         {
-            graphics[i].validateNow();
+            graphics[i].clear();
+            graphics[i].render();
         }
     }
 
@@ -1162,34 +1056,6 @@ module.exports = function(options)
         }
     }
 
-    function invalidateGraphics()
-    {
-        for(var i = 0; i < graphics.length; i++)
-        {
-            if(graphics[i].isInvalid)
-            {
-                invalidateIntersectingGraphics(graphics[i].getRect());
-            }
-        }
-    }
-
-    function invalidateIntersectingGraphics(rectangle)
-    {
-        for(var i = 0; i < graphics.length; i++)
-        {
-            if(graphics[i].isIntersecting(rectangle))
-            {
-                // console.log("isIntersecting:", graphics[i].name)
-                graphics[i].invalidate(rectangle);
-            }
-
-            // if(graphics[i].isIntersectingOldPosition(rectangle))
-            // {
-            //     graphics[i].invalidate(rectangle);
-            // }
-        }
-    }
-
     init();
 
     return this;
@@ -1197,12 +1063,12 @@ module.exports = function(options)
 
 },{}],9:[function(require,module,exports){
 
-'use strict';
-
-//Timer class implements the main loop of the application and the callbacs that handle
-//game processing in main loop.
-module.exports = function(options)
+// Timer class implements the main loop of the application and the callbacs that handle
+// application processing in main loop.
+module.exports = function Timer(options)
 {
+    'use strict';
+
     if(Timer.prototype.singletonInstance)
     {
         return Timer.prototype.singletonInstance;
@@ -1363,12 +1229,12 @@ module.exports = function(options)
 
 },{}],10:[function(require,module,exports){
 
-'use strict';
-
 module.exports = Transform;
 
 function Transform(imageData, context)
 {
+    'use strict';
+
     if (!(this instanceof Transform))
     {
         return new Transform(imageData);
@@ -1478,6 +1344,23 @@ Transform.Alpha = function(p)
     return [p.r, p.g, p.b, p.value];
 }
 
+// Weighted alpha blend between two images.
+// Used for drawing images with alpha colors
+// on top of other images
+Transform.WeightedAlphaBlend = function(p)
+{
+    var p2 = Transform.sampleLinear(p.imageData2, p.x, p.y);
+    var p2a = p2[3];
+    var p2aPct = p2a / 255;
+
+    return [
+        getGetColorFromGradient(p.r, p2[0], p2aPct),
+        getGetColorFromGradient(p.g, p2[1], p2aPct),
+        getGetColorFromGradient(p.b, p2[2], p2aPct),
+        p.a > p2a ? p.a : p2a
+    ];
+}
+
 Transform.Rotate = function(p)
 {
     var degree = p.degree;
@@ -1510,6 +1393,18 @@ Transform.Swirl = function(p)
     ty = Math.round(p.y - ty);
 
     return Transform.sampleLinear(p.imageData, tx, ty);
+}
+
+/**
+ * Get color value between two color component at the specified position
+ * @param colorComponent1 color component e.g. red value from 0 to 255
+ * @param colorComponent2 color component e.g. red value from 0 to 255
+ * @param position Position of the color in gradient. Number value from 0 to 1
+ * @return number between 0 to 255
+ */
+function getGetColorFromGradient(colorComponent1, colorComponent2, position)
+{
+    return colorComponent1 - position * (colorComponent1 - colorComponent2);
 }
 
 Transform.descriptions = {
