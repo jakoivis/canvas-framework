@@ -5,8 +5,9 @@ window.Transform = require('./transform.js');
 window.Graphic = require('./graphic.js');
 window.Timer = require('./timer.js');
 window.CanvasUtil = require('./canvasutil.js');
+window.Shape = require('./shape.js');
 
-},{"./canvasutil.js":2,"./graphic.js":3,"./imageLoader/imageLoader.js":4,"./layer.js":8,"./timer.js":9,"./transform.js":10}],2:[function(require,module,exports){
+},{"./canvasutil.js":2,"./graphic.js":3,"./imageLoader/imageLoader.js":4,"./layer.js":8,"./shape.js":9,"./timer.js":10,"./transform.js":11}],2:[function(require,module,exports){
 
 module.exports = new CanvasUtil();
 
@@ -167,7 +168,7 @@ module.exports = function Graphic(options)
 
     me.clear = function()
     {
-        renderContext.clearRect(renderedX-1, renderedY-1, _imageData.width+2, _imageData.height+2);
+        renderContext.clearRect(renderedX-1, renderedY-1, _imageData.width+1, _imageData.height+1);
     }
 
     me.update = function()
@@ -242,7 +243,7 @@ module.exports = function Graphic(options)
     return this;
 }
 
-},{"./transform.js":10}],4:[function(require,module,exports){
+},{"./transform.js":11}],4:[function(require,module,exports){
 
 var Queue = require('./queue');
 var Thread = require('./thread');
@@ -817,11 +818,19 @@ module.exports = function Layer(options)
 
     function init()
     {
-        canvas = document.createElement("canvas");
+        if(options && options.target)
+        {
+            canvas = document.getElementById(options.target);
+        }
+        else
+        {
+            canvas = document.createElement("canvas");
+        }
+
         context = canvas.getContext("2d");
         graphics = [];
 
-        if (options)
+        if(options)
         {
             if (options.enableOnRollEvents)
             {
@@ -846,6 +855,11 @@ module.exports = function Layer(options)
             if (options.fullScreen)
             {
                 me.enableFullScreen();
+            }
+
+            if(options.clickThrough)
+            {
+                canvas.style["pointer-events"] = "none";
             }
 
             if (options.appendToBody)
@@ -1044,6 +1058,10 @@ module.exports = function Layer(options)
         for(var i = 0; i < graphics.length; i++)
         {
             graphics[i].clear();
+        }
+
+        for(var i = 0; i < graphics.length; i++)
+        {
             graphics[i].render();
         }
     }
@@ -1062,6 +1080,228 @@ module.exports = function Layer(options)
 }
 
 },{}],9:[function(require,module,exports){
+
+"use strict";
+
+module.exports = Shape;
+
+function Shape (options)
+{
+    if (!(this instanceof Shape))
+    {
+        return new Shape(options);
+    }
+
+    var me = this;
+    var renderContext;
+
+    var TYPE_FUNCTION = 0;
+    var TYPE_SETTER = 1;
+
+    me.x = 0;
+    me.y = 0;
+
+    var clearRect = {};
+
+    var stack = [];
+
+    function init()
+    {
+        if (options)
+        {
+            me.x = options.x || 0;
+            me.y = options.y || 0;
+        }
+    }
+
+    me.render = function()
+    {
+        var stackItem;
+
+        for(var i = 0; i < stack.length; i++)
+        {
+            stackItem = stack[i];
+
+            if(stackItem.type === TYPE_FUNCTION)
+            {
+                renderContext[stackItem.member].apply(renderContext, stackItem.arguments);
+            }
+            else if (stackItem.type === TYPE_SETTER)
+            {
+                renderContext[stackItem.member] = stackItem.value;
+            }
+        }
+    };
+
+    me.clear = function()
+    {
+        var left = clearRect.left - clearRect.padding;
+        var top = clearRect.top - clearRect.padding;
+        var right = clearRect.right + clearRect.padding;
+        var bottom = clearRect.bottom + clearRect.padding;
+        var width = right - left;
+        var height = bottom - top;
+
+        renderContext.clearRect(left, top, width, height);
+    };
+
+    me.setRenderContext = function(context)
+    {
+        renderContext = context;
+    };
+
+    me.beginPath = function()
+    {
+        storeFunction("beginPath", arguments);
+    };
+
+    me.closePath = function()
+    {
+        storeFunction("closePath", arguments);
+    };
+
+    me.moveTo = function(x, y)
+    {
+        translateXY(arguments);
+        setDimensionsXY(arguments);
+        storeFunction("moveTo", arguments);
+    };
+
+    me.lineTo = function(x, y)
+    {
+        translateXY(arguments);
+        setDimensionsXY(arguments);
+        storeFunction("lineTo", arguments);
+    };
+
+    me.fill = function()
+    {
+        storeFunction("fill", arguments);
+    };
+
+    me.stroke = function()
+    {
+        storeFunction("stroke", arguments);
+    };
+
+    Object.defineProperty(this, "fillStyle", {
+        set: function(value)
+        {
+            storeProperty("fillStyle", value);
+        }
+    });
+
+    Object.defineProperty(this, "strokeStyle", {
+        set: function(value)
+        {
+            storeProperty("strokeStyle", value);
+        }
+    });
+
+    Object.defineProperty(this, "lineCap", {
+        set: function(value)
+        {
+            storeProperty("lineCap", value);
+        }
+    });
+
+    Object.defineProperty(this, "lineWidth", {
+        set: function(value)
+        {
+            storeProperty("lineWidth", value);
+            setDimensionsPadding(value/2);
+        }
+    });
+
+    function storeFunction(name, args)
+    {
+        stack.push({member: name, type: TYPE_FUNCTION, arguments: args});
+    }
+
+    function storeProperty(name, value)
+    {
+        stack.push({member: name, type: TYPE_SETTER, value: value});
+    }
+
+    function translateXY(args)
+    {
+        args[0] += me.x;
+        args[1] += me.y;
+    }
+
+    function translateXYXY(args)
+    {
+        args[0] += me.x;
+        args[1] += me.y;
+        args[2] += me.x;
+        args[3] += me.y;
+    }
+
+    function setDimensionsPadding(padding)
+    {
+        if(padding > clearRect.padding)
+        {
+            clearRect.padding = Math.ceil(padding);
+        }
+    }
+
+    function setDimensionsXY(args)
+    {
+        if(clearRect.hasOwnProperty("left"))
+        {
+            expandDimensions(args[0], args[1]);
+        }
+        else
+        {
+            setInitialDimensions(args[0], args[1]);
+        }
+    }
+
+    function setInitialDimensions(x, y)
+    {
+        clearRect.left = x;
+        clearRect.right = x;
+        clearRect.top = y;
+        clearRect.bottom = y;
+        clearRect.padding = 0;
+    }
+
+    function expandDimensions(x, y)
+    {
+        if(x < clearRect.left)
+        {
+            clearRect.left = x;
+        }
+        else if(x > clearRect.right)
+        {
+            clearRect.right = x+1;
+        }
+
+        if(y < clearRect.top)
+        {
+            clearRect.top = y;
+        }
+        else if(y > clearRect.bottom)
+        {
+            clearRect.bottom = y;
+        }
+    }
+
+    me.box = function(x, y, width, height)
+    {
+        me.beginPath();
+        me.moveTo(x, y);
+        me.lineTo(width, y);
+        me.lineTo(width, height);
+        me.lineTo(x, height);
+        me.closePath();
+    }
+
+    init();
+
+    return this;
+}
+},{}],10:[function(require,module,exports){
 
 // Timer class implements the main loop of the application and the callbacs that handle
 // application processing in main loop.
@@ -1227,7 +1467,7 @@ module.exports = function Timer(options)
     return this;
 }
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 
 module.exports = Transform;
 
@@ -1352,6 +1592,15 @@ Transform.WeightedAlphaBlend = function(p)
     var p2 = Transform.sampleLinear(p.imageData2, p.x, p.y);
     var p2a = p2[3];
     var p2aPct = p2a / 255;
+
+    if(p2a === 255)
+    {
+        return [p2[0], p2[1], p2[2], p2[3]];
+    }
+    else if(p2a === 0)
+    {
+        return [p.r, p.g, p.b, p.a];
+    }
 
     return [
         getGetColorFromGradient(p.r, p2[0], p2aPct),

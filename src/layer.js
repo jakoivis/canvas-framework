@@ -24,11 +24,19 @@ module.exports = function Layer(options)
 
     function init()
     {
-        canvas = document.createElement("canvas");
+        if(options && options.target)
+        {
+            canvas = document.getElementById(options.target);
+        }
+        else
+        {
+            canvas = document.createElement("canvas");
+        }
+
         context = canvas.getContext("2d");
         graphics = [];
 
-        if (options)
+        if(options)
         {
             if (options.enableOnRollEvents)
             {
@@ -53,6 +61,11 @@ module.exports = function Layer(options)
             if (options.fullScreen)
             {
                 me.enableFullScreen();
+            }
+
+            if(options.clickThrough)
+            {
+                canvas.style["pointer-events"] = "none";
             }
 
             if (options.appendToBody)
