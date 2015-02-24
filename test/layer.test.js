@@ -105,6 +105,22 @@ describe("Layer:", function() {
 
 
 
+    describe("options target", function() {
+
+        it("existing canvas is used", function() {
+            var testCanvas = document.createElement("canvas");
+            testCanvas.id = "test";
+            document.body.appendChild(testCanvas);
+
+            var layer = new Layer({target:"test"});
+
+            var isSame = testCanvas === layer.getCanvas();
+            expect(isSame).toEqual(true);
+        });
+    });
+
+
+
     describe("other:", function() {
 
         it("getCanvas returns object of correct type", function() {
