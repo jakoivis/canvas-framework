@@ -209,11 +209,11 @@ function Shape (options)
     {
         me.beginPath();
         me.moveTo(x, y);
-        me.lineTo(width, y);
-        me.lineTo(width, height);
-        me.lineTo(x, height);
+        me.lineTo(width + x, y);
+        me.lineTo(width + x, height + y);
+        me.lineTo(x, height + y);
         me.closePath();
-    }
+    };
 
     init();
 
