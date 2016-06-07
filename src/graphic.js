@@ -72,11 +72,12 @@ module.exports = function Graphic(options)
     {
         saveRenderedPosition();
 
-        var existingImageData = renderContext.getImageData(me.x, me.y, _imageData.width, _imageData.height);
-        var transform = new Transform(existingImageData, renderContext);
+        // var existingImageData = renderContext.getImageData(me.x, me.y, _imageData.width, _imageData.height);
+        // var transform = new Transform(existingImageData, renderContext);
 
-        transform.do(Transform.WeightedAlphaBlend, {imageData2:_imageData});
-        renderContext.putImageData(transform.getImageData(), me.x, me.y);
+        // transform.do(Transform.WeightedAlphaBlend, {imageData2:_imageData});
+        // renderContext.putImageData(transform.getImageData(), me.x, me.y);
+        renderContext.putImageData(_imageData, me.x, me.y);
     }
 
     me.clear = function()
