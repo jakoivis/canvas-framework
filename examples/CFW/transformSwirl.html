@@ -27,7 +27,7 @@
                 var imageData = CanvasUtil.getImageDataFromTag(loaderItem.tag);
 
                 var transform = new Transform(imageData, layer.getCanvas().getContext("2d"));
-                transform.do(Transform.Swirl, {originX:500, originY:250, degree: 2, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
 
                 var graphic = new Graphic({
                     imageData: transform.getImageData(),
@@ -52,7 +52,7 @@
                     .easing(TWEEN.Easing.Cubic.InOut)
                     .onUpdate(function () {
                         transform.reset();
-                        transform.do(Transform.Swirl, {originX:this.x, originY:250, degree: 2, radius: 20});
+                        transform.do(Transform.Swirl, {originX:this.x, originY:250, angle: 0.0349, radius: 20});
                         graphic.setImageData(transform.getImageData());
                     })
                     .start();

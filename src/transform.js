@@ -1,7 +1,7 @@
 
 module.exports = Transform;
 
-function Transform(imageData, context)
+function Transform(imageDataOriginal, context)
 {
     'use strict';
 
@@ -11,34 +11,134 @@ function Transform(imageData, context)
     }
 
     var me = this;
-    var originalImageData = imageData;
-    var modifiedImageData = originalImageData;
+
+    var imageDataModified = imageDataOriginal;
+
+    var pixelCache;
+    var imageCache;
+
+    function init()
+    {
+        me.updateCache();
+    }
+
+    /**
+     * Must be called when image data has been changed.
+     * Called initially
+     */
+    me.updateCache = function()
+    {
+        pixelCache = [];
+
+        var uint8COriginal = imageDataOriginal.data;
+
+        var width = imageDataOriginal.width;
+        var height = imageDataOriginal.height;
+        var dataLength = width * height;
+
+        imageCache = {
+            width: width,
+            numberOfPixels: dataLength
+        }
+
+        for (var i = 0; i < dataLength; i++)
+        {
+            // cache pitch should be 4, same as the number of components in color (rgba)
+
+            // cache pixel position
+            pixelCache.push({
+                x: (i % width),
+                y: Math.floor(i / width),
+                // r: uint8COriginal[i],
+                // g: uint8COriginal[i+1],
+                // b: uint8COriginal[i+2],
+                // a: uint8COriginal[i+3],
+                i: i
+            });
+        }
+    };
 
     me.getImageData = function()
     {
-        return modifiedImageData;
-    }
+        return imageDataModified;
+    };
 
+    /**
+     * Perform transformation by remanipulating original data.
+     * Can be used to appy only one transformation.
+     */
     me.do = function(evaluatePixel, factor)
     {
-        modifiedImageData = transform(evaluatePixel, factor);
+        imageDataModified = transform(imageDataModified, evaluatePixel, factor);
+    };
 
-        return me;
+    /**
+     * Perform transformation by remanipulating data.
+     * Can be used to perform multiple transformations.
+     * Reset must be called manually before executing
+     * new transformations.
+     *
+     * @param      {<type>}  evaluatePixel  The evaluate pixel
+     * @param      {<type>}  factor         The factor
+     */
+    me.doOld = function(evaluatePixel, factor)
+    {
+        imageDataModified = transform2(evaluatePixel, factor);
     }
 
     me.reset = function()
     {
-        modifiedImageData = originalImageData;
+        imageDataModified = imageDataOriginal;
+    };
 
-        return me;
-    }
-
-    function transform(evaluatePixel, userParameters)
+    function transform(imageDataSrc, evaluatePixel, userParameters)
     {
-        var imageData = modifiedImageData;
+        // var bufferSrc = new ArrayBuffer(imageDataSrc.data.length);
+        var bufferSrc = imageDataSrc.data.buffer;
+        var bufferDst = new ArrayBuffer(imageDataSrc.data.length);
+
+        var uint32Src = new Uint32Array(bufferSrc);
+        var uint32Dst = new Uint32Array(bufferDst);
+
+        var uint8CSrc = new Uint8ClampedArray(bufferSrc);
+        var uint8CDst = new Uint8ClampedArray(bufferDst);
+
+        var imageDataDst = context.createImageData(imageDataSrc);
+
+        // var uint8cData = imageDataSrc.data;
+        // var uint8cDataNew = imageDataNew.data;
+
+        var result = [];
+        var length = imageCache.numberOfPixels;
+        var parameters = {};
+
+        userParameters = userParameters || {};
+
+        for(var property in userParameters)
+        {
+            parameters[property] = userParameters[property];
+        }
+
+        // console.time("transform2");
+        for (var i = 0; i < length; i++)
+        {
+            evaluatePixel(uint32Src, uint32Dst, parameters, pixelCache[i], imageCache);
+        }
+        // console.timeEnd("transform2");
+
+        imageDataDst.data.set(uint8CDst);
+
+        return imageDataDst;
+    };
+
+    function transform2(evaluatePixel, userParameters)
+    {
+        var imageData = imageDataModified;
+        var imageDataNew = context.createImageData(imageData);
+
         var imageDataPixels = imageData.data;
-        var newImageData = context.createImageData(imageData);
-        var newImageDataPixels = newImageData.data;
+        var newImageDataPixels = imageDataNew.data;
+
         var result = [];
         var length = newImageDataPixels.length;
         var parameters = {
@@ -69,8 +169,27 @@ function Transform(imageData, context)
             newImageDataPixels[i+3] = result[3]; // A
         }
 
-        return newImageData;
+        return imageDataNew;
     };
+
+    init();
+}
+
+function avg(sum, numberOfSamples)
+{
+    return sum / numberOfSamples;
+}
+
+function sum(values)
+{
+    var total = 0;
+
+    for(var i = 0; i < values.length; i++)
+    {
+        total += values[i];
+    }
+
+    return total;
 }
 
 Transform.sampleLinear = function(imageData, x, y)
@@ -151,7 +270,42 @@ Transform.Rotate = function(p)
     return Transform.sampleLinear(p.imageData, tx, ty);
 }
 
-Transform.Swirl = function(p)
+Transform.Swirl = function(src32, dst32, p, pixelCache, imageCache)
+{
+    var originX = p.originX;
+    var originY = p.originY;
+    var radius = p.radius;
+
+    // var distance = Transform.distance(pixelCache.x, pixelCache.y, originX, originY);
+    var distanceX = pixelCache.x-originX;
+    var distanceY = pixelCache.y-originY;
+    var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
+
+    // radian is the greater the farther the pixel is from origin
+    var radian = p.angle * distance;
+    var tx = originX + Math.cos(radian)*radius;
+    var ty = originY - Math.sin(radian)*radius;
+
+    tx -= originX;
+    ty -= originY;
+
+    // tx = pixelCache.x - Math.round(tx);
+    // ty = pixelCache.y - Math.round(ty);
+    tx = (pixelCache.x - tx) | 0;
+    ty = (pixelCache.y - ty) | 0;
+
+    if(tx < 0 || ty < 0) {
+        return;
+    }
+
+    // return Transform.sampleLinear(p.imageData, tx, ty);
+    var srcIndex = ty * imageCache.width + tx;
+    var dstIndex = pixelCache.i;
+
+    dst32[dstIndex]   = src32[srcIndex];
+}
+
+Transform.SwirlOld = function(p)
 {
     var originX = p.originX;
     var originY = p.originY;
@@ -227,12 +381,12 @@ Transform.descriptions = {
                 description: "Center position of the transform on Y axis."
             },
             {
-                name: "degree",
+                name: "angle",
                 min: Number.MIN_VALUE,
                 max: Number.MAX_VALUE,
-                default: 2,
+                default: 0.0349,
                 type: "number",
-                description: "Degree of the twist."
+                description: "Angle of the twist in radians."
             },
             {
                 name: "radius",

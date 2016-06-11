@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>canvas fw: Graphic click test</title>
+    <script src="../../build/canvas-framework.js"></script>
+</head>
+
+<body>
+
+    <script>
+        (function(){
+
+            var layer = new Layer({
+                appendToBody: true,
+                fullScreen: true
+            });
+
+            var loader = new ImageLoader({
+                images:[{src: '../../sampleImages/IMG_5803_1200.jpg'}],
+                onComplete: onComplete,
+            });
+
+            var graphic;
+
+            function onComplete()
+            {
+                var loaderItem = loader.getItemAt(0);
+                var imageData = CanvasUtil.getImageDataFromTag(loaderItem.tag);
+
+                graphic = new Graphic({
+                    imageData: imageData,
+                    x: 10,
+                    y: 10
+                });
+
+                layer.addGraphic(graphic);
+
+                render(imageData);
+            }
+
+            function render(imageData)
+            {
+                // transform.reset();
+
+                var transform = new Transform(imageData, layer.getCanvas().getContext("2d"));
+                console.time("transform");
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+
+
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                // transform.doOld(Transform.SwirlOld, {originX:500, originY:250, degree: 2, radius: 20});
+                console.timeEnd("transform");
+
+                console.time("setImageData");
+                graphic.setImageData(transform.getImageData());
+                console.timeEnd("setImageData");
+
+                console.time("render");
+                layer.render();
+                console.timeEnd("render");
+            }
+
+        })();
+
+
+    </script>
+</body>
+</html>

@@ -100,8 +100,8 @@ gulp.task('test', ['startSingleRunServer'], function() {
         .bundle()
         .pipe(source('testbundle.js'))
         .pipe(buffer())
-        .pipe(gulp.dest(coverageFolder))
-        .pipe(karma(karmaOptions))
+        // .pipe(gulp.dest(coverageFolder))
+        // .pipe(karma(karmaOptions))
         .on('end', function() {
             serverStop();
         })
