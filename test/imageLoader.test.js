@@ -1,4 +1,4 @@
-describe("ImageLoader", function() {
+xdescribe("ImageLoader", function() {
 
     function getImages_stringArray() {
         return [

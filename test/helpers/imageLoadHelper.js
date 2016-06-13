@@ -7,7 +7,7 @@ it("...", function(done) {
 });
 */
 
-window.ImageLoadHelper = {
+var ImageLoadHelper = {
 
     loader: null,
 
@@ -32,3 +32,5 @@ window.ImageLoadHelper = {
         });
     }
 };
+
+module.exports = ImageLoadHelper;

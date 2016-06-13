@@ -1,4 +1,4 @@
-window.ImageTester = {
+var ImageTester = {
 
     COLOR32_CORNER: 4294967040, // abgr FFFFFF00
     COLOR32_R: 4278190335, // abgr FF0000FF
@@ -126,3 +126,5 @@ window.ImageTester = {
     },
 
 };
+
+module.exports = ImageTester;

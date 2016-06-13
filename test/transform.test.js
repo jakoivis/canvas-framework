@@ -1,6 +1,8 @@
+var ImageTester = require("./helpers/imageTester.js");
+
 describe("Transform:", function() {
 
-    ClassTester.classTest(Transform);
+    // ClassTester.classTest(Transform);
 
     var canvas = document.createElement("canvas");
     var context = canvas.getContext("2d");
@@ -16,7 +18,7 @@ describe("Transform:", function() {
     afterEach(function() {
     });
 
-    describe("Class", function() {
+    xdescribe("Class", function() {
 
         it("Pixel evaluation functions are shared between instances", function() {
             var transform2 = new Transform(testImage, context);
@@ -25,7 +27,7 @@ describe("Transform:", function() {
         });
     });
 
-    describe("transforms", function() {
+    xdescribe("transforms", function() {
 
         it("Invert", function() {
             transform.do(Transform.Invert);
@@ -42,7 +44,7 @@ describe("Transform:", function() {
         });
     });
 
-    describe("chaining", function() {
+    xdescribe("chaining", function() {
 
         it("do returns instance of Transform", function() {
             // var x = transform.do(Transform.GrayScale);
@@ -53,7 +55,7 @@ describe("Transform:", function() {
         });
     });
 
-    describe("", function() {
+    xdescribe("", function() {
 
         it("sampleLinear", function() {
             var pixel = Transform.sampleLinear(testImage, 0, 0);
@@ -70,7 +72,7 @@ describe("Transform:", function() {
         });
     });
 
-    describe("pixel evaluation function", function() {
+    xdescribe("pixel evaluation function", function() {
 
         it("Pixel evaluation is performed correct number of times", function() {
 
@@ -126,7 +128,7 @@ describe("Transform:", function() {
         });
     });
 
-    describe("resetting and cumulative effects", function() {
+    xdescribe("resetting and cumulative effects", function() {
 
         it("first transform is done against original image", function() {
 

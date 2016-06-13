@@ -1,4 +1,6 @@
-describe("Layer:", function() {
+var ClassTester = require("./helpers/classTester.js");
+
+xdescribe("Layer:", function() {
 
     ClassTester.classTest(Layer);
 

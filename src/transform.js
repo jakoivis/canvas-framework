@@ -1,4 +1,6 @@
 
+// var ApproximationCache = require('./approximationCache.js');
+
 module.exports = Transform;
 
 function Transform(imageDataOriginal, context)
@@ -15,7 +17,6 @@ function Transform(imageDataOriginal, context)
     var imageDataModified = imageDataOriginal;
 
     var pixelCache;
-    var imageCache;
 
     function init()
     {
@@ -30,32 +31,50 @@ function Transform(imageDataOriginal, context)
     {
         pixelCache = [];
 
-        var uint8COriginal = imageDataOriginal.data;
-
         var width = imageDataOriginal.width;
         var height = imageDataOriginal.height;
         var dataLength = width * height;
-
-        imageCache = {
-            width: width,
-            numberOfPixels: dataLength
-        }
+        var x;
+        var y;
 
         for (var i = 0; i < dataLength; i++)
         {
-            // cache pitch should be 4, same as the number of components in color (rgba)
+            x = (i % width);
+            y = Math.floor(i / width);
 
-            // cache pixel position
             pixelCache.push({
-                x: (i % width),
-                y: Math.floor(i / width),
-                // r: uint8COriginal[i],
-                // g: uint8COriginal[i+1],
-                // b: uint8COriginal[i+2],
-                // a: uint8COriginal[i+3],
-                i: i
+                approximate: me.isApproximated(width, height, x, y),
+                x: x,
+                y: y,
+                i: i,
+                tx: 0, // translated positions. These are evaluated
+                ty: 0 // in evaluatePixel function if needed
             });
         }
+    };
+
+    me.getApproximateCacheIndex1 = function(width, height, x, y, index)
+    {
+        // if(x )
+    };
+
+    me.isApproximated = function(width, height, x, y)
+    {
+        // points marked with x will be calculated
+        // points marked with - will be approximated
+        // last should be calculated on right and bottom
+        //   0 1 2 3 4 5
+        // 0 x - x - x x
+        // 1 - - - - - x
+        // 2 x - x - x x
+        // 3 - - - - - x
+        // 4 x - x - x x
+        // 5 x x x x x x
+
+        return ! (
+            (y % 4 === 0 && x % 4 === 0) ||
+            (x === width-1 || y === height-1)
+        );
     };
 
     me.getImageData = function()
@@ -67,9 +86,9 @@ function Transform(imageDataOriginal, context)
      * Perform transformation by remanipulating original data.
      * Can be used to appy only one transformation.
      */
-    me.do = function(evaluatePixel, factor)
+    me.do = function(evaluatePixel, parameters)
     {
-        imageDataModified = transform(imageDataModified, evaluatePixel, factor);
+        imageDataModified = transform(imageDataModified, evaluatePixel, parameters);
     };
 
     /**
@@ -78,22 +97,21 @@ function Transform(imageDataOriginal, context)
      * Reset must be called manually before executing
      * new transformations.
      *
-     * @param      {<type>}  evaluatePixel  The evaluate pixel
-     * @param      {<type>}  factor         The factor
+     * @param      {function}  evaluatePixel  The evaluate pixel
+     * @param      {object}  parameters
      */
-    me.doOld = function(evaluatePixel, factor)
+    me.doOld = function(evaluatePixel, parameters)
     {
-        imageDataModified = transform2(evaluatePixel, factor);
-    }
+        imageDataModified = transform2(evaluatePixel, parameters);
+    };
 
     me.reset = function()
     {
         imageDataModified = imageDataOriginal;
     };
 
-    function transform(imageDataSrc, evaluatePixel, userParameters)
+    function transform(imageDataSrc, evaluatePixel, parameters)
     {
-        // var bufferSrc = new ArrayBuffer(imageDataSrc.data.length);
         var bufferSrc = imageDataSrc.data.buffer;
         var bufferDst = new ArrayBuffer(imageDataSrc.data.length);
 
@@ -105,31 +123,21 @@ function Transform(imageDataOriginal, context)
 
         var imageDataDst = context.createImageData(imageDataSrc);
 
-        // var uint8cData = imageDataSrc.data;
-        // var uint8cDataNew = imageDataNew.data;
-
+        var length = uint32Src.length;
+        var srcWidth = imageDataSrc.width;
         var result = [];
-        var length = imageCache.numberOfPixels;
-        var parameters = {};
-
-        userParameters = userParameters || {};
-
-        for(var property in userParameters)
-        {
-            parameters[property] = userParameters[property];
-        }
 
         // console.time("transform2");
-        for (var i = 0; i < length; i++)
+        for (var srcIndex = 0; srcIndex < length; srcIndex++)
         {
-            evaluatePixel(uint32Src, uint32Dst, parameters, pixelCache[i], imageCache);
+            evaluatePixel(srcIndex, uint32Src, uint32Dst, parameters, pixelCache, srcWidth);
         }
         // console.timeEnd("transform2");
 
         imageDataDst.data.set(uint8CDst);
 
         return imageDataDst;
-    };
+    }
 
     function transform2(evaluatePixel, userParameters)
     {
@@ -170,26 +178,9 @@ function Transform(imageDataOriginal, context)
         }
 
         return imageDataNew;
-    };
-
-    init();
-}
-
-function avg(sum, numberOfSamples)
-{
-    return sum / numberOfSamples;
-}
-
-function sum(values)
-{
-    var total = 0;
-
-    for(var i = 0; i < values.length; i++)
-    {
-        total += values[i];
     }
 
-    return total;
+    init();
 }
 
 Transform.sampleLinear = function(imageData, x, y)
@@ -210,12 +201,12 @@ Transform.distance = function(x1, y1, x2, y2)
     var distanceX = x1-x2;
     var distanceY = y1-y2;
     return Math.sqrt(distanceX*distanceX + distanceY*distanceY);
-}
+};
 
 Transform.degreesToRadians = function(degree)
 {
     return (degree/180.0)*3.14159265;
-}
+};
 
 Transform.Invert = function(p)
 {
@@ -231,7 +222,7 @@ Transform.GrayScale = function(p)
 Transform.Alpha = function(p)
 {
     return [p.r, p.g, p.b, p.value];
-}
+};
 
 // Weighted alpha blend between two images.
 // Used for drawing images with alpha colors
@@ -257,7 +248,7 @@ Transform.WeightedAlphaBlend = function(p)
         getGetColorFromGradient(p.b, p2[2], p2aPct),
         p.a > p2a ? p.a : p2a
     ];
-}
+};
 
 Transform.Rotate = function(p)
 {
@@ -268,42 +259,57 @@ Transform.Rotate = function(p)
     var ty = Math.round(p.x*Math.sin(radian) + p.y*Math.cos(radian));
 
     return Transform.sampleLinear(p.imageData, tx, ty);
-}
+};
 
-Transform.Swirl = function(src32, dst32, p, pixelCache, imageCache)
+Transform.Swirl = function(srcIndex, src32, dst32, p, pixelCache, srcWidth)
 {
+    var cache = pixelCache[srcIndex];
+
+    if(cache.approximate)
+    {
+        Transform.SwirlApproximation(srcIndex, src32, dst32, p, pixelCache, srcWidth);
+        return;
+    }
+
     var originX = p.originX;
     var originY = p.originY;
     var radius = p.radius;
 
-    // var distance = Transform.distance(pixelCache.x, pixelCache.y, originX, originY);
-    var distanceX = pixelCache.x-originX;
-    var distanceY = pixelCache.y-originY;
+    // var distance = Transform.distance(cache.x, cache.y, originX, originY);
+    var distanceX = cache.x-originX;
+    var distanceY = cache.y-originY;
     var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
 
     // radian is the greater the farther the pixel is from origin
     var radian = p.angle * distance;
-    var tx = originX + Math.cos(radian)*radius;
-    var ty = originY - Math.sin(radian)*radius;
+    // var tx = originX + Math.cos(radian)*radius;
+    // var ty = originY - Math.sin(radian)*radius;
+    var tx = Math.cos(radian)*radius;
+    var ty = Math.sin(radian)*radius;
 
-    tx -= originX;
-    ty -= originY;
+    // tx -= originX;
+    // ty -= originY;
 
-    // tx = pixelCache.x - Math.round(tx);
-    // ty = pixelCache.y - Math.round(ty);
-    tx = (pixelCache.x - tx) | 0;
-    ty = (pixelCache.y - ty) | 0;
+    // tx = cache.x - Math.round(tx);
+    // ty = cache.y - Math.round(ty);
+    tx = (cache.x + tx) | 0;
+    ty = (cache.y + ty) | 0;
+
 
     if(tx < 0 || ty < 0) {
         return;
     }
 
     // return Transform.sampleLinear(p.imageData, tx, ty);
-    var srcIndex = ty * imageCache.width + tx;
-    var dstIndex = pixelCache.i;
+    dst32[srcIndex] = src32[ty * srcWidth + tx];
+    cache.tx = tx;
+    cache.ty = ty;
+};
 
-    dst32[dstIndex]   = src32[srcIndex];
-}
+Transform.SwirlApproximation = function(srcIndex, src32, dst32, p, pixelCache, srcWidth)
+{
+
+};
 
 Transform.SwirlOld = function(p)
 {
@@ -326,7 +332,7 @@ Transform.SwirlOld = function(p)
     ty = Math.round(p.y - ty);
 
     return Transform.sampleLinear(p.imageData, tx, ty);
-}
+};
 
 /**
  * Get color value between two color component at the specified position

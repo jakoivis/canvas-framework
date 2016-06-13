@@ -25,9 +25,9 @@ module.exports = function Graphic(options)
     me.x = 0;
     me.y = 0;
 
-    me.onRollOver;
-    me.onRollOut;
-    me.onClick;
+    me.onRollOver = null;
+    me.onRollOut = null;
+    me.onClick = null;
 
     var update = dummyFunction;
 

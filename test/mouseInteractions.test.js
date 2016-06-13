@@ -1,4 +1,4 @@
-describe("Mouse interactions", function() {
+xdescribe("Mouse interactions", function() {
 
     var graphic1;
     var graphic2;

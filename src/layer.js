@@ -76,6 +76,7 @@ module.exports = function Layer(options)
     }
 
     me.getCanvas = function() { return canvas; }
+    me.getContext = function() { return context; }
 
     me.enableOnRollEvents = function()
     {
@@ -261,12 +262,14 @@ module.exports = function Layer(options)
 
     me.render = function()
     {
-        for(var i = 0; i < graphics.length; i++)
+        var i;
+
+        for(i = 0; i < graphics.length; i++)
         {
             graphics[i].clear();
         }
 
-        for(var i = 0; i < graphics.length; i++)
+        for(i = 0; i < graphics.length; i++)
         {
             graphics[i].render();
         }

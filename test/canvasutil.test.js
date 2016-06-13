@@ -1,4 +1,6 @@
-describe("CanvasUtil:", function() {
+var ImageLoadHelper = require("./helpers/imageLoadHelper.js");
+
+xdescribe("CanvasUtil:", function() {
 
     beforeEach(function() {
     });

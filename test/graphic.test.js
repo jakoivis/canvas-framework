@@ -1,10 +1,11 @@
-describe("Graphic:", function() {
+var ClassTester = require("./helpers/classTester.js");
+var ImageTester = require("./helpers/imageTester.js");
+
+xdescribe("Graphic:", function() {
 
     ClassTester.classTest(Graphic);
 
     var imageData = ImageTester.createTestImage();
-
-
 
     describe("options", function() {
 
