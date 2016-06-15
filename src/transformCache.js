@@ -18,11 +18,12 @@ function TransformCache(imageData, level)
 
     var me = this;
 
-    var cache;
-    Object.defineProperty(this, "cache", {
+    var data;
+
+    Object.defineProperty(this, "data", {
         get: function()
         {
-            return cache;
+            return data;
         }
     });
 
@@ -30,31 +31,64 @@ function TransformCache(imageData, level)
     {
         level = level || 2;
         level = level < 1 ? 1 : level;
+
+        me.createCache();
     }
 
     me.createCache = function()
     {
-        cache = [];
+        data = [];
 
         var width = imageData.width;
         var height = imageData.height;
         var dataLength = width * height;
+        var lineLastIndex;
+        var colLastIndex;
         var x;
         var y;
-        var p1;
-        var p2;
+        var pixel1;
+        var pixel2;
+        var approximated;
 
         for (var i = 0; i < dataLength; i++)
         {
             x = (i % width);
             y = Math.floor(i / width);
 
-            p1 = i - (x % level);
-            p2 = i + (level - (x % level));
-            console.log(x, p1, p2);
+            approximated = me.isApproximated(width, height, x, y);
+            lineLastIndex = y * width + width-1;
+            colLastIndex = (height-1) * width + x;
 
-            cache.push({
-                approximate: me.isApproximated(width, height, x, y),
+            if(y % level === 0 || y === height-1)
+            {
+                pixel1 = i - (x % level);
+                pixel2 = i + (level - (x % level));
+                pixel2 = pixel2 > lineLastIndex ? lineLastIndex : pixel2;
+                // metohod: point on line calculation
+                // arg: position between the two points 1 third or something
+            }
+            else if(x % level === 0 || x === width-1)
+            {
+                pixel1 = i - (y % level) * width;
+                pixel2 = i + (level - (y % level)) * width;
+                pixel2 = pixel2 > colLastIndex ? colLastIndex : pixel2;
+                // metohod: point on line calculation
+                // arg: position between the two points 1 third or something
+            }
+            else
+            {
+                pixel1 = undefined;
+                pixel2 = undefined;
+                // approximated = true;
+                // method: take x from pixel1 and y from pixel2
+            }
+
+            // console.log(x, y, pixel1, pixel2, approximated);
+
+            data.push({
+                approximate: approximated,
+                ai1: pixel1,
+                ai2: pixel2,
                 x: x,
                 y: y,
                 i: i,
@@ -62,11 +96,6 @@ function TransformCache(imageData, level)
                 ty: 0 // in evaluatePixel function if needed
             });
         }
-    };
-
-    me.getApproximateCacheIndex1 = function(width, height, x, y, index)
-    {
-        // if(x )
     };
 
     me.isApproximated = function(width, height, x, y)

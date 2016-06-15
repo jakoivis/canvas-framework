@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>canvas fw: Graphic click test</title>
+    <script src="../canvas-framework.js"></script>
+</head>
+
+<body>
+
+    <script>
+        (function(){
+
+            "use strict";
+
+            var layer = new Layer({
+                appendToBody: true,
+                fullScreen: true
+            });
+
+            var box1 = new Shape({x: 100, y: 100});
+            var box2 = new Shape({x: 100, y: 100});
+            var box3 = new Shape({x: 100, y: 100});
+            box1.box(0, 0, 100, 100);
+            box2.box(-7.5, -7.5, 107.5, 107.5);
+            box3.box(-10, -10, 110, 110);
+            box1.fillStyle = "#FF0000";
+            box1.fill();
+            box2.fillStyle = "#00FF00";
+            box2.fill();
+            box3.fillStyle = "#000000";
+            box3.fill();
+
+            var line = new Shape({x: 100, y: 100});
+
+            line.beginPath();
+            line.moveTo(0,0);
+            line.lineWidth = 15;
+
+            line.lineCap = "round";
+            line.lineTo(100, 100);
+            line.strokeStyle = "#777777";
+            line.stroke();
+
+            layer.addGraphic(box3);
+            layer.addGraphic(box2);
+            layer.addGraphic(line);
+            layer.addGraphic(box1);
+
+            layer.render();
+            // box1.clear();
+            // line.clear();
+            // layer.render();
+
+        })();
+
+
+    </script>
+</body>
+</html>

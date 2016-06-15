@@ -1,7 +1,3 @@
-var chai = require('chai');
-
-chai.should();
-
 describe("TransformCache:", function() {
 
     beforeEach(function() {
@@ -12,7 +8,7 @@ describe("TransformCache:", function() {
 
     describe("", function() {
 
-        it("Should", function() {
+        xit("Should", function() {
         });
     });
 

@@ -1,5 +1,5 @@
 
-// var ApproximationCache = require('./approximationCache.js');
+var TransformCache = require('./transformCache.js');
 
 module.exports = Transform;
 
@@ -20,62 +20,63 @@ function Transform(imageDataOriginal, context)
 
     function init()
     {
-        me.updateCache();
+        pixelCache = new TransformCache(imageDataOriginal, 4);
+        // me.updateCache();
     }
 
     /**
      * Must be called when image data has been changed.
      * Called initially
      */
-    me.updateCache = function()
-    {
-        pixelCache = [];
+    // me.updateCache = function()
+    // {
+    //     pixelCache = [];
 
-        var width = imageDataOriginal.width;
-        var height = imageDataOriginal.height;
-        var dataLength = width * height;
-        var x;
-        var y;
+    //     var width = imageDataOriginal.width;
+    //     var height = imageDataOriginal.height;
+    //     var dataLength = width * height;
+    //     var x;
+    //     var y;
 
-        for (var i = 0; i < dataLength; i++)
-        {
-            x = (i % width);
-            y = Math.floor(i / width);
+    //     for (var i = 0; i < dataLength; i++)
+    //     {
+    //         x = (i % width);
+    //         y = Math.floor(i / width);
 
-            pixelCache.push({
-                approximate: me.isApproximated(width, height, x, y),
-                x: x,
-                y: y,
-                i: i,
-                tx: 0, // translated positions. These are evaluated
-                ty: 0 // in evaluatePixel function if needed
-            });
-        }
-    };
+    //         pixelCache.push({
+    //             approximate: me.isApproximated(width, height, x, y),
+    //             x: x,
+    //             y: y,
+    //             i: i,
+    //             tx: 0, // translated positions. These are evaluated
+    //             ty: 0 // in evaluatePixel function if needed
+    //         });
+    //     }
+    // };
 
-    me.getApproximateCacheIndex1 = function(width, height, x, y, index)
-    {
-        // if(x )
-    };
+    // me.getApproximateCacheIndex1 = function(width, height, x, y, index)
+    // {
+    //     // if(x )
+    // };
 
-    me.isApproximated = function(width, height, x, y)
-    {
-        // points marked with x will be calculated
-        // points marked with - will be approximated
-        // last should be calculated on right and bottom
-        //   0 1 2 3 4 5
-        // 0 x - x - x x
-        // 1 - - - - - x
-        // 2 x - x - x x
-        // 3 - - - - - x
-        // 4 x - x - x x
-        // 5 x x x x x x
+    // me.isApproximated = function(width, height, x, y)
+    // {
+    //     // points marked with x will be calculated
+    //     // points marked with - will be approximated
+    //     // last should be calculated on right and bottom
+    //     //   0 1 2 3 4 5
+    //     // 0 x - x - x x
+    //     // 1 - - - - - x
+    //     // 2 x - x - x x
+    //     // 3 - - - - - x
+    //     // 4 x - x - x x
+    //     // 5 x x x x x x
 
-        return ! (
-            (y % 4 === 0 && x % 4 === 0) ||
-            (x === width-1 || y === height-1)
-        );
-    };
+    //     return ! (
+    //         (y % 4 === 0 && x % 4 === 0) ||
+    //         (x === width-1 || y === height-1)
+    //     );
+    // };
 
     me.getImageData = function()
     {
@@ -130,7 +131,7 @@ function Transform(imageDataOriginal, context)
         // console.time("transform2");
         for (var srcIndex = 0; srcIndex < length; srcIndex++)
         {
-            evaluatePixel(srcIndex, uint32Src, uint32Dst, parameters, pixelCache, srcWidth);
+            evaluatePixel(srcIndex, uint32Src, uint32Dst, parameters, pixelCache.data, srcWidth);
         }
         // console.timeEnd("transform2");
 

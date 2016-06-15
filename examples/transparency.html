@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>canvas fw: Graphic click test</title>
+    <script src="../canvas-framework.js"></script>
+</head>
+
+<body style="background-color: #AAAAAA;">
+
+    <div class="output"></div>
+
+    <script>
+        (function(){
+
+            var layer = new Layer({
+                appendToBody: true,
+                fullScreen: true
+            });
+
+            var loader = new ImageLoader({
+                images:[
+                    {src: 'images/image_01.png', name: 'alphaOneLeft', y:50, x:100},
+                    {src: 'images/image_02.png', name: 'alphaOnRight', y:10, x:10},
+                    {src: 'images/image_03.png', name: 'opaque', y:100, x:80}
+                ],
+                onComplete: onComplete,
+            });
+
+            function onComplete()
+            {
+                addGraphic(loader.getItemAt(2));
+                addGraphic(loader.getItemAt(0));
+                addGraphic(loader.getItemAt(1));
+            }
+
+            function addGraphic(loaderItem)
+            {
+                var graphic = new Graphic({
+                    imageData: CanvasUtil.getImageDataFromTag(loaderItem.tag),
+                    x: loaderItem.x,
+                    y: loaderItem.y,
+                });
+
+                graphic.name = loaderItem.name;
+
+                layer.addGraphic(graphic);
+
+                graphic.render();
+            }
+
+        })();
+
+
+    </script>
+</body>
+</html>
