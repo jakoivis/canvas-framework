@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>canvas fw: Graphic click test</title>
+    <script src="../canvas-framework.js"></script>
+</head>
+
+<body>
+
+    <script>
+        (function(){
+            function swirl(srcIndex, src32, dst32, p, width, cache)
+            {
+                console.time("init");
+                var pixelCache = cache[srcIndex];
+                var originX = p.originX;
+                var originY = p.originY;
+                var radius = p.radius;
+                console.timeEnd("init");
+
+                console.time("distance");
+                var distanceX = pixelCache.x-originX;
+                var distanceY = pixelCache.y-originY;
+                var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
+                console.timeEnd("distance");
+
+                console.time("radian");
+                var radian = p.angle * distance;
+                console.timeEnd("radian");
+
+                console.time("swirl");
+                var tx = (pixelCache.x + Math.cos(radian) * radius) | 0;
+                var ty = (pixelCache.y + Math.sin(radian) * radius) | 0;
+                console.timeEnd("swirl");
+
+                console.time("if");
+                if(tx < 0 || tx > width-1) {
+                    return;
+                }
+                console.timeEnd("if");
+
+                console.time("copy");
+                dst32[srcIndex] = src32[ty * width + tx];
+                console.timeEnd("copy");
+            };
+
+
+
+            var src = [];
+            for(var i=0; i<90000; ++i) src.push(0);
+            var dst = [];
+            for(var i=0; i<90000; ++i) dst.push(0);
+            var cache = [];
+            for(var i=0; i<90000; ++i) cache.push({
+                x: 0, y: 0
+            });
+
+            var p = {
+                originX:0,
+                originY:0,
+                radius:10,
+                angle:0.035
+            };
+
+
+            swirl(0, src, dst, p, 500, cache);
+        })();
+
+
+    </script>
+</body>
+</html>

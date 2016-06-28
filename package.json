@@ -29,6 +29,7 @@
     "karma-firefox-launcher": "^1.0.0",
     "karma-mocha": "^1.0.1",
     "karma-phantomjs-launcher": "^1.0.0",
+    "karma-spec-reporter": "0.0.26",
     "live-reload": "^1.1.0",
     "mocha": "^2.5.3",
     "npm-build-tools": "^2.2.5",
@@ -48,14 +49,18 @@
     "copy:examples": "n-copy --source examples --destination dist/examples \"**/*\"",
     "build:js": "browserify --debug src/index.js > dist/canvas-framework.js",
     "build:jsrelease": "browserify -g uglifyify src/index.js > dist/canvas-framework.min.js",
-    "prebuild": "npm run clean && npm run test",
-    "build": "npm run copy:examples && npm run copy:html && npm run copy:assets && npm run build:jsrelease && npm run build:js",
+    "prebuild": "npm run clean",
+    "build": "npm run copy:examples && npm run copy:html && npm run copy:assets && npm run build:jsrelease && npm run build:js && npm run test",
     "watch:js": "watch \"npm run build:js\" src",
     "watch:html": "watch \"npm run copy:html\" src",
     "watch:examples": "watch \"npm run copy:examples\" examples",
     "live-reload": "live-reload --port 8081 dist",
     "server": "http-server -p 8080 dist",
     "watch": "parallelshell \"npm run live-reload -s\" \"npm run server -s\" \"npm run watch:examples -s\" \"npm run watch:js -s\" \"npm run watch:html -s\" \"karma start karma.conf.js\"",
+    "coverage": "karma start karma.conf.js --reporter=progress,coverage",
     "test": "karma start karma.conf.js --singleRun"
+  },
+  "dependencies": {
+    "smath": "^1.0.0"
   }
 }

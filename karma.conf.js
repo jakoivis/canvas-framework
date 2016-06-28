@@ -4,6 +4,7 @@
 var istanbul = require('browserify-istanbul');
 
 module.exports = function(config) {
+
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -38,7 +39,16 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress', 'coverage'],
+    reporters: ['spec'],
+
+    specReporter: {
+        // maxLogLines: 5,         // limit number of lines logged per test
+        suppressErrorSummary: false,
+        suppressFailed: false,
+        suppressPassed: false,
+        suppressSkipped: false,
+        showSpecTiming: true
+    },
 
 
     // https://www.npmjs.com/package/karma-coverage
@@ -91,13 +101,7 @@ module.exports = function(config) {
 
     browserify: {
         watch: true,
-        debug: true,
-        transform: [
-            'brfs',
-            istanbul({
-                ignore: ['**/node_modules/**']
-            })
-        ]
+        debug: true
     },
 
 
@@ -107,5 +111,20 @@ module.exports = function(config) {
     proxies: {
         '/assets/': 'http://localhost:8080/assets/'
     }
-  })
+  });
+
+  if(config.reporters.indexOf("coverage") > -1) {
+    config.set({
+        browserify: {
+            watch: true,
+            debug: true,
+            transform: [
+                'brfs',
+                istanbul({
+                    ignore: ['**/node_modules/**']
+                })
+            ]
+        }
+    });
+  }
 }
