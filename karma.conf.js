@@ -46,8 +46,8 @@ module.exports = function(config) {
         suppressErrorSummary: false,
         suppressFailed: false,
         suppressPassed: false,
-        suppressSkipped: false,
-        showSpecTiming: true
+        suppressSkipped: true,
+        showSpecTiming: false
     },
 
 
@@ -109,7 +109,7 @@ module.exports = function(config) {
     // by referencing to e.g. assets/sample1_tb.png in test code
     // it will be loaded from http://localhost:8080/assets/sample1_tb.png
     proxies: {
-        '/assets/': 'http://localhost:8080/assets/'
+        '/assets/': 'http://localhost:8080/examples/images/'
     }
   });
 

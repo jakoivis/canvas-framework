@@ -1,26 +1,42 @@
-var ImageLoadHelper = require("./helpers/imageLoadHelper.js");
+var ImageDataUtil = require("./utils/ImageDataUtil.js");
 
-xdescribe("CanvasUtil:", function() {
+describe("CanvasUtil", function() {
 
-    beforeEach(function() {
+    describe("getImageData", function() {
+
+        it("should return imageData", function(done) {
+
+            ImageDataUtil.getImageTag()
+                .then(function(imageTag) {
+
+                    var imageData = CanvasUtil.getImageData(imageTag);
+
+                    imageData.width.should.equal(10);
+                    imageData.height.should.equal(10);
+                    imageData.data.length.should.equal(10 * 10 * 4);
+
+                    done();
+                });
+        });
     });
 
-    afterEach(function() {
-    });
+    describe("createImageData", function() {
 
-    describe("getImageDataFromTag returned object", function() {
+        it("should return imageData", function() {
 
-        it("has properties", function(done) {
+            ImageDataUtil.getImageTag()
+                .then(function(imageTag) {
 
-            ImageLoadHelper.getImageTag(function(imageTag) {
+                    var imageData1 = CanvasUtil.getImageData(imageTag);
+                    var imageData2 = CanvasUtil.createImageData(imageData1);
 
-                var imageData = CanvasUtil.getImageDataFromTag(imageTag);
+                    imageData2.width.should.equal(10);
+                    imageData2.height.should.equal(10);
+                    imageData2.data.length.should.equal(10 * 10 * 4);
 
-                ImageTester.expectToHaveImageDataProperties(imageData);
-                ImageTester.expectImageDataSizeToBe(imageData, 20, 20);
+                    done();
+                });
 
-                done();
-            });
         });
     });
 

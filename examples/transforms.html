@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>canvas fw: Graphic click test</title>
+    <script src="../canvas-framework.js"></script>
+
+    <style>
+        canvas {
+            /*position:absolute;*/
+            /*top: 0;*/
+            /*left: 0;*/
+            /*left:50%;*/
+            /*margin-left:-250px;*/
+            /*top:50%;*/
+            /*margin-top:-166.5px;*/
+            /*width:500px;*/
+            /*height:333px;*/
+            /*width: 100%;*/
+            /*height: 100%;*/
+        }
+    </style>
+
+</head>
+
+<body>
+    <canvas id="sample1"></canvas>
+    <canvas id="sample2"></canvas>
+    <canvas id="sample3"></canvas>
+    <canvas id="sample4"></canvas>
+
+    <script>
+        (function(){
+
+            var basicCache;
+            var otherCache;
+
+            var layer1 = new Layer({
+                target: "sample1",
+                width: 500,
+                height: 333
+            });
+
+            var layer2 = new Layer({
+                target: "sample2",
+                width: 500,
+                height: 333
+            });
+
+            var layer3 = new Layer({
+                target: "sample3",
+                width: 500,
+                height: 333
+            });
+
+            var layer4 = new Layer({
+                target: "sample4",
+                width: 500,
+                height: 333
+            });
+
+            var loader = new ImageLoader({
+                images:[{src: 'images/image_04_500.jpg'}],
+                onComplete: onComplete,
+            });
+
+            function onComplete()
+            {
+                var loaderItem = loader.getItemAt(0);
+                var imageData = CanvasUtil.getImageData(loaderItem.tag);
+
+                basicCache = new TransformCacheBasic(imageData);
+
+                var transform1 = new Transform(imageData);
+                initLayer(layer1, transform1, function(mouseX, mouseY, centerDistX, centerDistY) {
+                    transform1.reset();
+
+                    transform1.do(Transform.Swirl, {
+                        originX: mouseX,
+                        originY: mouseY,
+                        angle: centerDistX * 0.0001,
+                        radius: centerDistY * 0.3
+                    });
+
+                    layer1.getGraphicAt(0).setImageData(transform1.imageData);
+                    layer1.render();
+                });
+
+                var transform2 = new Transform(imageData);
+                initLayer(layer2, transform2, function(mouseX, mouseY, centerDistX, centerDistY) {
+                    transform2.reset();
+
+                    transform2.do(Transform.Swirl, {
+                        originX: mouseX,
+                        originY: mouseY,
+                        angle: centerDistX * 0.0001,
+                        radius: centerDistY * 2
+                    });
+
+                    layer2.getGraphicAt(0).setImageData(transform2.imageData);
+                    layer2.render();
+                });
+
+                var transform3 = new Transform(imageData);
+                initLayer(layer3, transform3, function(mouseX, mouseY, centerDistX, centerDistY) {
+                    transform3.reset();
+
+                    transform3.do(Transform.Swirl, {
+                        originX: mouseX,
+                        originY: mouseY,
+                        angle: centerDistX * 0.001,
+                        radius: centerDistY * 0.3
+                    });
+
+                    layer3.getGraphicAt(0).setImageData(transform3.imageData);
+                    layer3.render();
+                });
+
+            }
+
+            function initLayer(layer, transform, update)
+            {
+                var graphic = new Graphic({
+                    imageData: transform.imageData
+                });
+
+                layer.addGraphic(graphic);
+                layer.render();
+
+                layer.getCanvas().addEventListener('mousemove', function(event) {
+                    mouseMoveHandler(event, layer, transform, update);
+                });
+            }
+
+            function mouseMoveHandler(event, layer, transform, update)
+            {
+                var rect = layer.getCanvas().getBoundingClientRect();
+                var left = rect.left;
+                var top = rect.top;
+                var centerX = left + (rect.width >> 1);
+                var centerY = top + (rect.height >> 1);
+                var mouseX = event.clientX;
+                var mouseY = event.clientY;
+                var canvasMouseX = mouseX - left;
+                var canvasMouseY = mouseY - top;
+                var centerDistX = mouseX - centerX;
+                var centerDistY = mouseY - centerY;
+
+                update(canvasMouseX, canvasMouseY, centerDistX, centerDistY);
+            }
+
+        })();
+
+
+    </script>
+</body>
+</html>

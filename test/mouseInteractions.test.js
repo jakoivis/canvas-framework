@@ -4,8 +4,8 @@ xdescribe("Mouse interactions", function() {
     var graphic2;
 
     beforeEach(function() {
-        graphic1 = new Graphic({imageData: ImageTester.createTestImage()});
-        graphic2 = new Graphic({imageData: ImageTester.createTestImage()});
+        graphic1 = new Graphic({imageData: ImageDataUtil.createTestImage()});
+        graphic2 = new Graphic({imageData: ImageDataUtil.createTestImage()});
         graphic1.onClick = jasmine.createSpy('clickHandler1');
         graphic1.onRollOver = jasmine.createSpy('rollOverHandler1');
         graphic1.onRollOut = jasmine.createSpy('rollOutHandler1');

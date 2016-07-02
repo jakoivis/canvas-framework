@@ -1,11 +1,7 @@
 
 'use strict';
 
-var ClassTester = require("./helpers/classTester.js");
-
 xdescribe('Shape:', function() {
-
-    ClassTester.classTest(Shape);
 
     beforeEach(function() {
     });

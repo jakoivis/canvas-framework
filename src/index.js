@@ -1,8 +1,9 @@
-window.ImageLoader = require('./imageLoader/imageLoader.js');
-window.Layer = require('./layer.js');
-window.Transform = require('./transform.js');
-window.TransformOriginal = require('./transformOriginal.js');
-window.Graphic = require('./graphic.js');
-window.Timer = require('./timer.js');
-window.CanvasUtil = require('./canvasutil.js');
-window.Shape = require('./shape.js');
+window.ImageLoader = require('./imageLoader/ImageLoader.js');
+window.Layer = require('./Layer.js');
+window.Transform = require('./Transform.js');
+window.TransformOriginal = require('./TransformOriginal.js');
+window.TransformCacheBasic = require('./TransformCacheBasic.js');
+window.Graphic = require('./Graphic.js');
+window.Timer = require('./Timer.js');
+window.CanvasUtil = require('./CanvasUtil.js');
+window.Shape = require('./Shape.js');

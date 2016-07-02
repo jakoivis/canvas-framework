@@ -4,11 +4,7 @@ var sinon = require("sinon");
 chai.should();
 var expect = chai.expect;
 
-var ClassTester = require("./helpers/classTester.js");
-
 xdescribe("Timer:", function() {
-
-    // ClassTester.singletonClassTest(Timer);
 
     var defaultFrameRate = 30;
 

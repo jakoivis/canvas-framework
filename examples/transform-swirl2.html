@@ -54,8 +54,8 @@
                 var loaderItem = loader.getItemAt(0);
                 var imageData = CanvasUtil.getImageDataFromTag(loaderItem.tag);
 
-                transform = new Transform(imageData, layer.getCanvas().getContext("2d"));
-                transform.do(Transform.Swirl, {originX:0, originY:0, angle: 0.0349, radius: 20});
+                transform = new Transform(Transform.Swirl, imageData, layer.getCanvas().getContext("2d"));
+                transform.do({originX:0, originY:0, angle: 0.0349, radius: 20});
 
                 graphic = new Graphic({
                     imageData: transform.getImageData(),
@@ -85,7 +85,7 @@
 
                 transform.reset();
 
-                transform.do(Transform.Swirl, {
+                transform.do({
                     originX: canvasMouseX,
                     originY: canvasMouseY,
                     angle: centerDistX * 0.0001,
