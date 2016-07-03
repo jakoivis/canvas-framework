@@ -209,7 +209,7 @@ module.exports = function Layer(options)
     me.addGraphic = function(graphic)
     {
         graphics.push(graphic);
-        graphic.setRenderContext(context);
+        graphic.renderContext = context;
     }
 
     me.removeGraphic = function(graphic)

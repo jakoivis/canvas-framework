@@ -1,48 +1,44 @@
-var chai = require('chai');
+var chai = require("chai");
 var sinon = require("sinon");
 
 chai.should();
 var expect = chai.expect;
 
-xdescribe("Timer:", function() {
+describe("Timer", function() {
 
     var defaultFrameRate = 30;
 
-    describe("", function() {
-        var renderHandler;
-        var updateHandler;
-        var measureHandler;
+    var renderHandler;
+    var updateHandler;
+    var measureHandler;
 
-        beforeEach(function() {
-            Timer.prototype.singletonInstance = undefined;
+    beforeEach(function() {
+        Timer.prototype.singletonInstance = undefined;
 
-            renderHandler = sinon.spy();
-            updateHandler = sinon.spy();
-            measureHandler = sinon.spy();
-        });
-
-        afterEach(function() {
-        });
-
-        it("Callbacks are called", function(done) {
-            var timer = getTimer();
-            timer.start();
-            setTimeout(function () {
-                timer.stop();
-                expect(renderHandler.callCount).toBeGreaterThan(0);
-                expect(updateHandler.callCount).toBeGreaterThan(0);
-                expect(measureHandler.callCount).toBeGreaterThan(0);
-                done();
-            }, 100);
-        });
-
-        function getTimer(frameRate) {
-            return new Timer({
-                renderCallback: renderHandler,
-                updateCallback: updateHandler,
-                measureCallback: measureHandler,
-                frameRate: frameRate || defaultFrameRate
-            });
-        }
+        renderHandler = sinon.spy();
+        updateHandler = sinon.spy();
+        measureHandler = sinon.spy();
     });
+
+    it("should call callbacks", function(done) {
+        var timer = getTimer();
+        timer.start();
+        setTimeout(function () {
+            timer.stop();
+            (renderHandler.callCount > 0).should.be.true;
+            (updateHandler.callCount > 0).should.be.true;
+            (measureHandler.callCount > 0).should.be.true;
+
+            done();
+        }, 100);
+    });
+
+    function getTimer(frameRate) {
+        return new Timer({
+            renderCallback: renderHandler,
+            updateCallback: updateHandler,
+            measureCallback: measureHandler,
+            frameRate: frameRate || defaultFrameRate
+        });
+    }
 });

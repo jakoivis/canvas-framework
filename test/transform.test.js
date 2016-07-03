@@ -1,6 +1,6 @@
 var ImageDataUtil = require("./utils/ImageDataUtil.js");
 
-describe("Transform:", function() {
+xdescribe("Transform:", function() {
 
     var canvas = document.createElement("canvas");
     var context = canvas.getContext("2d");
