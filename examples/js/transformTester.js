@@ -42,7 +42,7 @@
         function onImageLoadComplete()
         {
             var loaderItem = loader.getItemAt(0);
-            var imageData = CanvasUtil.getImageDataFromTag(loaderItem.tag);
+            var imageData = CanvasUtil.getImageData(loaderItem.tag);
 
             var graphic = new Graphic({
                 imageData: imageData,
@@ -89,7 +89,7 @@
             }
 
             var graphic = layer.getGraphicAt(0);
-            graphic.setImageData(transform.getImageData());
+            graphic.imageData = transform.imageData;
             graphic.clear();
             graphic.render();
         }

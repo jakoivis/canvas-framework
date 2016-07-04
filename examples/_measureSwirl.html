@@ -25,7 +25,7 @@
             function onComplete()
             {
                 var loaderItem = loader.getItemAt(0);
-                var imageData = CanvasUtil.getImageDataFromTag(loaderItem.tag);
+                var imageData = CanvasUtil.getImageData(loaderItem.tag);
 
                 graphic = new Graphic({
                     imageData: imageData,
@@ -40,44 +40,34 @@
 
             function render(imageData)
             {
-                var noop = function() {};
-
-                console.time("init cache1");
-                var cache1 = new TransformCacheBasic(imageData);
-                console.timeEnd("init cache1");
-
-                console.time("init cache2");
-                var cache2 = new TransformCache(imageData, 2, [noop, noop, noop]);
-                console.timeEnd("init cache2");
-
-                var transform = new Transform(Transform.Swirl, imageData, layer.getCanvas().getContext("2d"), cache1);
+                var transform = new Transform(imageData, layer.getCanvas().getContext("2d"));
                 console.time("transform");
 
-                transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
-                // transform.do({originX:500, originY:250, angle: 0.0349, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
+                // transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
 
                 console.timeEnd("transform");
 
                 console.time("setImageData");
-                graphic.setImageData(transform.getImageData());
+                graphic.imageData = transform.imageData;
                 console.timeEnd("setImageData");
 
                 console.time("render");

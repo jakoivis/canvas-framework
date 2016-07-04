@@ -28,7 +28,7 @@
 
             function onComplete()
             {
-                var imageData = CanvasUtil.getImageDataFromTag(loader.getItemAt(0).tag);
+                var imageData = CanvasUtil.getImageData(loader.getItemAt(0).tag);
                 var graphic1 = new Graphic({imageData: imageData, x: 0, y: 200});
 
                 layer.addGraphic(graphic1);

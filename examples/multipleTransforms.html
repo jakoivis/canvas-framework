@@ -24,13 +24,13 @@
             function onComplete()
             {
                 var loaderItem = loader.getItemAt(0);
-                var imageData = CanvasUtil.getImageDataFromTag(loaderItem.tag);
+                var imageData = CanvasUtil.getImageData(loaderItem.tag);
 
                 var transform = new Transform(imageData, layer.getCanvas().getContext("2d"));
-                transform.do(Transform.Swirl, {originX:500, originY:250, degree: 2, radius: 20});
+                transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
 
                 var graphic = new Graphic({
-                    imageData: transform.getImageData(),
+                    imageData: transform.imageData,
                     x: 10,
                     y: 10
                 });
@@ -52,11 +52,11 @@
                     .easing(TWEEN.Easing.Cubic.InOut)
                     .onUpdate(function () {
                         transform.reset();
-                        transform.do(Transform.Alpha, {value:Math.abs(this.x/2)})
-                        transform.do(Transform.Swirl, {originX:this.x, originY:250, degree: 2, radius: 20});
-                        transform.do(Transform.Invert);
+                        // transform.do(Transform.Alpha, {value:Math.abs(this.x/2)})
+                        transform.do(Transform.Swirl, {originX:this.x, originY:250, angle: 0.0349, radius: 20});
+                        // transform.do(Transform.Invert);
 
-                        graphic.setImageData(transform.getImageData());
+                        graphic.imageData = transform.imageData;
                     })
                     .start();
             }

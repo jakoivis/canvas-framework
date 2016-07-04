@@ -4,7 +4,7 @@ var SMath = require("smath");
 
 var sMath = new SMath({resolution:1200});
 
-function Transform(imageDataOriginal)
+function Transform(imageDataOriginal, cacheFunction)
 {
     'use strict';
 
@@ -53,17 +53,21 @@ function Transform(imageDataOriginal)
         var y;
 
         var data = [];
+        var c;
 
         for (var i = 0; i < dataLength; i++)
         {
-            x = (i % width);
-            y = Math.floor(i / width);
+            c = {
+                x: (i % width),
+                y: Math.floor(i / width)
+            };
 
-            data.push({
-                x: x,
-                y: y,
-                i: i
-            });
+            if(cacheFunction)
+            {
+                cacheFunction(i, c);
+            }
+
+            data.push(c);
         }
 
         return data;
@@ -121,33 +125,6 @@ Transform.Swirl = function(srcIndex, src32, dst32, p, width, cache)
 
     dst32[srcIndex] = src32[ty * width + tx];
 };
-
-// function isApproximated(width, height, x, y)
-// {
-//     // x calculated, - approximated
-//     // e.g. 6x6 level=2
-//     //   0 1 2 3 4 5
-//     // 0 x - x - x x
-//     // 1 - - - - - -
-//     // 2 x - x - x x
-//     // 3 - - - - - -
-//     // 4 x - x - x x
-//     // 5 x - x - x x
-
-//     return ! (
-//         // normal pattern
-//         (y % level === 0 && x % level === 0) ||
-
-//         // fix bottom edge in uneven situations
-//         (y === height-1 && x % level === 0) ||
-
-//         // fix right edge in uneven situations
-//         (x === width-1 && y % level === 0) ||
-
-//         // last is always included
-//         (x === width-1 && y === height-1)
-//     );
-// };
 
 Transform.descriptions = {
     Swirl: {

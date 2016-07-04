@@ -24,25 +24,18 @@
             function onComplete()
             {
                 var loaderItem = loader.getItemAt(0);
-                var imageData = CanvasUtil.getImageDataFromTag(loaderItem.tag);
+                var imageData = CanvasUtil.getImageData(loaderItem.tag);
 
                 var transform = new Transform(imageData, layer.getCanvas().getContext("2d"));
                 transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
 
                 var graphic = new Graphic({
-                    imageData: transform.getImageData(),
+                    imageData: transform.imageData,
                     x: 10,
                     y: 10
                 });
 
-                var graphic2 = new Graphic({
-                    imageData: imageData,
-                    x: 270,
-                    y: 10
-                })
-
                 layer.addGraphic(graphic);
-                layer.addGraphic(graphic2);
                 layer.render();
 
                 new TWEEN.Tween({x: 500})
@@ -53,7 +46,7 @@
                     .onUpdate(function () {
                         transform.reset();
                         transform.do(Transform.Swirl, {originX:this.x, originY:250, angle: 0.0349, radius: 20});
-                        graphic.setImageData(transform.getImageData());
+                        graphic.imageData = transform.imageData;
                     })
                     .start();
             }
