@@ -28,7 +28,10 @@
         (function(){
 
             var loader = new ImageLoader({
-                images:[{src: 'images/image_04_500.jpg'}],
+                images:[
+                    // {src: 'images/image_04_500.jpg'}
+                    {src: 'images/pano_800x400.jpg'}
+                ],
                 onComplete: onComplete,
             });
 
@@ -98,13 +101,13 @@
                     l.render();
                 });
 
-                function dottedSwird(srcIndex, src32, dst32, p, width, cache)
+                function dottedSwird(srcIndex, src32, dst32, p, width, height, cache)
                 {
                     var c = cache[srcIndex];
 
                     if (c.y % p.interval === 0 && c.x % p.interval === 0)
                     {
-                        Transform.Swirl(srcIndex, src32, dst32, p, width, cache);
+                        Transform.Swirl(srcIndex, src32, dst32, p, width, height, cache);
                     }
                 };
 
@@ -124,16 +127,41 @@
                     l.render();
                 });
 
-                function gridSwirl(srcIndex, src32, dst32, p, width, cache)
+                function gridSwirl(srcIndex, src32, dst32, p, width, height, cache)
                 {
                     var c = cache[srcIndex];
 
                     if (c.y % p.interval === 0 || c.x % p.interval === 0)
                     {
-                        Transform.Swirl(srcIndex, src32, dst32, p, width, cache);
+                        Transform.Swirl(srcIndex, src32, dst32, p, width, height, cache);
                     }
                 };
 
+                // lens
+
+                initLayer(imageData, function(l, t, mouseX, mouseY, centerDistX, centerDistY) {
+                    t.reset();
+                    t.do(Transform.lens, {
+                        originX: mouseX,
+                        originY: mouseY,
+                        radius: -100
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
+
+                initLayer(imageData, function(l, t, mouseX, mouseY, centerDistX, centerDistY) {
+                    t.reset();
+                    t.do(Transform.lens, {
+                        originX: mouseX,
+                        originY: mouseY,
+                        radius: 100
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
 
 
                 // Test 1
@@ -149,7 +177,7 @@
                     l.render();
                 });
 
-                function test1(srcIndex, src32, dst32, p, width, cache)
+                function test1(srcIndex, src32, dst32, p, width, height, cache)
                 {
                     var c = cache[srcIndex];
                     var originX = p.originX;
@@ -183,7 +211,7 @@
                         c.angle = Math.PI / Math.atan2(c.y, c.x);
                     });
 
-                function test2(srcIndex, src32, dst32, p, width, cache)
+                function test2(srcIndex, src32, dst32, p, width, height, cache)
                 {
                     var c = cache[srcIndex];
                     var originX = p.originX;
@@ -214,7 +242,7 @@
                     l.render();
                 });
 
-                function test3(srcIndex, src32, dst32, p, width, cache)
+                function test3(srcIndex, src32, dst32, p, width, height, cache)
                 {
                     var c = cache[srcIndex];
                     var originX = p.originX;
@@ -245,7 +273,7 @@
                     l.render();
                 });
 
-                function test4(srcIndex, src32, dst32, p, width, cache)
+                function test4(srcIndex, src32, dst32, p, width, height, cache)
                 {
                     var c = cache[srcIndex];
                     var originX = p.originX;
@@ -277,7 +305,7 @@
                         c.angle = Math.atan2(c.y, c.x)*2;
                     });
 
-                function test5(srcIndex, src32, dst32, p, width, cache)
+                function test5(srcIndex, src32, dst32, p, width, height, cache)
                 {
                     var c = cache[srcIndex];
                     var originX = p.originX;
@@ -306,7 +334,7 @@
                     l.render();
                 });
 
-                function test6(srcIndex, src32, dst32, p, width, cache)
+                function test6(srcIndex, src32, dst32, p, width, height, cache)
                 {
                     var c = cache[srcIndex];
                     var originX = p.originX;
@@ -316,52 +344,217 @@
                     var distanceY = c.y - originY;
                     var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
 
-                    var angle = Math.atan2(c.y, c.x)*2;
+                    var angle = Math.atan2(distanceY, distanceX) * 2;
 
-                    var tx = originX + (Math.cos(angle) * distance) | 0;
-                    var ty = originY + (Math.sin(angle) * distance) | 0;
-
-                    // var pixelCache = cache[srcIndex];
-                    // var originX = p.originX;
-                    // var originY = p.originY;
-                    // var radius = p.radius;
-
-                    // var distanceX = pixelCache.x-originX;
-                    // var distanceY = pixelCache.y-originY;
-                    // var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
-
-                    // var radian = p.angle * distance;
-
-                    // var tx = (pixelCache.x + sMath.cos(radian) * radius) | 0;
-                    // var ty = (pixelCache.y + sMath.sin(radian) * radius) | 0;
-
-                    // if(tx < 0 || ty < 0 || tx > width-1 || ty > 800) {
-                    //     return;
-                    // }
+                    var tx = originX + (Math.cos(angle) * distanceX) | 0;
+                    var ty = originY + (Math.sin(angle) * distanceY) | 0;
 
                     dst32[srcIndex] = src32[ty * width + tx];
                 };
-            }
+
+                initLayer(imageData, function(l, t, mouseX, mouseY, centerDistX, centerDistY) {
+                    t.reset();
+                    t.do(test7, {
+                        originX: mouseX + 200,
+                        originY: mouseY,
+                        angle: centerDistX * 0.0001,
+                        radius: -600
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
+
+                function test7(srcIndex, src32, dst32, p, width, height, cache)
+                {
+                    var h = height-3;
+                    var c = cache[srcIndex];
+                    var originX = p.originX;
+                    var originY = height-p.originY;
+
+                    var distanceX = c.x-(width>>1);
+                    var distanceY = c.y - (h>>1);
+                    // var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
+
+                    var radius = p.radius;
+                    var radian = Math.atan2(distanceY, distanceX);
+
+                    var tx = originX + (c.x + Math.cos(radian) * radius) | 0;
+                    var ty = height - (c.y + Math.sin(radian) * radius) | 0;
 
 
+                    if(ty < 0 || ty >= h) {
+                        ty = (((ty/h)|0)*h - ty%h);
+                    }
 
+                    dst32[srcIndex] = src32[ty * width + tx];
+                };
 
+                initLayer(imageData, function(l, t, mouseX, mouseY, centerDistX, centerDistY) {
+                    t.reset();
+                    t.do(Transform.stereographicProjection, {
+                        centerX: 0,
+                        centerY: 0,
+                        longitude: mouseX,
+                        latitude: mouseY,
+                        rotate: 0,
+                        zoom: 1,
+                        wrap: (-200+mouseY) / 400,
+                        twist: 0,
+                        bulge: 0
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
+
+            //     function test8(srcIndex, src32, dst32, p, width, height, cache)
+            //     {
+            //         // original source code created by tom@subblue.com
+
+            //         var PI = 3.141592653589793;
+            //         var TWOPI = 6.283185307179586;
+            //         var HALFPI = 1.570796326794897;
+            //         var PI180 = 0.017453292519943;
+
+            //         // props
+            //         var outputWidth = width;
+            //         var outputHeight = height;
+            //         var centerX = p.centerX;
+            //         var centerY = p.centerY;
+            //         var longitude = p.longitude
+            //         var latitude = p.latitude
+            //         var rotate = p.rotate
+            //         var zoom = p.zoom;
+            //         var wrap = p.wrap;
+            //         var twist = p.twist;
+            //         var bulge = p.bulge;
+
+            //         var ca = cache[srcIndex];
+
+            //         var hwidth = width * 0.5;
+            //         var hheight = height * 0.5;
+
+            //         // var rc = Math.cos(radians(rotate));
+            //         // var rs = Math.sin(radians(rotate));
+            //         // float2x2 rotation = float2x2(rc, rs, -rs, rc);
+
+            //         var px = (ca.x - outputWidth * 0.5 - centerX * outputWidth) / height;
+            //         var py = (ca.y - outputHeight * 0.5 - centerY * outputHeight) / height;
+
+            //         // p *= rotation;
+
+            //         // Stereographic projection
+            //         var r = Math.sqrt(px*px + py*py);
+            //         var c = 2 * Math.atan2(r, 0.5 * (zoom + bulge));
+
+            //         var cc = Math.cos(c);
+            //         var sc = Math.sin(c);
+            //         var cl = Math.cos(radians(latitude));
+            //         var sl = Math.sin(radians(latitude));
+
+            //         var lat = Math.asin(cc * sl + (py * sc * cl) / r) + (wrap * PI);
+            //         var lon = radians(longitude) + Math.atan2(px * sc, (r * cl*cc - py * sl * sc));
+
+            //         // Twist
+            //         lon += twist * r * PI;
+
+            //         // Wrap longitude
+            //         lon = ((lon + PI) % TWOPI) - PI;
+
+            //         if (wrap !== 0) {
+            //             // Reflect the top and bottowrappingm to get smooth
+            //             if (lat > TWOPI) {
+            //                 // Second inner sky reflection (+wrap)
+            //                 lat = Math.abs(lat) % HALFPI;
+
+            //             } else if (lat > TWOPI - HALFPI) {
+            //                 // First inner sky reflection (+wrap)
+            //                 lat = (Math.abs(lat) % HALFPI) - HALFPI;
+
+            //             } else if (lat > HALFPI) {
+            //                 // First ground reflection (+wrap)
+            //                 lat = PI - lat;
+
+            //             } else if (lat < -TWOPI) {
+            //                 // Second outside sky reflection (-wrap)
+            //                 lat = -(Math.abs(lat) % HALFPI);
+
+            //             } else if (lat < -TWOPI + HALFPI) {
+            //                 // Second outside ground reflection (-wrap)
+            //                 lat = HALFPI - (Math.abs(lat) % HALFPI);
+
+            //             } else if (lat < -PI) {
+            //                 // First outside ground reflection (-wrap)
+            //                 lat = Math.abs(lat) % HALFPI;
+
+            //             } else if (lat < -HALFPI) {
+            //                 // First outside sky reflection (-wrap)
+            //                 lat = -HALFPI + (Math.abs(lat) % HALFPI);
+            //             }
+            //         }
+
+            //         // Convert back to equirectangular coordinates
+
+            //         var radsx = PI / hwidth;
+            //         var radsy = HALFPI / hheight;
+            //         var tx = -lon / radsx;
+            //         var ty = -lat / radsy;
+
+            //         ty += bulge * r * hwidth;
+
+            //         tx = hwidth - tx;
+            //         ty = hheight - ty;
+
+            //         // clamp
+            //         if(tx < 0.5) {
+            //             tx = 0.5;
+            //         }
+            //         if(ty < 0.5) {
+            //             ty = 0.5;
+            //         }
+            //         if(tx > (width - 0.5)) {
+            //             tx = width - 0.5;
+            //         }
+            //         if(ty > (height - 0.5)) {
+            //             ty = height - 0.5;
+            //         }
+
+            //         tx = tx | 0;
+            //         ty = ty | 0;
+
+            //         dst32[srcIndex] = src32[ty * width + tx];
+            //     };
+            // }
+
+            // function radians(degrees) {
+            //     return degrees * (Math.PI / 180);
+            // }
 
             function initLayer(imageData, update, cacheFn)
             {
                 var layer = new Layer({
                     appendToBody: true,
-                    width: 500,
-                    height: 333
+                    width: 800,
+                    height: 400
                 });
 
-                var transform = new Transform(imageData, cacheFn);
+                var transform;
                 var graphic = new Graphic({
-                    imageData: transform.imageData
+                    imageData: imageData
                 });
 
                 layer.addGraphic(graphic);
                 layer.render();
+
+                layer.getCanvas().addEventListener('mouseenter', function(event) {
+                    transform = new Transform(imageData, cacheFn);
+                });
+
+                layer.getCanvas().addEventListener('mouseleave', function(event) {
+                    // release this when not needed. There are some caching that increase jsheap size
+                    transform = null;
+                });
 
                 layer.getCanvas().addEventListener('mousemove', function(event) {
                     var rect = layer.getCanvas().getBoundingClientRect();
@@ -376,7 +569,9 @@
                     var centerDistX = mouseX - centerX;
                     var centerDistY = mouseY - centerY;
 
+                    // console.time("asd");
                     update(layer, transform, canvasMouseX, canvasMouseY, centerDistX, centerDistY)
+                    // console.timeEnd("asd");
                 });
             }
 
