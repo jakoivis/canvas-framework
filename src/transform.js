@@ -106,19 +106,17 @@ function Transform(imageDataOriginal, cacheFunction)
 
 Transform.Swirl = function(srcIndex, src32, dst32, p, width, height, cache)
 {
-    var pixelCache = cache[srcIndex];
-    var originX = p.originX;
-    var originY = p.originY;
+    var c = cache[srcIndex];
     var radius = p.radius;
 
-    var distanceX = pixelCache.x-originX;
-    var distanceY = pixelCache.y-originY;
+    var distanceX = c.x-p.originX;
+    var distanceY = c.y-p.originY;
     var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
 
     var radian = p.angle * distance;
 
-    var tx = (pixelCache.x + Math.cos(radian) * radius) | 0;
-    var ty = (pixelCache.y + Math.sin(radian) * radius) | 0;
+    var tx = (c.x + Math.cos(radian) * radius) | 0;
+    var ty = (c.y + Math.sin(radian) * radius) | 0;
 
     if(tx < 0 || ty < 0 || tx > width-1 || ty > 800) {
         return;
@@ -129,18 +127,16 @@ Transform.Swirl = function(srcIndex, src32, dst32, p, width, height, cache)
 
 Transform.lens = function(srcIndex, src32, dst32, p, width, height, cache)
 {
-    var pixelCache = cache[srcIndex];
-    var originX = p.originX;
-    var originY = p.originY;
+    var c = cache[srcIndex];
     var radius = p.radius;
 
-    var distanceX = pixelCache.x-originX;
-    var distanceY = pixelCache.y-originY;
+    var distanceX = c.x-p.originX;
+    var distanceY = c.y-p.originY;
     var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
     var radian = Math.atan2(distanceY, distanceX);
 
-    var tx = (pixelCache.x + Math.cos(radian) * radius) | 0;
-    var ty = (pixelCache.y + Math.sin(radian) * radius) | 0;
+    var tx = (c.x + Math.cos(radian) * radius) | 0;
+    var ty = (c.y + Math.sin(radian) * radius) | 0;
 
     if(tx < 0 || ty < 0 || tx > width-1 || ty > 800) {
         return;
