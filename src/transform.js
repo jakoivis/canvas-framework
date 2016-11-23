@@ -302,7 +302,111 @@ Transform.descriptions = {
                 default: 20,
                 type: "number",
                 description: ""
+            }
+        ]
+    },
+    lens: {
+        arguments: [
+            {
+                name: "originX",
+                min: Number.MIN_VALUE,
+                max: Number.MAX_VALUE,
+                default: 0,
+                type: "number",
+                description: "Center position of the transform on X axis."
             },
+            {
+                name: "originY",
+                min: Number.MIN_VALUE,
+                max: Number.MAX_VALUE,
+                default: 0,
+                type: "number",
+                description: "Center position of the transform on Y axis."
+            },
+            {
+                name: "radius",
+                min: Number.MIN_VALUE,
+                max: Number.MAX_VALUE,
+                default: 20,
+                type: "number",
+                description: ""
+            }
+        ]
+    },
+    stereographicProjection: {
+        arguments: [
+            {
+                name: "centerX",
+                min: Number.MIN_VALUE,
+                max: Number.MAX_VALUE,
+                default: 0,
+                type: "number",
+                description: "Center position of the transform on X axis."
+            },
+            {
+                name: "centerY",
+                min: Number.MIN_VALUE,
+                max: Number.MAX_VALUE,
+                default: 0,
+                type: "number",
+                description: "Center position of the transform on Y axis."
+            },
+            {
+                name: "latitude",
+                min: Number.MIN_VALUE,
+                max: Number.MAX_VALUE,
+                default: 0,
+                type: "number",
+                description: "Latitude"
+            },
+            {
+                name: "longitude",
+                min: Number.MIN_VALUE,
+                max: Number.MAX_VALUE,
+                default: 0,
+                type: "number",
+                description: "Longitude"
+            },
+            {
+                name: "rotate",
+                min: Number.MIN_VALUE,
+                max: Number.MAX_VALUE,
+                default: 0,
+                type: "number",
+                description: "Rotation"
+            },
+            {
+                name: "zoom",
+                min: Number.MIN_VALUE,
+                max: Number.MAX_VALUE,
+                default: 0.5,
+                type: "number",
+                description: "Zoom"
+            },
+            {
+                name: "wrap",
+                min: Number.MIN_VALUE,
+                max: Number.MAX_VALUE,
+                default: 0,
+                type: "number",
+                description: "Wrap"
+            },
+            {
+                name: "twist",
+                min: Number.MIN_VALUE,
+                max: Number.MAX_VALUE,
+                default: 0,
+                type: "number",
+                description: "Twist"
+            },
+            {
+                name: "bulge",
+                min: Number.MIN_VALUE,
+                max: Number.MAX_VALUE,
+                default: 0,
+                type: "number",
+                description: "Bulge"
+            }
         ]
     }
 };

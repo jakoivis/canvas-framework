@@ -26,7 +26,7 @@
                 var loaderItem = loader.getItemAt(0);
                 var imageData = CanvasUtil.getImageData(loaderItem.tag);
 
-                var transform = new Transform(imageData, layer.getCanvas().getContext("2d"));
+                var transform = new Transform(imageData);
                 transform.do(Transform.Swirl, {originX:500, originY:250, angle: 0.0349, radius: 20});
 
                 var graphic = new Graphic({

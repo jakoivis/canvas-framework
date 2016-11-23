@@ -7,14 +7,10 @@
     <style>
         canvas {
             position:absolute;
-            left:50%;
-            margin-left:-250px;
-            top:50%;
-            margin-top:-166.5px;
-            /*width:800px;
-            height:533px;
+            left:0;
+            top:0;
             width: 100%;
-            height: 100%;*/
+            height: 100%;
         }
     </style>
 
@@ -33,10 +29,6 @@
                 fullScreen: false,
                 width: 500,
                 height: 333
-                // width: 800,
-                // height: 533
-                // width: 1200,
-                // height: 800
             });
 
             var loader = new ImageLoader({
@@ -86,8 +78,8 @@
                 transform.do(Transform.Swirl, {
                     originX: canvasMouseX,
                     originY: canvasMouseY,
-                    angle: centerDistX * 0.0001,
-                    radius: centerDistY * 0.3
+                    angle: centerDistX * 0.00002,
+                    radius: centerDistY * 0.8
                 });
 
                 graphic.imageData  = transform.imageData;

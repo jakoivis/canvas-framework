@@ -10,7 +10,18 @@
     <style>
     form {
         float:left;
-        width: 200px;
+        width: 220px;
+    }
+
+    fieldset {
+        border: 1px dashed #aaa;
+        background-color: #eee;
+    }
+
+    fieldset > legend {
+        background-color: #333;
+        border: 1px solid #AAA;
+        color: #EEE;
     }
 
     fieldset p {
@@ -36,7 +47,7 @@
         $("#test").transformTester({
             imagePath: "images/image_03.png",
             canvasWidth: 550,
-            canvasHeight: 280
+            canvasHeight: 380
         });
     </script>
 </body>

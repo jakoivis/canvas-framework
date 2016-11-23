@@ -60,7 +60,7 @@
             layer.addGraphic(graphic2);
             layer.render();
 
-            transform = new Transform(imageData, layer.getCanvas().getContext("2d"));
+            transform = new Transform(imageData);
         }
 
         function drawBackground()

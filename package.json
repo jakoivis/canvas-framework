@@ -50,7 +50,7 @@
     "build:js": "browserify --debug src/index.js > dist/canvas-framework.js",
     "build:jsrelease": "browserify -g uglifyify src/index.js > dist/canvas-framework.min.js",
     "prebuild": "npm run clean",
-    "build": "npm run copy:examples && npm run copy:html && npm run copy:assets && npm run build:jsrelease && npm run build:js && npm run test",
+    "build": "npm run copy:examples && npm run copy:html && npm run copy:assets && npm run build:jsrelease && npm run build:js",
     "watch:js": "watch \"npm run build:js\" src",
     "watch:html": "watch \"npm run copy:html\" src",
     "watch:examples": "watch \"npm run copy:examples\" examples",
