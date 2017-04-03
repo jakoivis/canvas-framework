@@ -1,6 +1,6 @@
-describe("Layer:", function() {
+var sinon = require("sinon");
 
-    ClassTester.classTest(Layer);
+describe("Layer:", function() {
 
     var graphic1;
     var graphic2;
@@ -20,214 +20,150 @@ describe("Layer:", function() {
             window.innerHeight = 1200;
         });
 
-        it("default size", function() {
+        it("should not have fullscreen by default", function() {
             var layer = new Layer();
             var canvas = layer.getCanvas();
-            expect(canvas.width).toEqual(300);
-            expect(canvas.height).toEqual(150);
+            canvas.width.should.equal(300);
+            canvas.height.should.equal(150);
         });
 
-        it("fullScreen on", function() {
+        it("should set fullscreen", function() {
             var layer = new Layer({fullScreen:true});
             var canvas = layer.getCanvas();
-            expect(canvas.width).toEqual(1000);
-            expect(canvas.height).toEqual(1200);
+            canvas.width.should.equal(1000);
+            canvas.height.should.equal(1200);
         });
 
-        it("size change", function() {
+        it("should update fullscreen size", function() {
             var layer = new Layer({fullScreen:true});
             var canvas = layer.getCanvas();
-            expect(canvas.width).toEqual(1000);
-            expect(canvas.height).toEqual(1200);
             window.innerWidth = 100;
             window.innerHeight = 120;
-            window.dispatchEvent(new Event('resize'));
-            expect(canvas.width).toEqual(100);
-            expect(canvas.height).toEqual(120);
+            window.dispatchEvent(new Event("resize"));
+            canvas.width.should.equal(100);
+            canvas.height.should.equal(120);
         });
 
-        it("enableFullScreen sets the fullscreen state", function() {
+        it("should enable/disable fullscreen", function() {
             var layer = new Layer();
             var canvas = layer.getCanvas();
             canvas.width = 500;
             canvas.height = 300;
             layer.enableFullScreen();
-            expect(canvas.width).toEqual(1000);
-            expect(canvas.height).toEqual(1200);
-        });
-
-        it("disableFullScreen function disables the fullscreen state", function() {
-            var layer = new Layer();
-            var canvas = layer.getCanvas();
-            canvas.width = 500;
-            canvas.height = 300;
-            layer.enableFullScreen();
-            expect(canvas.width).toEqual(1000);
-            expect(canvas.height).toEqual(1200);
+            canvas.width.should.equal(1000);
+            canvas.height.should.equal(1200);
             layer.disableFullScreen();
-            expect(canvas.width).toEqual(500);
-            expect(canvas.height).toEqual(300);
+            canvas.width.should.equal(500);
+            canvas.height.should.equal(300);
         });
     });
-
-
 
     describe("options.appendToBody", function() {
 
-        it("not added to document by default", function() {
+        it("should not add to document by default", function() {
             var layer = new Layer();
             var canvas = layer.getCanvas();
-            expect(document.body.getElementsByTagName("canvas").length).toEqual(0);
+            document.body.getElementsByTagName("canvas").length.should.equal(0);
         });
 
-        it("can be added to document body by setting a flag", function() {
+        it("should add to document", function() {
             var layer = new Layer({appendToBody:true});
             var canvas = layer.getCanvas();
-            expect(document.body.getElementsByTagName("canvas").length).toEqual(1);
+            document.body.getElementsByTagName("canvas").length.should.equal(1);
             var bodyCanvas = document.body.getElementsByTagName("canvas")[0];
-            var areSame = canvas === bodyCanvas;
-            expect(areSame).toEqual(true);
+            (canvas === bodyCanvas).should.equal(true);
         });
     });
-
-
 
     describe("options width and height", function() {
 
-        it("", function() {
+        it("should set size", function() {
             var layer = new Layer({width: 500, height: 600});
             var canvas = layer.getCanvas();
 
-            expect(canvas.width).toEqual(500);
-            expect(canvas.height).toEqual(600);
+            canvas.width.should.equal(500);
+            canvas.height.should.equal(600);
         });
     });
 
-
-
     describe("options target", function() {
 
-        it("existing canvas is used", function() {
+        it("should use existing canvas", function() {
             var testCanvas = document.createElement("canvas");
             testCanvas.id = "test";
             document.body.appendChild(testCanvas);
 
             var layer = new Layer({target:"test"});
 
-            var isSame = testCanvas === layer.getCanvas();
-            expect(isSame).toEqual(true);
+            (testCanvas === layer.getCanvas()).should.equal(true);
         });
     });
 
+    describe("other", function() {
 
-
-    describe("other:", function() {
-
-        it("getCanvas returns object of correct type", function() {
+        it("should return number of graphic objects", function() {
             var layer = new Layer();
-            var isCanvas = layer.getCanvas() instanceof HTMLCanvasElement;
-            expect(isCanvas).toEqual(true);
-        });
-
-        it("length returns the number of graphic objects in the layer", function() {
-            var layer = new Layer();
-            expect(layer.length()).toEqual(0);
+            layer.length().should.equal(0);
             layer.addGraphic(graphic1);
-            expect(layer.length()).toEqual(1);
+            layer.length().should.equal(1);
             layer.addGraphic(graphic2);
-            expect(layer.length()).toEqual(2);
-            layer.removeGraphic(graphic1);
-            expect(layer.length()).toEqual(1);
+            layer.length().should.equal(2);
         });
     });
-
-
 
     describe("getGraphicAtPoint", function() {
 
-        beforeEach(function() {
-        });
-
-        it("Calls hasGlobalPixelAt on every graphic", function() {
+        it("Should return null if all hasGlobalPixelAt return null", function() {
             spyHasGlobalPixelAtAndReturnFalse();
 
             var layer = new Layer();
             layer.addGraphic(graphic1);
             layer.addGraphic(graphic2);
             layer.addGraphic(graphic3);
-            layer.getGraphicAtPoint(0,0);
-            expect(graphic1.hasGlobalPixelAt.calls.count()).toEqual(1);
-            expect(graphic2.hasGlobalPixelAt.calls.count()).toEqual(1);
-            expect(graphic3.hasGlobalPixelAt.calls.count()).toEqual(1);
+
+            expect(layer.getGraphicAtPoint(0,0)).to.be.null;
         });
 
-        it("Returns null if all hasGlobalPixelAt return null", function() {
-            spyHasGlobalPixelAtAndReturnFalse();
-
-            var layer = new Layer();
-            layer.addGraphic(graphic1);
-            layer.addGraphic(graphic2);
-            layer.addGraphic(graphic3);
-            var actual = layer.getGraphicAtPoint(0,0);
-            var isNull = actual === null;
-            expect(isNull).toEqual(true);
-        });
-
-        it("Returns the graphic object which returns true", function() {
+        it("should return a graphic", function() {
             spyHasGlobalPixelAtAndOneReturnsTrue();
 
             var layer = new Layer();
             layer.addGraphic(graphic1);
             layer.addGraphic(graphic2);
             layer.addGraphic(graphic3);
-            var actual = layer.getGraphicAtPoint(0,0);
-            var isGraphic2 = actual === graphic2;
-            expect(isGraphic2).toEqual(true);
+            layer.getGraphicAtPoint(0,0).should.equal(graphic2);
         });
     });
 
-
-
     describe("render, clear and update", function() {
 
-        it("graphics render and clear are called", function(){
+        it("should call render and clear on graphics", function() {
             var layer = new Layer();
             layer.addGraphic(graphic1);
             layer.addGraphic(graphic2);
             layer.addGraphic(graphic3);
             layer.render();
-            expect(graphic1.render.calls.count()).toEqual(1);
-            expect(graphic2.render.calls.count()).toEqual(1);
-            expect(graphic3.render.calls.count()).toEqual(1);
-            expect(graphic1.clear.calls.count()).toEqual(1);
-            expect(graphic2.clear.calls.count()).toEqual(1);
-            expect(graphic3.clear.calls.count()).toEqual(1);
+            graphic1.render.calledOnce.should.be.true;
+            graphic2.render.calledOnce.should.be.true;
+            graphic3.render.calledOnce.should.be.true;
+            graphic1.clear.calledOnce.should.be.true;
+            graphic2.clear.calledOnce.should.be.true;
+            graphic3.clear.calledOnce.should.be.true;
         });
 
-        it("graphics update is called", function(){
+        it("should call update on graphics", function() {
             var layer = new Layer();
             layer.addGraphic(graphic1);
             layer.addGraphic(graphic2);
             layer.addGraphic(graphic3);
             layer.update();
-            expect(graphic1.update.calls.count()).toEqual(1);
-            expect(graphic2.update.calls.count()).toEqual(1);
-            expect(graphic3.update.calls.count()).toEqual(1);
+            graphic1.update.calledOnce.should.be.true;
+            graphic2.update.calledOnce.should.be.true;
+            graphic3.update.calledOnce.should.be.true;
         });
     });
 
-
-
     describe("adding and removing and getting graphics", function() {
-
-        it("addGraphic", function(){
-            var layer = new Layer();
-            layer.addGraphic(graphic1);
-            layer.update();
-            expect(graphic1.update.calls.count()).toEqual(1);
-            expect(graphic2.update.calls.count()).toEqual(0);
-            expect(graphic3.update.calls.count()).toEqual(0);
-        });
 
         it("removeGraphic", function(){
             var layer = new Layer();
@@ -237,38 +173,32 @@ describe("Layer:", function() {
             layer.update();
             layer.removeGraphic(graphic2);
             layer.update();
-            expect(graphic1.update.calls.count()).toEqual(2);
-            expect(graphic2.update.calls.count()).toEqual(1);
-            expect(graphic3.update.calls.count()).toEqual(2);
+            graphic1.update.callCount.should.equal(2);
+            graphic2.update.callCount.should.equal(1);
+            graphic3.update.callCount.should.equal(2);
             layer.removeGraphic(graphic1);
             layer.update();
-            expect(graphic1.update.calls.count()).toEqual(2);
-            expect(graphic2.update.calls.count()).toEqual(1);
-            expect(graphic3.update.calls.count()).toEqual(3);
-            layer.removeGraphic(graphic3);
-            layer.update();
-            expect(graphic1.update.calls.count()).toEqual(2);
-            expect(graphic2.update.calls.count()).toEqual(1);
-            expect(graphic3.update.calls.count()).toEqual(3);
+            graphic1.update.callCount.should.equal(2);
+            graphic2.update.callCount.should.equal(1);
+            graphic3.update.callCount.should.equal(3);
         });
 
-        it("getGraphicAt returns correct graphic", function() {
+        it("should return correct graphic", function() {
             var layer = new Layer();
             layer.addGraphic(graphic1);
             layer.addGraphic(graphic2);
             layer.addGraphic(graphic3);
 
-            var isSame = layer.getGraphicAt(1) === graphic2;
-            expect(isSame).toEqual(true);
+            (layer.getGraphicAt(1) === graphic2).should.be.true;
         });
 
-        it("getGraphicAt returns undefined if out of bounds", function() {
+        it("should return undefined if out of bounds", function() {
             var layer = new Layer();
             layer.addGraphic(graphic1);
             layer.addGraphic(graphic2);
             layer.addGraphic(graphic3);
 
-            expect(layer.getGraphicAt(-1)).toEqual(undefined);
+            expect(layer.getGraphicAt(-1)).to.be.undefined;
         });
 
         it("removeAllGraphics", function() {
@@ -278,9 +208,9 @@ describe("Layer:", function() {
             layer.addGraphic(graphic3);
             layer.removeAllGraphics();
             layer.update();
-            expect(graphic1.update.calls.count()).toEqual(0);
-            expect(graphic2.update.calls.count()).toEqual(0);
-            expect(graphic3.update.calls.count()).toEqual(0);
+            graphic1.update.callCount.should.equal(0);
+            graphic2.update.callCount.should.equal(0);
+            graphic3.update.callCount.should.equal(0);
         });
     });
 
@@ -291,31 +221,31 @@ describe("Layer:", function() {
         graphic1 = new Graphic();
         graphic2 = new Graphic();
         graphic3 = new Graphic();
-        spyOn(graphic1, 'render');
-        spyOn(graphic2, 'render');
-        spyOn(graphic3, 'render');
-        spyOn(graphic1, 'clear');
-        spyOn(graphic2, 'clear');
-        spyOn(graphic3, 'clear');
-        spyOn(graphic1, 'update');
-        spyOn(graphic2, 'update');
-        spyOn(graphic3, 'update');
-        spyOn(graphic1, 'setRenderContext');
-        spyOn(graphic2, 'setRenderContext');
-        spyOn(graphic3, 'setRenderContext');
+        sinon.stub(graphic1, "render");
+        sinon.stub(graphic2, "render");
+        sinon.stub(graphic3, "render");
+        sinon.stub(graphic1, "clear");
+        sinon.stub(graphic2, "clear");
+        sinon.stub(graphic3, "clear");
+        sinon.stub(graphic1, "update");
+        sinon.stub(graphic2, "update");
+        sinon.stub(graphic3, "update");
+        // sinon.spy(graphic1, "renderContext");
+        // sinon.spy(graphic2, "renderContext");
+        // sinon.spy(graphic3, "renderContext");
     }
 
     function spyHasGlobalPixelAtAndReturnFalse()
     {
-        spyOn(graphic1, 'hasGlobalPixelAt').and.returnValue(false);
-        spyOn(graphic2, 'hasGlobalPixelAt').and.returnValue(false);
-        spyOn(graphic3, 'hasGlobalPixelAt').and.returnValue(false);
+        sinon.stub(graphic1, "hasGlobalPixelAt").returns(false);
+        sinon.stub(graphic2, "hasGlobalPixelAt").returns(false);
+        sinon.stub(graphic3, "hasGlobalPixelAt").returns(false);
     }
 
     function spyHasGlobalPixelAtAndOneReturnsTrue()
     {
-        spyOn(graphic1, 'hasGlobalPixelAt').and.returnValue(false);
-        spyOn(graphic2, 'hasGlobalPixelAt').and.returnValue(true);
-        spyOn(graphic3, 'hasGlobalPixelAt').and.returnValue(false);
+        sinon.stub(graphic1, "hasGlobalPixelAt").returns(false);
+        sinon.stub(graphic2, "hasGlobalPixelAt").returns(true);
+        sinon.stub(graphic3, "hasGlobalPixelAt").returns(false);
     }
 });

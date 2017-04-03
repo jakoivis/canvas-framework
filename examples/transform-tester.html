@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>canvas-framework: Transform tester</title>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/transformTester.js"></script>
+    <script src="../canvas-framework.js"></script>
+
+    <style>
+    form {
+        float:left;
+        width: 220px;
+    }
+
+    fieldset {
+        border: 1px dashed #aaa;
+        background-color: #eee;
+    }
+
+    fieldset > legend {
+        background-color: #333;
+        border: 1px solid #AAA;
+        color: #EEE;
+    }
+
+    fieldset p {
+        margin:0;
+    }
+
+    input[type='text'] {
+        width:50px;
+    }
+
+    fieldset.arguments {
+        display: none;
+    }
+
+    </style>
+</head>
+
+<body>
+
+    <div id="test"></div>
+
+    <script>
+        $("#test").transformTester({
+            imagePath: "images/image_03.png",
+            canvasWidth: 550,
+            canvasHeight: 380
+        });
+    </script>
+</body>
+</html>

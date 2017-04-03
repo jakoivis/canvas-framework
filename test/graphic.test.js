@@ -1,242 +1,193 @@
-describe("Graphic:", function() {
+var ImageDataUtil = require("./utils/ImageDataUtil.js");
 
-    ClassTester.classTest(Graphic);
+describe("Graphic", function() {
 
-    var imageData = ImageTester.createTestImage();
-
-
+    var imageData = ImageDataUtil.createTestImage();
+    var COLORS = ImageDataUtil.RGBA32;
 
     describe("options", function() {
 
-        it("default values without options", function() {
+        it("should have default values without options", function() {
             var graphic = new Graphic();
-            expect(graphic.x).toEqual(0);
-            expect(graphic.y).toEqual(0);
-            expect(graphic.onRollOver).toEqual(undefined);
-            expect(graphic.onRollOut).toEqual(undefined);
-            expect(graphic.onClick).toEqual(undefined);
-            expect(graphic.getImageData()).toEqual(undefined);
+            graphic.x.should.equal(0);
+            graphic.y.should.equal(0);
+            expect(graphic.onRollOver).to.be.null;
+            expect(graphic.onRollOut).to.be.null;
+            expect(graphic.onClick).to.be.null;
+            expect(graphic.imageData).to.be.null;
         });
 
-        it("define values in options", function() {
+        it("should define options values", function() {
             var graphic = new Graphic({
                 x: 1,
                 y: 2,
                 onRollOver: function() {return 3;},
                 onRollOut: function() {return 4;},
                 onClick: function(){return 5;},
-                imageData: ImageTester.createTestImage(),
+                imageData: imageData,
             });
 
-            expect(graphic.x).toEqual(1);
-            expect(graphic.y).toEqual(2);
-            expect(graphic.onRollOver()).toEqual(3);
-            expect(graphic.onRollOut()).toEqual(4);
-            expect(graphic.onClick()).toEqual(5);
+            graphic.x.should.equal(1);
+            graphic.y.should.equal(2);
+            graphic.onRollOver().should.equal(3);
+            graphic.onRollOut().should.equal(4);
+            graphic.onClick().should.equal(5);
 
-            var imageData = graphic.getImageData();
-            ImageTester.expectToHaveImageDataProperties(imageData);
-            ImageTester.expectImageDataSizeToBe(imageData, 20, 20);
+            graphic.imageData.width.should.equal(10);
+            graphic.imageData.height.should.equal(10);
+            graphic.imageData.data.length.should.equal(10 * 10 * 4);
         });
     });
 
+    describe("hasGlobalPixelAt", function() {
 
-
-    describe("setImageData", function(){
-
-        it("check that imageData32 view is in sync with imageData", function() {
+        it("should find pixel (graphic position 0,0)", function() {
             var graphic = new Graphic();
-            graphic.setImageData(ImageTester.createTestImage());
-            var hasPixel = graphic.hasGlobalPixelAt(0,0);
-            expect(hasPixel).toEqual(true);
+            graphic.imageData = imageData;
+
+            graphic.hasGlobalPixelAt(0,0).should.be.true;
+            graphic.hasGlobalPixelAt(9,0).should.be.true;
+            graphic.hasGlobalPixelAt(0,9).should.be.true;
+            graphic.hasGlobalPixelAt(9,9).should.be.true;
+
+            graphic.hasGlobalPixelAt(-1,0).should.be.false;
+            graphic.hasGlobalPixelAt(10,0).should.be.false;
+            graphic.hasGlobalPixelAt(0,-1).should.be.false;
+            graphic.hasGlobalPixelAt(0,10).should.be.false;
+        });
+
+        it("should find pixel (graphic position 100,200)", function() {
+            var graphic = new Graphic();
+            graphic.imageData = imageData;
+            graphic.x = 100;
+            graphic.y = 200;
+
+            graphic.hasGlobalPixelAt(100,200).should.be.true;
+            graphic.hasGlobalPixelAt(109,200).should.be.true;
+            graphic.hasGlobalPixelAt(100,209).should.be.true;
+            graphic.hasGlobalPixelAt(109,209).should.be.true;
+
+            graphic.hasGlobalPixelAt(99,200).should.be.false;
+            graphic.hasGlobalPixelAt(110,200).should.be.false;
+            graphic.hasGlobalPixelAt(100,210).should.be.false;
+            graphic.hasGlobalPixelAt(100,199).should.be.false;
+        });
+
+        it("should return false for fully transparent pixels", function() {
+            var graphic = new Graphic();
+            graphic.imageData = imageData;
+
+            // this specific pixel is fully transparent
+            graphic.hasGlobalPixelAt(1,0).should.be.false;
+        });
+
+        it("should return true for half transparent pixels", function() {
+            var graphic = new Graphic();
+            graphic.imageData = imageData;
+
+            // this specific pixel is half transparent
+            graphic.hasGlobalPixelAt(2,0).should.be.true;
         });
     });
 
+    describe("getGlobalPixel32At", function() {
 
+        it("should find corners (graphic position 0,0)", function() {
+            var graphic = new Graphic();
+            graphic.imageData = imageData;
 
-    describe("positions and rendering:", function() {
+            graphic.getGlobalPixel32At(0,0).should.equal(COLORS.R);
+            graphic.getGlobalPixel32At(9,0).should.equal(COLORS.R);
+            graphic.getGlobalPixel32At(0,9).should.equal(COLORS.R);
+            graphic.getGlobalPixel32At(9,9).should.equal(COLORS.R);
 
-        it("is (0,0)", function() {
-            var graphic = new Graphic({imageData:imageData});
-            var canvas = document.createElement("canvas");
-            var context = canvas.getContext("2d");
-            graphic.setRenderContext(context);
-            graphic.render();
-            ImageTester.expectTestImagePositionToBeOnCanvas(canvas, 0, 0);
+            graphic.getGlobalPixel32At(-1,0).should.equal(0);
+            graphic.getGlobalPixel32At(10,0).should.equal(0);
+            graphic.getGlobalPixel32At(0,-1).should.equal(0);
+            graphic.getGlobalPixel32At(0,10).should.equal(0);
         });
 
-        it("is (10,10)", function() {
-            var graphic = new Graphic({imageData:imageData, x: 10, y: 10});
-            var canvas = document.createElement("canvas");
-            var context = canvas.getContext("2d");
-            graphic.setRenderContext(context);
-            graphic.render();
-            ImageTester.expectTestImagePositionToBeOnCanvas(canvas, 10, 10);
-        });
+        it("should find corners (graphic position 100,200)", function() {
+            var graphic = new Graphic();
+            graphic.imageData = imageData;
+            graphic.x = 100;
+            graphic.y = 200;
 
-        it("is (10,10) after changing position and rerendering", function() {
-            var graphic = new Graphic({imageData:imageData, x: 0, y: 0});
-            var canvas = document.createElement("canvas");
-            var context = canvas.getContext("2d");
-            graphic.setRenderContext(context);
-            graphic.x = 10;
-            graphic.y = 10;
-            graphic.render();
-            ImageTester.expectTestImagePositionToBeOnCanvas(canvas, 10, 10);
-        });
-    });
+            graphic.getGlobalPixel32At(100,200).should.equal(COLORS.R);
+            graphic.getGlobalPixel32At(109,200).should.equal(COLORS.R);
+            graphic.getGlobalPixel32At(100,209).should.equal(COLORS.R);
+            graphic.getGlobalPixel32At(109,209).should.equal(COLORS.R);
 
-
-
-    describe("Remove graphic:", function() {
-
-        it("removed graphic should leave fully transparent pixels", function() {
-            var graphic = new Graphic({imageData:imageData});
-            var canvas = document.createElement("canvas");
-            var context = canvas.getContext("2d");
-            graphic.setRenderContext(context);
-            graphic.render();
-            graphic.clear();
-            ImageTester.expectTestImageToBeRemovedFromCanvas(canvas, 0,0);
-        });
-
-        it("removed graphic from moved position should leave fully transparent pixels", function() {
-            var graphic = new Graphic({imageData:imageData});
-            var canvas = document.createElement("canvas");
-            var context = canvas.getContext("2d");
-            graphic.setRenderContext(context);
-            graphic.render();
-            graphic.clear();
-            graphic.x = 200;
-            graphic.y = 100;
-            graphic.render();
-            graphic.clear();
-            ImageTester.expectTestImageToBeRemovedFromCanvas(canvas, 0,0);
-            ImageTester.expectTestImageToBeRemovedFromCanvas(canvas, 200,100);
+            graphic.getGlobalPixel32At(99,200).should.equal(0);
+            graphic.getGlobalPixel32At(110,200).should.equal(0);
+            graphic.getGlobalPixel32At(100,210).should.equal(0);
+            graphic.getGlobalPixel32At(100,199).should.equal(0);
         });
     });
 
+    describe("positions and rendering", function() {
 
+        it("should render graphic at correct position (0,0)", function() {
+            var graphic = new Graphic({imageData:imageData});
+            var canvas = document.createElement("canvas");
+            graphic.renderContext = canvas.getContext("2d");
+            graphic.render();
 
-    describe("local and global coordinates", function() {
+            ImageDataUtil.shouldHaveImageAt(canvas, 0, 0);
+        });
 
-        it("globalToLocal", function() {
+        it("should render graphic at correct position (200,100)", function() {
+            var graphic = new Graphic({imageData:imageData, x:200, y:100});
+            var canvas = document.createElement("canvas");
+            graphic.renderContext = canvas.getContext("2d");
+            graphic.render();
+
+            ImageDataUtil.shouldHaveImageAt(canvas, 200, 100);
+        });
+
+        it("should remove graphic", function() {
+            var graphic = new Graphic({imageData:imageData});
+            var canvas = document.createElement("canvas");
+            graphic.renderContext = canvas.getContext("2d");
+            graphic.render();
+            graphic.clear();
+
+            ImageDataUtil.shouldNotHaveImageAt(canvas, 0, 0);
+        });
+
+        it("should removed graphic from moved position", function() {
+            var graphic = new Graphic({imageData:imageData, x:200, y:100});
+            var canvas = document.createElement("canvas");
+            graphic.renderContext = canvas.getContext("2d");
+            graphic.render();
+            graphic.x = 0;
+            graphic.y = 0;
+            graphic.clear();
+
+            ImageDataUtil.shouldNotHaveImageAt(canvas, 200,100);
+        });
+    });
+
+    describe("pos and global coordinates", function() {
+
+        it("globalTopos", function() {
             var graphic = new Graphic({imageData:imageData, x: 100, y: 200});
-            var localCoordinates = graphic.globalToLocal(0, 0);
-            expect(localCoordinates.x).toEqual(-100);
-            expect(localCoordinates.y).toEqual(-200);
-            localCoordinates = graphic.globalToLocal(110, 210);
-            expect(localCoordinates.x).toEqual(10);
-            expect(localCoordinates.y).toEqual(10);
+            var pos = graphic.globalToLocal(0, 0);
+            pos.x.should.equal(-100);
+            pos.y.should.equal(-200);
+            pos = graphic.globalToLocal(110, 210);
+            pos.x.should.equal(10);
+            pos.y.should.equal(10);
         });
 
-        it("localToGlobal", function() {
+        it("posToGlobal", function() {
             var graphic = new Graphic({imageData:imageData, x: 100, y: 200});
-            var globalCoordinates = graphic.localToGlobal(0, 0);
-            expect(globalCoordinates.x).toEqual(100);
-            expect(globalCoordinates.y).toEqual(200);
-            globalCoordinates = graphic.localToGlobal(110, 210);
-            expect(globalCoordinates.x).toEqual(210);
-            expect(globalCoordinates.y).toEqual(410);
-        });
-    });
-
-
-
-    describe("hasGlobalPixelAt:", function() {
-
-        describe("off bounding box. return false when", function() {
-
-            it("x and y don't hit", function() {
-                var graphic = new Graphic({imageData:imageData, x: 10, y: 10});
-                var canvas = document.createElement("canvas");
-                var context = canvas.getContext("2d");
-                graphic.setRenderContext(context);
-                var actual = graphic.hasGlobalPixelAt(5,5);
-                expect(actual).toEqual(false);
-            });
-
-            it("y hits, x doesn't (left)", function() {
-                var graphic = new Graphic({imageData:imageData, x: 10, y: 10});
-                var canvas = document.createElement("canvas");
-                var context = canvas.getContext("2d");
-                graphic.setRenderContext(context);
-                var actual = graphic.hasGlobalPixelAt(5,15);
-                expect(actual).toEqual(false);
-            });
-
-            it("y hits, x doesn't (right)", function() {
-                var graphic = new Graphic({imageData:imageData, x: 10, y: 10});
-                var canvas = document.createElement("canvas");
-                var context = canvas.getContext("2d");
-                graphic.setRenderContext(context);
-                var actual = graphic.hasGlobalPixelAt(35,10);
-                expect(actual).toEqual(false);
-            });
-
-            it("x hits, y doesn't (top)", function() {
-                var graphic = new Graphic({imageData:imageData, x: 10, y: 10});
-                var canvas = document.createElement("canvas");
-                var context = canvas.getContext("2d");
-                graphic.setRenderContext(context);
-                var actual = graphic.hasGlobalPixelAt(10, 5);
-                expect(actual).toEqual(false);
-            });
-
-            it("x hits, y doesn't (bottom)", function() {
-                var graphic = new Graphic({imageData:imageData, x: 10, y: 10});
-                var canvas = document.createElement("canvas");
-                var context = canvas.getContext("2d");
-                graphic.setRenderContext(context);
-                var actual = graphic.hasGlobalPixelAt(15, 35);
-                expect(actual).toEqual(false);
-            });
-        });
-
-
-
-        describe("corners, return graphic:", function() {
-
-            it("left top", function() {
-                var graphic = new Graphic({imageData:imageData, x: 10, y: 10});
-                var canvas = document.createElement("canvas");
-                var context = canvas.getContext("2d");
-                graphic.setRenderContext(context);
-                var actual = graphic.hasGlobalPixelAt(10,10);
-                expect(actual).toEqual(true);
-            });
-
-            it("bottom right", function() {
-                var graphic = new Graphic({imageData:imageData, x: 10, y: 10});
-                var canvas = document.createElement("canvas");
-                var context = canvas.getContext("2d");
-                graphic.setRenderContext(context);
-                var actual = graphic.hasGlobalPixelAt(29,29);
-                expect(actual).toEqual(true);
-            });
-        });
-
-
-
-        describe("transparency", function() {
-
-            it("Return false when 100% transparent pixel", function() {
-                var graphic = new Graphic({imageData:imageData});
-                var canvas = document.createElement("canvas");
-                var context = canvas.getContext("2d");
-                graphic.setRenderContext(context);
-                var actual = graphic.hasGlobalPixelAt(0,6);
-                expect(actual).toEqual(false);
-            });
-
-            it("Return true when semi-transparent pixel", function() {
-                var graphic = new Graphic({imageData:imageData});
-                var canvas = document.createElement("canvas");
-                var context = canvas.getContext("2d");
-                graphic.setRenderContext(context);
-                var actual = graphic.hasGlobalPixelAt(0,4);
-                expect(actual).toEqual(true);
-            });
+            var pos = graphic.localToGlobal(0, 0);
+            pos.x.should.equal(100);
+            pos.y.should.equal(200);
+            pos = graphic.localToGlobal(110, 210);
+            pos.x.should.equal(210);
+            pos.y.should.equal(410);
         });
     });
 });

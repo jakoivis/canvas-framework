@@ -1,13 +1,16 @@
 
 module.exports = new CanvasUtil();
 
+/**
+ * @class CanvasUtil
+ */
 function CanvasUtil()
 {
     'use strict';
 
-    if(CanvasUtil.prototype.singletonInstance)
+    if(CanvasUtil.prototype.instance)
     {
-        return CanvasUtil.prototype.singletonInstance;
+        return CanvasUtil.prototype.instance;
     }
 
     if (!(this instanceof CanvasUtil))
@@ -15,58 +18,77 @@ function CanvasUtil()
         return new CanvasUtil();
     }
 
-    CanvasUtil.prototype.singletonInstance = this;
+    CanvasUtil.prototype.instance = this;
 
     var me = this;
 
-    var canvas;
-    var context;
+    var _canvas = null;
+    var _context = null;
 
     function init()
     {
-        me.resetTempCanvas();
+        me.reset();
     }
 
-    me.resetTempCanvas = function()
+    /**
+     * Reset the temporal canvas
+     */
+    me.reset = function()
     {
-        canvas = document.createElement("canvas");
-        context = canvas.getContext("2d");
+        _canvas = document.createElement("canvas");
+        _context = _canvas.getContext("2d");
+    };
+
+    /**
+     * Get ImageData of CanvasImageSource
+     *
+     * @param  {canvasImageSource}  image   Source image
+     * @return {ImageData}
+     */
+    me.getImageData = function(image)
+    {
+        updateCanvasSize(image);
+        clearContext(image);
+        drawImageToContext(image);
+        return getImageData(image);
     }
 
-    me.getImageDataFromTag = function(imageTag)
+    /**
+     * Creates an image data.
+     *
+     * @param      {ImageData}  object
+     */
+    me.createImageData = function(imageData)
     {
-        updateCanvasSize(imageTag);
-        clearCanvas(imageTag);
-        drawImageTag(imageTag);
-        return getImageData(imageTag);
+        return _context.createImageData(imageData);
     }
 
-    function updateCanvasSize(imageTag)
+    function updateCanvasSize(image)
     {
-        if (canvas.width < imageTag.width)
+        if (_canvas.width < image.width)
         {
-            canvas.width = imageTag.width;
+            _canvas.width = image.width;
         }
 
-        if(canvas.height < imageTag.height)
+        if(_canvas.height < image.height)
         {
-            canvas.height = imageTag.height;
+            _canvas.height = image.height;
         }
     }
 
-    function clearCanvas(imageTag)
+    function clearContext(image)
     {
-        context.clearRect(0, 0, imageTag.width, imageTag.height);
+        _context.clearRect(0, 0, image.width, image.height);
     }
 
-    function drawImageTag(imageTag)
+    function drawImageToContext(image)
     {
-        context.drawImage(imageTag, 0, 0);
+        _context.drawImage(image, 0, 0);
     }
 
-    function getImageData(imageTag)
+    function getImageData(image)
     {
-        return context.getImageData(0, 0, imageTag.width, imageTag.height);
+        return _context.getImageData(0, 0, image.width, image.height);
     }
 
     init();

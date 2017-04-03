@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>canvas fw: Graphic click test</title>
+    <script src="../canvas-framework.js"></script>
+</head>
+
+<body style="background-color: #AAAAAA;">
+
+    <div class="output"></div>
+
+    <script>
+        (function(){
+
+            var layer = new Layer({
+                appendToBody: true,
+                fullScreen: true,
+                enableOnClickEvents: true,
+                enableOnRollEvents: true
+            });
+
+            var loader = new ImageLoader({
+                images:[
+                    {src: 'images/test.png', name: 'purple', y:10, x:10, rotationRadius: 30},
+                    {src: 'images/test.png', name: 'blue', y:10, x:30, rotationRadius: 60},
+                    {src: 'images/test.png', name: 'orange', y:10, x:110, rotationRadius: 90}
+                ],
+                onComplete: onComplete,
+            });
+
+            function onComplete()
+            {
+                addGraphic(loader.getItemAt(0));
+                addGraphic(loader.getItemAt(1));
+                addGraphic(loader.getItemAt(2));
+            }
+
+            function addGraphic(loaderItem)
+            {
+                var graphic = new Graphic({
+                    imageData: CanvasUtil.getImageData(loaderItem.tag),
+                    update: updateGraphic,
+                    x: loaderItem.x,
+                    y: loaderItem.y,
+                });
+
+                graphic.name = loaderItem.name;
+                graphic.rotationRadius = loaderItem.rotationRadius;
+                // graphic.update = updateGraphic; // works also with this
+                // TODO: create unit tests fot this
+
+                layer.addGraphic(graphic);
+
+                graphic.render();
+            }
+
+            function updateGraphic()
+            {
+                var period = new Date().getTime() * 0.002;
+                this.x = 100 + Math.cos(period) * this.rotationRadius;
+                this.y = 100 + Math.sin(period) * this.rotationRadius;
+            }
+
+            function animationLoop()
+            {
+                layer.update();
+                layer.render();
+                window.requestAnimationFrame(animationLoop);
+            }
+
+            window.requestAnimationFrame(animationLoop);
+
+        })();
+
+
+    </script>
+</body>
+</html>

@@ -1,17 +1,20 @@
+var sinon = require("sinon");
+var ImageDataUtil = require("./utils/ImageDataUtil.js");
+
 describe("Mouse interactions", function() {
 
     var graphic1;
     var graphic2;
 
     beforeEach(function() {
-        graphic1 = new Graphic({imageData: ImageTester.createTestImage()});
-        graphic2 = new Graphic({imageData: ImageTester.createTestImage()});
-        graphic1.onClick = jasmine.createSpy('clickHandler1');
-        graphic1.onRollOver = jasmine.createSpy('rollOverHandler1');
-        graphic1.onRollOut = jasmine.createSpy('rollOutHandler1');
-        graphic2.onClick = jasmine.createSpy('clickHandler2');
-        graphic2.onRollOver = jasmine.createSpy('rollOverHandler2');
-        graphic2.onRollOut = jasmine.createSpy('rollOutHandler2');
+        graphic1 = new Graphic({imageData: ImageDataUtil.createTestImage()});
+        graphic2 = new Graphic({imageData: ImageDataUtil.createTestImage()});
+        graphic1.onClick = sinon.spy();
+        graphic1.onRollOver = sinon.spy();
+        graphic1.onRollOut = sinon.spy();
+        graphic2.onClick = sinon.spy();
+        graphic2.onRollOver = sinon.spy();
+        graphic2.onRollOut = sinon.spy();
     });
 
     afterEach(function() {
@@ -19,166 +22,170 @@ describe("Mouse interactions", function() {
 
     describe("Graphic click", function() {
 
-        it("click handler is not triggered if click events are not enabled on layer", function() {
+        it("should not trigger click handler if click events are not enabled on layer", function() {
             var layer = new Layer();
             layer.addGraphic(graphic1);
             simulateClick(layer.getCanvas(), 0, 0);
-            expect(graphic1.onClick).not.toHaveBeenCalled();
+            graphic1.onClick.callCount.should.equal(0);
         });
 
-        it("clicks are triggered when enabled from layer's options object", function() {
+        it("should triggered clicks when enabled", function() {
             var layer = new Layer({enableOnClickEvents:true});
             layer.addGraphic(graphic1);
             simulateClick(layer.getCanvas(), 0, 0);
-            expect(graphic1.onClick).toHaveBeenCalled();
+            graphic1.onClick.callCount.should.equal(1);
         });
 
-        it("clicks are triggered when enabled by enableOnClickEvents function call", function() {
+        it("should trigger clicks when enabled by enableOnClickEvents call", function() {
             var layer = new Layer();
             layer.enableOnClickEvents();
             layer.addGraphic(graphic1);
             simulateClick(layer.getCanvas(), 0, 0);
-            expect(graphic1.onClick).toHaveBeenCalled();
+            graphic1.onClick.callCount.should.equal(1);
         });
 
-        it("clicks are not triggered when disabled by disableOnClickEvents function call", function() {
+        it("should not trigger clicks when disabled by disableOnClickEvents call", function() {
             var layer = new Layer();
             layer.enableOnClickEvents();
             layer.disableOnClickEvents();
             layer.addGraphic(graphic1);
             simulateClick(layer.getCanvas(), 0, 0);
-            expect(graphic1.onClick).not.toHaveBeenCalled();
+            graphic1.onClick.callCount.should.equal(0);
         });
 
-        it("click is not triggered if mouse position doesn't hit the graphic", function() {
+        it("should not trigger click if mouse doesn't hit the graphic", function() {
             var layer = new Layer({enableOnClickEvents:true});
             layer.addGraphic(graphic1);
             simulateClick(layer.getCanvas(), 100, 0);
-            expect(graphic1.onClick).not.toHaveBeenCalled();
+            graphic1.onClick.callCount.should.equal(0);
         });
 
-        it("graphics are identified", function() {
+        it("should identify graphics", function() {
             var layer = new Layer({enableOnClickEvents:true});
             graphic2.x = 40;
             layer.addGraphic(graphic1);
             layer.addGraphic(graphic2);
             simulateClick(layer.getCanvas(), 40, 0);
-            expect(graphic1.onClick).not.toHaveBeenCalled();
-            expect(graphic2.onClick).toHaveBeenCalled();
+            graphic1.onClick.callCount.should.equal(0);
+            graphic2.onClick.callCount.should.equal(1);
         });
 
-        it("graphics are identified when overlapping", function() {
+        it("should identify graphics when overlapping", function() {
             var layer = new Layer({enableOnClickEvents:true});
-            graphic2.x = 10;
+            graphic2.x = 5;
             layer.addGraphic(graphic1);
             layer.addGraphic(graphic2);
-            simulateClick(layer.getCanvas(), 10, 0);
-            expect(graphic1.onClick.calls.count()).toEqual(0);
-            expect(graphic2.onClick.calls.count()).toEqual(1);
-            simulateClick(layer.getCanvas(), 9, 0);
-            expect(graphic1.onClick.calls.count()).toEqual(1);
-            expect(graphic2.onClick.calls.count()).toEqual(1);
+            simulateClick(layer.getCanvas(), 5, 0);
+            graphic1.onClick.callCount.should.equal(0);
+            graphic2.onClick.callCount.should.equal(1);
+            simulateClick(layer.getCanvas(), 4, 0);
+            graphic1.onClick.callCount.should.equal(1);
+            graphic2.onClick.callCount.should.equal(1);
         });
     });
 
     describe("Graphic mouse move", function() {
 
-        it("roll handlers handlers are not triggered if roll events are not enabled on layer", function() {
+        it("should not trigger roll handlers if roll events are not enabled on layer", function() {
             var layer = new Layer();
             layer.addGraphic(graphic1);
             simulateMouseMove(layer.getCanvas(), 0, 0);
-            expect(graphic1.onRollOver).not.toHaveBeenCalled();
-            expect(graphic1.onRollOut).not.toHaveBeenCalled();
+            graphic1.onRollOver.callCount.should.equal(0);
+            graphic1.onRollOut.callCount.should.equal(0);
         });
 
-        it("roll handlers are triggered when enabled from layer's options object", function() {
+        it("should trigger roll handlers when enabled from layer's options object", function() {
             var layer = new Layer({enableOnRollEvents:true});
             layer.addGraphic(graphic1);
             simulateMouseMove(layer.getCanvas(), 0, 0);
-            expect(graphic1.onRollOver.calls.count()).toEqual(1);
-            expect(graphic1.onRollOut.calls.count()).toEqual(0);
+            graphic1.onRollOver.callCount.should.equal(1);
+            graphic1.onRollOut.callCount.should.equal(0);
             simulateMouseMove(layer.getCanvas(), 30, 0);
-            expect(graphic1.onRollOver.calls.count()).toEqual(1);
-            expect(graphic1.onRollOut.calls.count()).toEqual(1);
+            graphic1.onRollOver.callCount.should.equal(1);
+            graphic1.onRollOut.callCount.should.equal(1);
         });
 
-        it("roll handlers are triggered when enabled by enableOnRollEvents function call", function() {
+        it("should trigger roll handlers when enabled by enableOnRollEvents call", function() {
             var layer = new Layer();
             layer.enableOnRollEvents();
             layer.addGraphic(graphic1);
             simulateMouseMove(layer.getCanvas(), 0, 0);
-            expect(graphic1.onRollOver.calls.count()).toEqual(1);
-            expect(graphic1.onRollOut.calls.count()).toEqual(0);
+            graphic1.onRollOver.callCount.should.equal(1);
+            graphic1.onRollOut.callCount.should.equal(0);
             simulateMouseMove(layer.getCanvas(), 30, 0);
-            expect(graphic1.onRollOver.calls.count()).toEqual(1);
-            expect(graphic1.onRollOut.calls.count()).toEqual(1);
+            graphic1.onRollOver.callCount.should.equal(1);
+            graphic1.onRollOut.callCount.should.equal(1);
         });
 
-        it("roll handler are not triggered when disabled by disableOnRollEvents function call", function() {
+        it("should not trigger roll handler when disabled by disableOnRollEvents call", function() {
             var layer = new Layer();
             layer.enableOnRollEvents();
             layer.disableOnRollEvents();
             layer.addGraphic(graphic1);
             simulateMouseMove(layer.getCanvas(), 0, 0);
-            expect(graphic1.onRollOver.calls.count()).toEqual(0);
-            expect(graphic1.onRollOut.calls.count()).toEqual(0);
+            graphic1.onRollOver.callCount.should.equal(0);
+            graphic1.onRollOut.callCount.should.equal(0);
             simulateMouseMove(layer.getCanvas(), 30, 0);
-            expect(graphic1.onRollOver.calls.count()).toEqual(0);
-            expect(graphic1.onRollOut.calls.count()).toEqual(0);
+            graphic1.onRollOver.callCount.should.equal(0);
+            graphic1.onRollOut.callCount.should.equal(0);
         });
 
-        it("roll handlers are not triggered if mouse position doesn't hit the graphic", function() {
+        it("should not trigger roll handlers if mouse position doesn't hit the graphic", function() {
             var layer = new Layer({enableOnRollEvents:true});
             layer.addGraphic(graphic1);
-            simulateMouseMove(layer.getCanvas(), 30, 0);
-            simulateMouseMove(layer.getCanvas(), 30, 30);
-            simulateMouseMove(layer.getCanvas(), 0, 30);
-            expect(graphic1.onRollOver).not.toHaveBeenCalled();
-            expect(graphic1.onRollOut).not.toHaveBeenCalled();
+            simulateMouseMove(layer.getCanvas(), 10, 0);
+            simulateMouseMove(layer.getCanvas(), 10, 10);
+            simulateMouseMove(layer.getCanvas(), 0, 10);
+            graphic1.onRollOver.callCount.should.equal(0);
+            graphic1.onRollOut.callCount.should.equal(0);
         });
 
-        it("graphics are identified", function() {
+        it("should identify graphics", function() {
             var layer = new Layer({enableOnRollEvents:true});
-            graphic2.x = 40;
+            graphic2.x = 20;
             layer.addGraphic(graphic1);
             layer.addGraphic(graphic2);
-            simulateMouseMove(layer.getCanvas(), 40, 0);
-            expect(graphic1.onRollOver.calls.count()).toEqual(0);
-            expect(graphic1.onRollOut.calls.count()).toEqual(0);
-            expect(graphic2.onRollOver.calls.count()).toEqual(1);
-            expect(graphic2.onRollOut.calls.count()).toEqual(0);
-            simulateMouseMove(layer.getCanvas(), 25, 0);
-            expect(graphic1.onRollOver.calls.count()).toEqual(0);
-            expect(graphic1.onRollOut.calls.count()).toEqual(0);
-            expect(graphic2.onRollOver.calls.count()).toEqual(1);
-            expect(graphic2.onRollOut.calls.count()).toEqual(1);
-            simulateMouseMove(layer.getCanvas(), 10, 0);
-            expect(graphic1.onRollOver.calls.count()).toEqual(1);
-            expect(graphic1.onRollOut.calls.count()).toEqual(0);
-            expect(graphic2.onRollOver.calls.count()).toEqual(1);
-            expect(graphic2.onRollOut.calls.count()).toEqual(1);
-            simulateMouseMove(layer.getCanvas(), 25, 0);
-            expect(graphic1.onRollOver.calls.count()).toEqual(1);
-            expect(graphic1.onRollOut.calls.count()).toEqual(1);
-            expect(graphic2.onRollOver.calls.count()).toEqual(1);
-            expect(graphic2.onRollOut.calls.count()).toEqual(1);
-        });
+            simulateMouseMove(layer.getCanvas(), 20, 0);
+            graphic1.onRollOver.callCount.should.equal(0);
+            graphic1.onRollOut.callCount.should.equal(0);
+            graphic2.onRollOver.callCount.should.equal(1);
+            graphic2.onRollOut.callCount.should.equal(0);
 
-        it("graphics are identified when overlapping", function() {
-            var layer = new Layer({enableOnRollEvents:true});
-            graphic2.x = 10;
-            layer.addGraphic(graphic1);
-            layer.addGraphic(graphic2);
-            simulateMouseMove(layer.getCanvas(), 10, 0);
-            expect(graphic1.onRollOver.calls.count()).toEqual(0);
-            expect(graphic1.onRollOut.calls.count()).toEqual(0);
-            expect(graphic2.onRollOver.calls.count()).toEqual(1);
-            expect(graphic2.onRollOut.calls.count()).toEqual(0);
+            simulateMouseMove(layer.getCanvas(), 19, 0);
+            graphic1.onRollOver.callCount.should.equal(0);
+            graphic1.onRollOut.callCount.should.equal(0);
+            graphic2.onRollOver.callCount.should.equal(1);
+            graphic2.onRollOut.callCount.should.equal(1);
+
             simulateMouseMove(layer.getCanvas(), 9, 0);
-            expect(graphic1.onRollOver.calls.count()).toEqual(1);
-            expect(graphic1.onRollOut.calls.count()).toEqual(0);
-            expect(graphic2.onRollOver.calls.count()).toEqual(1);
-            expect(graphic2.onRollOut.calls.count()).toEqual(1);
+            graphic1.onRollOver.callCount.should.equal(1);
+            graphic1.onRollOut.callCount.should.equal(0);
+            graphic2.onRollOver.callCount.should.equal(1);
+            graphic2.onRollOut.callCount.should.equal(1);
+
+            simulateMouseMove(layer.getCanvas(), 10, 0);
+            graphic1.onRollOver.callCount.should.equal(1);
+            graphic1.onRollOut.callCount.should.equal(1);
+            graphic2.onRollOver.callCount.should.equal(1);
+            graphic2.onRollOut.callCount.should.equal(1);
+        });
+
+        it("should identify graphics when overlapping", function() {
+            var layer = new Layer({enableOnRollEvents:true});
+            graphic2.x = 5;
+            layer.addGraphic(graphic1);
+            layer.addGraphic(graphic2);
+            simulateMouseMove(layer.getCanvas(), 5, 0);
+            graphic1.onRollOver.callCount.should.equal(0);
+            graphic1.onRollOut.callCount.should.equal(0);
+            graphic2.onRollOver.callCount.should.equal(1);
+            graphic2.onRollOut.callCount.should.equal(0);
+
+            simulateMouseMove(layer.getCanvas(), 4, 0);
+            graphic1.onRollOver.callCount.should.equal(1);
+            graphic1.onRollOut.callCount.should.equal(0);
+            graphic2.onRollOver.callCount.should.equal(1);
+            graphic2.onRollOut.callCount.should.equal(1);
         });
     });
 

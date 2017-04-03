@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>canvas fw: Graphic click test</title>
+    <script src="../canvas-framework.js"></script>
+    <script src="//localhost:8081"></script>
+
+    <style>
+        canvas {
+            /*position:absolute;*/
+            /*top: 0;*/
+            /*left: 0;*/
+            /*left:50%;*/
+            /*margin-left:-250px;*/
+            /*top:50%;*/
+            /*margin-top:-166.5px;*/
+            /*width:500px;*/
+            /*height:333px;*/
+            /*width: 100%;*/
+            /*height: 100%;*/
+        }
+    </style>
+
+</head>
+
+<body>
+    <script>
+        (function(){
+
+            var loader = new ImageLoader({
+                images:[
+                    {src: 'images/pano_800x400_2.jpg'}
+                ],
+                onComplete: onComplete,
+            });
+
+            function onComplete()
+            {
+                var loaderItem = loader.getItemAt(0);
+                var imageData = CanvasUtil.getImageData(loaderItem.tag);
+
+                // Swirl 1
+
+                initLayer(imageData, function(l, t, mouse) {
+                    t.reset();
+                    t.do(Transform.Swirl, {
+                        originX: mouse.x,
+                        originY: mouse.y,
+                        angle: mouse.centerDistX * 0.0001,
+                        radius: mouse.centerDistY * 0.3
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
+
+                // Swirl 2
+
+                initLayer(imageData, function(l, t, mouse) {
+                    t.reset();
+                    t.do(Transform.Swirl, {
+                        originX: mouse.x,
+                        originY: mouse.y,
+                        angle: mouse.centerDistX * 0.0001,
+                        radius: mouse.centerDistY * 2
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
+
+                // Swirl 3
+
+                initLayer(imageData, function(l, t, mouse) {
+                    t.reset();
+                    t.do(Transform.Swirl, {
+                        originX: mouse.x,
+                        originY: mouse.y,
+                        angle: mouse.centerDistX * 0.001,
+                        radius: mouse.centerDistY * 0.3
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
+
+                // Dotted Swirl
+
+                initLayer(imageData, function(l, t, mouse) {
+                    t.reset();
+                    t.do(dottedSwird, {
+                        originX: mouse.x,
+                        originY: mouse.y,
+                        angle: mouse.centerDistX * 0.0001,
+                        radius: mouse.centerDistY * 2,
+                        interval: 4
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
+
+                function dottedSwird(srcIndex, src32, dst32, p, width, height, cache)
+                {
+                    var c = cache[srcIndex];
+
+                    if (c.y % p.interval === 0 && c.x % p.interval === 0)
+                    {
+                        Transform.Swirl(srcIndex, src32, dst32, p, width, height, cache);
+                    }
+                };
+
+                // Grid Swirl 1
+
+                initLayer(imageData, function(l, t, mouse) {
+                    t.reset();
+                    t.do(gridSwirl, {
+                        originX: mouse.x,
+                        originY: mouse.y,
+                        angle: mouse.centerDistX * 0.0001,
+                        radius: mouse.centerDistY * 2,
+                        interval: 10
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
+
+                function gridSwirl(srcIndex, src32, dst32, p, width, height, cache)
+                {
+                    var c = cache[srcIndex];
+
+                    if (c.y % p.interval === 0 || c.x % p.interval === 0)
+                    {
+                        Transform.Swirl(srcIndex, src32, dst32, p, width, height, cache);
+                    }
+                };
+
+                // lens
+
+                initLayer(imageData, function(l, t, mouse) {
+                    t.reset();
+                    t.do(Transform.lens, {
+                        originX: mouse.x,
+                        originY: mouse.y,
+                        radius: -100
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
+
+                initLayer(imageData, function(l, t, mouse) {
+                    t.reset();
+                    t.do(Transform.lens, {
+                        originX: mouse.x,
+                        originY: mouse.y,
+                        radius: 100
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
+
+                // stereographic
+
+                initLayer(imageData, function(l, t, mouse) {
+                    t.reset();
+                    t.do(Transform.stereographicProjection, {
+                        centerX: 0,
+                        centerY: 0,
+                        longitude: mouse.x,
+                        latitude: 20,
+                        zoom: 0.6,
+                        wrap: mouse.centerDistYPct,
+                        twist: 0,
+                        bulge: 0
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
+
+                initLayer(imageData, function(l, t, mouse) {
+                    t.reset();
+                    t.do(Transform.stereographicProjection, {
+                        centerX: 0,
+                        centerY: 0,
+                        longitude: mouse.x,
+                        latitude: mouse.centerDistYPct * 50,
+                        zoom: 1,
+                        wrap: 0,
+                        twist: 0,
+                        bulge: 0
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
+
+                initLayer(imageData, function(l, t, mouse) {
+                    t.reset();
+                    t.do(Transform.stereographicProjection, {
+                        centerX: 0,
+                        centerY: 0,
+                        longitude: mouse.xPct * 180,
+                        latitude: 45 + mouse.yPct * 90,
+                        zoom: 0.6,
+                        wrap: 0,
+                        twist: 0,
+                        bulge: 0
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
+
+
+
+
+
+                // Test 1
+
+                initLayer(imageData, function(l, t, mouse) {
+                    t.reset();
+                    t.do(test1, {
+                        originX: mouse.x,
+                        originY: mouse.y
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
+
+                function test1(srcIndex, src32, dst32, p, width, height, cache)
+                {
+                    var c = cache[srcIndex];
+                    var originX = p.originX;
+                    var originY = p.originY;
+
+                    var distanceX = c.x - originX;
+                    var distanceY = c.y - originY;
+                    var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
+
+                    var angle = Math.PI * (distanceX / originX);
+
+                    var tx = originX + (Math.cos(angle) * distance) | 0;
+                    var ty = originY + (Math.sin(angle) * distance) | 0;
+
+                    dst32[srcIndex] = src32[ty * width + tx];
+                };
+
+                // Test 2
+
+                initLayer(imageData, function(l, t, mouse) {
+                        t.reset();
+                        t.do(test2, {
+                            originX: mouse.x,
+                            originY: mouse.y
+                        });
+
+                        l.getGraphicAt(0).imageData = t.imageData;
+                        l.render();
+                    },
+                    function(i, c) {
+                        c.angle = Math.PI / Math.atan2(c.y, c.x);
+                    });
+
+                function test2(srcIndex, src32, dst32, p, width, height, cache)
+                {
+                    var c = cache[srcIndex];
+                    var originX = p.originX;
+                    var originY = p.originY;
+
+                    var distanceX = c.x - originX;
+                    var distanceY = c.y - originY;
+                    var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
+
+                    var angle = c.angle;
+
+                    var tx = originX + (Math.cos(angle) * distance) | 0;
+                    var ty = originY + (Math.sin(angle) * distance) | 0;
+
+                    dst32[srcIndex] = src32[ty * width + tx];
+                };
+
+                // Test 3
+
+                initLayer(imageData, function(l, t, mouse) {
+                    t.reset();
+                    t.do(test3, {
+                        originX: mouse.x,
+                        originY: mouse.y
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
+
+                function test3(srcIndex, src32, dst32, p, width, height, cache)
+                {
+                    var c = cache[srcIndex];
+                    var originX = p.originX;
+                    var originY = p.originY;
+
+                    var distanceX = c.x - originX;
+                    var distanceY = c.y - originY;
+                    var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
+
+                    var angle = Math.atan2(distanceX, distanceY) * 2;
+
+                    var tx = originX + (Math.cos(angle) * distance) | 0;
+                    var ty = originY + (Math.sin(angle) * distance) | 0;
+
+                    dst32[srcIndex] = src32[ty * width + tx];
+                };
+
+                // Test 4
+
+                initLayer(imageData, function(l, t, mouse) {
+                    t.reset();
+                    t.do(test4, {
+                        originX: mouse.x,
+                        originY: mouse.y
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
+
+                function test4(srcIndex, src32, dst32, p, width, height, cache)
+                {
+                    var c = cache[srcIndex];
+                    var originX = p.originX;
+                    var originY = p.originY;
+
+                    var distanceX = c.x - originX;
+                    var distanceY = c.y - originY;
+                    var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
+
+                    var angle = Math.atan2(originY, originX);
+
+                    var tx = originX + (Math.cos(angle) * distance) | 0;
+                    var ty = originY + (Math.sin(angle) * distance) | 0;
+
+                    dst32[srcIndex] = src32[ty * width + tx];
+                };
+
+                initLayer(imageData, function(l, t, mouse) {
+                        t.reset();
+                        t.do(test5, {
+                            originX: mouse.x,
+                            originY: mouse.y
+                        });
+
+                        l.getGraphicAt(0).imageData = t.imageData;
+                        l.render();
+                    },
+                    function(i, c) {
+                        c.angle = Math.atan2(c.y, c.x)*2;
+                    });
+
+                function test5(srcIndex, src32, dst32, p, width, height, cache)
+                {
+                    var c = cache[srcIndex];
+                    var originX = p.originX;
+                    var originY = p.originY;
+
+                    var distanceX = c.x - originX;
+                    var distanceY = c.y - originY;
+                    var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
+
+                    var angle = c.angle;
+
+                    var tx = originX + (Math.cos(angle) * distance) | 0;
+                    var ty = originY + (Math.sin(angle) * distance) | 0;
+
+                    dst32[srcIndex] = src32[ty * width + tx];
+                };
+
+                initLayer(imageData, function(l, t, mouse) {
+                    t.reset();
+                    t.do(test6, {
+                        originX: mouse.x,
+                        originY: mouse.y
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
+
+                function test6(srcIndex, src32, dst32, p, width, height, cache)
+                {
+                    var c = cache[srcIndex];
+                    var originX = p.originX;
+                    var originY = p.originY;
+
+                    var distanceX = c.x - originX;
+                    var distanceY = c.y - originY;
+                    var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
+
+                    var angle = Math.atan2(distanceY, distanceX) * 2;
+
+                    var tx = originX + (Math.cos(angle) * distanceX) | 0;
+                    var ty = originY + (Math.sin(angle) * distanceY) | 0;
+
+                    dst32[srcIndex] = src32[ty * width + tx];
+                };
+
+                initLayer(imageData, function(l, t, mouse) {
+                    t.reset();
+                    t.do(test7, {
+                        originX: mouse.x + 200,
+                        originY: mouse.y,
+                        angle: mouse.centerDistX * 0.0001,
+                        radius: -600
+                    });
+
+                    l.getGraphicAt(0).imageData = t.imageData;
+                    l.render();
+                });
+
+                function test7(srcIndex, src32, dst32, p, width, height, cache)
+                {
+                    var h = height-3;
+                    var c = cache[srcIndex];
+                    var originX = p.originX;
+                    var originY = height-p.originY;
+
+                    var distanceX = c.x-(width>>1);
+                    var distanceY = c.y - (h>>1);
+                    // var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
+
+                    var radius = p.radius;
+                    var radian = Math.atan2(distanceY, distanceX);
+
+                    var tx = originX + (c.x + Math.cos(radian) * radius) | 0;
+                    var ty = height - (c.y + Math.sin(radian) * radius) | 0;
+
+
+                    if(ty < 0 || ty >= h) {
+                        ty = (((ty/h)|0)*h - ty%h);
+                    }
+
+                    dst32[srcIndex] = src32[ty * width + tx];
+                };
+            }
+
+            function initLayer(imageData, update, cacheFn)
+            {
+                var layer = new Layer({
+                    appendToBody: true,
+                    width: 800,
+                    height: 400
+                });
+
+                var transform;
+                var graphic = new Graphic({
+                    imageData: imageData
+                });
+
+                layer.addGraphic(graphic);
+                layer.render();
+
+                layer.getCanvas().addEventListener('mouseenter', function(event) {
+                    transform = new Transform(imageData, cacheFn);
+                });
+
+                layer.getCanvas().addEventListener('mouseleave', function(event) {
+                    // release this when not needed. There are some caching that increase jsheap size
+                    transform = null;
+                });
+
+                layer.getCanvas().addEventListener('mousemove', function(event) {
+                    var rect = layer.getCanvas().getBoundingClientRect();
+                    var left = rect.left;
+                    var top = rect.top;
+                    var centerX = left + (rect.width >> 1);
+                    var centerY = top + (rect.height >> 1);
+                    var mouseX = event.clientX;
+                    var mouseY = event.clientY;
+
+                    var canvasMouseX = mouseX - left;
+                    var canvasMouseY = mouseY - top;
+                    var centerDistX = mouseX - centerX;
+                    var centerDistY = mouseY - centerY;
+
+                    var mouse = {
+                        x: canvasMouseX,
+                        y: canvasMouseY,
+                        centerDistX: centerDistX,
+                        centerDistY: centerDistY,
+                        centerDistXPct: centerDistX / (rect.width >> 1),
+                        centerDistYPct: centerDistY / (rect.height >> 1),
+                        xPct: canvasMouseX / rect.width,
+                        yPct: canvasMouseY / rect.height
+                    };
+
+                    // console.time("asd");
+                    update(layer, transform, mouse);
+                    // console.timeEnd("asd");
+                });
+            }
+
+        })();
+
+
+    </script>
+</body>
+</html>

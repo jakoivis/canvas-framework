@@ -1,5 +1,4 @@
 
-var Transform = require('./transform.js');
 
 module.exports = function Graphic(options)
 {
@@ -11,25 +10,62 @@ module.exports = function Graphic(options)
     }
 
     var me = this;
-    var renderContext;
+    var renderContext = null;
 
-    var _imageData;
-    var imageData8ClampedView;
-    var imageData32View;
-
-    var renderedX;
-    var renderedY;
+    var renderedX = null;
+    var renderedY = null;
 
     var dummyFunction = function() {}
 
     me.x = 0;
     me.y = 0;
 
-    me.onRollOver;
-    me.onRollOut;
-    me.onClick;
+    me.onRollOver = null;
+    me.onRollOut = null;
+    me.onClick = null;
 
     var update = dummyFunction;
+
+    var imageData = null;
+    var uint8CView = null;
+    var uint32View = null;
+    var width = 0;
+    var height = 0;
+
+    Object.defineProperty(this, "imageData", {
+        get: function() { return imageData; },
+        set: function(value)
+        {
+            imageData = value;
+
+            uint8CView = imageData.data;
+            uint32View = new Uint32Array(uint8CView.buffer);
+
+            width = imageData.width;
+            height = imageData.height;
+        }
+    });
+
+    Object.defineProperty(this, "uint32View", {
+        get: function() { return uint32View; }
+    });
+
+    Object.defineProperty(this, "uint8CView", {
+        get: function() { return uint8CView; }
+    });
+
+    Object.defineProperty(this, "width", {
+        get: function() { return width; }
+    });
+
+    Object.defineProperty(this, "height", {
+        get: function() { return height; }
+    });
+
+    Object.defineProperty(this, "renderContext", {
+        get: function(value) { return renderContext; },
+        set: function(value) { renderContext = value; }
+    });
 
     function init()
     {
@@ -37,52 +73,30 @@ module.exports = function Graphic(options)
         {
             if (options.imageData)
             {
-                me.setImageData(options.imageData);
+                me.imageData = options.imageData;
             }
 
             me.x = options.x || 0;
             me.y = options.y || 0;
 
-            me.onRollOver = options.onRollOver;
-            me.onRollOut = options.onRollOut;
-            me.onClick = options.onClick;
+            me.onRollOver = options.onRollOver || null;
+            me.onRollOut = options.onRollOut || null;
+            me.onClick = options.onClick || null;
 
             update = options.update || dummyFunction;
         }
     }
 
-    me.getImageData = function()
-    {
-        return _imageData;
-    }
-
-    me.setImageData = function(imageData)
-    {
-        _imageData = imageData;
-        imageData8ClampedView = _imageData.data;
-        imageData32View = new Uint32Array(imageData8ClampedView.buffer);
-    }
-
-    me.setRenderContext = function(context)
-    {
-        renderContext = context;
-    };
-
     me.render = function()
     {
         saveRenderedPosition();
 
-        // var existingImageData = renderContext.getImageData(me.x, me.y, _imageData.width, _imageData.height);
-        // var transform = new Transform(existingImageData, renderContext);
-
-        // transform.do(Transform.WeightedAlphaBlend, {imageData2:_imageData});
-        // renderContext.putImageData(transform.getImageData(), me.x, me.y);
-        renderContext.putImageData(_imageData, me.x, me.y);
+        renderContext.putImageData(imageData, me.x, me.y);
     }
 
     me.clear = function()
     {
-        renderContext.clearRect(renderedX-1, renderedY-1, _imageData.width+1, _imageData.height+1);
+        renderContext.clearRect(renderedX-1, renderedY-1, imageData.width+1, imageData.height+1);
     }
 
     me.update = function()
@@ -108,48 +122,43 @@ module.exports = function Graphic(options)
 
     me.hasGlobalPixelAt = function(x, y)
     {
-        var result = false;
+        var localX = x - me.x;
+        var localY = y - me.y;
 
-        if (isGlobalPositionWithinBoundaries(x, y))
-        {
-            var distanceFromLeft = x - me.x;
-            var distanceFromTop = y - me.y;
-            var pixel32 = getPixel32At(distanceFromLeft, distanceFromTop);
+        return localX >= 0
+                && localY >= 0
+                && localX < width
+                && localY < height
+                && !!uint32View[localY * width + localX];
+    };
 
-            if (pixel32 !== 0)
-            {
-                result = true;
-            }
-        }
-
-        return result;
-    }
-
-    function isGlobalPositionWithinBoundaries(x, y)
+    me.getGlobalPixel32At = function(x, y)
     {
-        //var distanceFromLeft = x - me.x;
-        //var distanceFromTop = y - me.y;
-        //var distanceFromRight = x - (me.x + _imageData.width);
-        //var distanceFromBottom = y - (me.y + _imageData.height);
-        //return (distanceFromLeft >= 0 && distanceFromRight <= 0
-        //    && distanceFromTop >= 0 && distanceFromBottom <= 0);
+        var localX = x - me.x;
+        var localY = y - me.y;
 
-        // the below statement implements the same functionality as above
-        return ((x - me.x) >= 0
-                && (y - me.y) >= 0
-                && (x - (me.x + _imageData.width)) <= 0
-                && (y - (me.y + _imageData.height)) <= 0);
+        return localX >= 0
+                && localY >= 0
+                && localX < width
+                && localY < height
+                ? uint32View[localY * width + localX]
+                : 0;
+    };
+
+    me.getPixel32At = function(x, y)
+    {
+        return x >= 0
+                && y >= 0
+                && x < width
+                && y < height
+                ? uint32View[y * width + x]
+                : 0;
     }
 
     function saveRenderedPosition()
     {
         renderedX = me.x;
         renderedY = me.y;
-    }
-
-    function getPixel32At(x, y)
-    {
-        return imageData32View[y * _imageData.width + x];
     }
 
     init();
