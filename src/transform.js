@@ -1,8 +1,8 @@
 
 var CanvasUtil = require("./CanvasUtil.js");
-var SMath = require("smath");
+// var SMath = require("smath");
 
-var sMath = new SMath({resolution:1200});
+// var sMath = new SMath({resolution:1200});
 
 function Transform(imageDataOriginal, cacheFunction)
 {
