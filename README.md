@@ -1,4 +1,6 @@
 
+![GitHub Logo](/examples/images/githubimage.png)
+
 Library that brings some features for handling graphics on canvas.
 
 ========
