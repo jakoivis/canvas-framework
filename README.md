@@ -1,3 +1,4 @@
+
 Library that brings some features for handling graphics on canvas.
 
 ========
@@ -13,9 +14,11 @@ Library that brings some features for handling graphics on canvas.
 You shouldn't. This is just a testing project.
 
 # Couple of runnign examples
-http://www.jarmokoivisto.fi/projects/canvasfwTest/transformSwirl1.html
-http://www.jarmokoivisto.fi/projects/canvasfwTest/transformSwirl2.html
-http://www.jarmokoivisto.fi/projects/canvasfwTest/transformTester.html
+http://www.jarmokoivisto.fi/projects/canvasfwTest/examples/transforms.html
+http://www.jarmokoivisto.fi/projects/canvasfwTest/examples/transform-tester.html
+http://www.jarmokoivisto.fi/projects/canvasfwTest/examples/transform-swirl3-cssscale.html
+http://www.jarmokoivisto.fi/projects/canvasfwTest/examples/transform-swirl2.html
+http://www.jarmokoivisto.fi/projects/canvasfwTest/examples/transform-swirl.html
 
 # API
 Won't be documented
